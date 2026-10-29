@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+:root,
+html[data-theme="dark"] {
+  --bg-stage: #0a0a0d;
+  --bg-nav: rgba(10, 10, 13, 0.82);
+  --bg-panel: #121218;
+  --text-primary: #f4f0ea;
+  --text-secondary: #b8b4ac;
+  --text-muted: #8f8b84;
+  --accent-amber: #e89b3c;
+  --cable-base: #26262e;
+  --cable-dash: #3f3f4c;
+  --btn-secondary-bg: rgba(255, 255, 255, 0.08);
+  --btn-secondary-hover: rgba(255, 255, 255, 0.16);
+}
+
+html[data-theme="light"] {
+  --bg-stage: #f2ece1;
+  --bg-nav: rgba(242, 236, 225, 0.88);
+  --bg-panel: #ffffff;
+  --text-primary: #141418;
+  --text-secondary: #434039;
+  --text-muted: #666259;
+  --accent-amber: #d47a12;
+  --cable-base: #8e877b;
+  --cable-dash: #5c574d;
+  --btn-secondary-bg: rgba(20, 20, 24, 0.12);
+  --btn-secondary-hover: rgba(20, 20, 24, 0.22);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background-color: var(--bg-stage);
+  color: var(--text-primary);
+  font-family: var(--font-grotesk), -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.font-mono-label {
+  font-family: var(--font-mono), monospace;
+}
+
+/* Weak begging flicker for idle orbs after 4s of inactivity */
+@keyframes orbBegFlicker {
+  0%, 100% {
+    opacity: 0.85;
+    filter: brightness(0.96);
+  }
+  12% {
+    opacity: 1;
+    filter: brightness(1.32);
+  }
+  18% {
+    opacity: 0.7;
+    filter: brightness(0.88);
+  }
+  28% {
+    opacity: 1;
+    filter: brightness(1.42);
+  }
+  36% {
+    opacity: 0.88;
+    filter: brightness(0.98);
+  }
+}
+
+.orb-begging {
+  animation: orbBegFlicker 2.6s infinite ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .orb-begging {
+    animation: none !important;
+  }
+}
