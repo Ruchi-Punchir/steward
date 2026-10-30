@@ -2,31 +2,39 @@
 
 :root,
 html[data-theme="dark"] {
-  --bg-stage: #0a0a0d;
-  --bg-nav: rgba(10, 10, 13, 0.82);
-  --bg-panel: #121218;
+  --bg-stage: #08080a;
+  --bg-nav: rgba(8, 8, 10, 0.78);
+  --bg-panel: #101014;
+  --surface-node: #111116;
+  --surface-machine: #111115;
+  --surface-terminal: #09090c;
+  --border-hairline: rgba(244, 240, 234, 0.09);
   --text-primary: #f4f0ea;
-  --text-secondary: #b8b4ac;
-  --text-muted: #8f8b84;
+  --text-secondary: #a09c94;
+  --text-muted: #66635c;
   --accent-amber: #e89b3c;
-  --cable-base: #26262e;
-  --cable-dash: #3f3f4c;
-  --btn-secondary-bg: rgba(255, 255, 255, 0.08);
-  --btn-secondary-hover: rgba(255, 255, 255, 0.16);
+  --cable-base: rgba(244, 240, 234, 0.14);
+  --btn-secondary-bg: rgba(244, 240, 234, 0.08);
+  --btn-secondary-border: rgba(244, 240, 234, 0.28);
+  --btn-secondary-hover: rgba(244, 240, 234, 0.14);
 }
 
 html[data-theme="light"] {
-  --bg-stage: #f2ece1;
-  --bg-nav: rgba(242, 236, 225, 0.88);
+  --bg-stage: #f5f2eb;
+  --bg-nav: rgba(245, 242, 235, 0.84);
   --bg-panel: #ffffff;
-  --text-primary: #141418;
-  --text-secondary: #434039;
-  --text-muted: #666259;
+  --surface-node: #18181d;
+  --surface-machine: #16161b;
+  --surface-terminal: #0c0c10;
+  --border-hairline: rgba(20, 20, 24, 0.12);
+  --text-primary: #121216;
+  --text-secondary: #524e46;
+  --text-muted: #7c776d;
   --accent-amber: #d47a12;
-  --cable-base: #8e877b;
-  --cable-dash: #5c574d;
-  --btn-secondary-bg: rgba(20, 20, 24, 0.12);
-  --btn-secondary-hover: rgba(20, 20, 24, 0.22);
+  --cable-base: rgba(20, 20, 24, 0.22);
+  --btn-secondary-bg: rgba(20, 20, 24, 0.08);
+  --btn-secondary-border: rgba(20, 20, 24, 0.24);
+  --btn-secondary-hover: rgba(20, 20, 24, 0.16);
 }
 
 * {
@@ -40,39 +48,52 @@ body {
   font-family: var(--font-grotesk), -apple-system, BlinkMacSystemFont, sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.35s ease, color 0.35s ease;
 }
 
 .font-mono-label {
   font-family: var(--font-mono), monospace;
 }
 
-/* Weak begging flicker for idle orbs after 4s of inactivity */
+.font-serif-editorial {
+  font-family: var(--font-serif), Georgia, serif;
+}
+
+/* Subtle begging pulse for idle nodes after 4s of inactivity */
 @keyframes orbBegFlicker {
   0%, 100% {
-    opacity: 0.85;
-    filter: brightness(0.96);
-  }
-  12% {
-    opacity: 1;
-    filter: brightness(1.32);
-  }
-  18% {
-    opacity: 0.7;
-    filter: brightness(0.88);
-  }
-  28% {
-    opacity: 1;
-    filter: brightness(1.42);
-  }
-  36% {
     opacity: 0.88;
-    filter: brightness(0.98);
+  }
+  15% {
+    opacity: 1;
+    filter: brightness(1.18);
+  }
+  25% {
+    opacity: 0.72;
+  }
+  38% {
+    opacity: 1;
+    filter: brightness(1.22);
   }
 }
 
 .orb-begging {
-  animation: orbBegFlicker 2.6s infinite ease-in-out;
+  animation: orbBegFlicker 3.2s infinite ease-in-out;
+}
+
+/* Continuous directional dotted line traveling from buttons into the typewriter */
+@keyframes wireEnergyFlow {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -24;
+  }
+}
+
+.wire-energy-flow {
+  stroke-dasharray: 2 10;
+  animation: wireEnergyFlow 0.9s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
