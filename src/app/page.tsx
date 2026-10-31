@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/hero/HeroSection";
 import TypewriterStage from "@/components/hero/TypewriterStage";
 import DashboardSection from "@/components/dashboard/DashboardSection";
+import ProcessSection from "@/components/process/ProcessSection";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -26,14 +27,42 @@ export default function HomePage() {
 
   // Shared wrapper ref for the continuous Section 1 -> Section 2 camera handoff
   const handoffWrapperRef = useRef<HTMLDivElement | null>(null);
+  const desktopFixedStageRef = useRef<HTMLDivElement | null>(null);
 
-  // Immediate full-section snap when scroll is hit (Section 1 <-> Section 2)
+  const syncFixedStage = useCallback(() => {
+    const fixedEl = desktopFixedStageRef.current;
+    if (!fixedEl) return;
+
+    // Once Section 2 fades into "Let's fix it together" (> 2.15 * vh), hide the Section 1/2 fixed stage
+    if (window.scrollY > window.innerHeight * 2.15) {
+      if (fixedEl.style.visibility !== "hidden") {
+        fixedEl.style.visibility = "hidden";
+      }
+    } else {
+      if (fixedEl.style.visibility !== "visible") {
+        fixedEl.style.visibility = "visible";
+      }
+    }
+  }, []);
+
+  // Guided multi-beat scroll choreography:
+  // Beat 0 (0): Section 1 Hero
+  // Beat 1 (1.0 * vh): Section 2 Dashboard
+  // Beat 2 (1.6 * vh): "together" turns italic & orange (#e89b3c)
+  // Beat 3 (2.6 * vh): "Let's fix it together" glides to center, Typewriter + Steward lockup
+  // Beat 4 (3.6 * vh): "How we work together" (assembled typewriter centered, 4 process steps at bottom)
+  // Beat 5: "1. Understand the problem" active + 3D Exploded View
+  // Beat 6: "2. Build a solution" active (Only Units 02 & 04 visible with traveling green repair light)
+  // Beat 7: "3. Test the solution" active (All 5 units brought together for live user testing)
+  // Beat 8: "4. Launch and measure" active
+  // Beat 9: "5. Iterate and scale" active
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (mq.matches) return;
 
+    type BeatIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+    const MAX_BEAT: BeatIndex = 9;
     let isAnimating = false;
-    let currentSection: 0 | 1 = window.scrollY > window.innerHeight * 0.5 ? 1 : 0;
     let wheelCooldownUntil = 0;
     let touchStartY = 0;
     let scrollbarSnapTimer: ReturnType<typeof setTimeout> | null = null;
@@ -44,35 +73,105 @@ export default function HomePage() {
       return el ? el.offsetTop : window.innerHeight;
     };
 
-    const snapToSection = (targetSection: 0 | 1) => {
-      const targetY = targetSection === 1 ? getSection2Top() : 0;
+    const getSection3Top = () => {
+      const el = document.getElementById("process");
+      return el ? el.offsetTop : window.innerHeight * 3.6;
+    };
 
-      if (Math.abs(window.scrollY - targetY) < 2 && currentSection === targetSection) {
+    const getBeatStops = (): [
+      number,
+      number,
+      number,
+      number,
+      number,
+      number,
+      number,
+      number,
+      number,
+      number
+    ] => {
+      const s2Top = getSection2Top();
+      const s3Top = getSection3Top();
+      const vh = window.innerHeight;
+      return [
+        0,                                // Beat 0: Hero
+        s2Top,                            // Beat 1: Dashboard
+        Math.round(s2Top + vh * 0.6),     // Beat 2: "together" italic orange
+        Math.round(s2Top + vh * 1.6),     // Beat 3: "Let's fix it together" + Steward lockup
+        s3Top,                            // Beat 4: "How we work together"
+        Math.round(s3Top + vh * 0.85),    // Beat 5: "1. Understand the problem"
+        Math.round(s3Top + vh * 1.95),    // Beat 6: "2. Build a solution"
+        Math.round(s3Top + vh * 2.95),    // Beat 7: "3. Test the solution"
+        Math.round(s3Top + vh * 3.85),    // Beat 8: "4. Launch and measure"
+        Math.round(s3Top + vh * 4.55),    // Beat 9: "5. Iterate and scale"
+      ];
+    };
+
+    const getNearestBeat = (y: number): BeatIndex => {
+      const stops = getBeatStops();
+      let bestIdx: BeatIndex = 0;
+      let bestDist = Math.abs(y - stops[0]);
+      for (let i = 1; i < stops.length; i++) {
+        const d = Math.abs(y - stops[i]);
+        if (d < bestDist) {
+          bestDist = d;
+          bestIdx = i as BeatIndex;
+        }
+      }
+      return bestIdx;
+    };
+
+    let currentBeat: BeatIndex = getNearestBeat(window.scrollY);
+
+    const snapToBeat = (targetBeat: BeatIndex) => {
+      const stops = getBeatStops();
+      const targetY = stops[targetBeat];
+
+      if (Math.abs(window.scrollY - targetY) < 2 && currentBeat === targetBeat) {
         return;
       }
 
+      const prevBeat = currentBeat;
       isAnimating = true;
-      currentSection = targetSection;
-      setIsTransitionLocked(true);
+      currentBeat = targetBeat;
 
       gsap.killTweensOf(scrollTweenObj);
       scrollTweenObj.y = window.scrollY;
 
+      // Custom pacing per story beat
+      const duration =
+        (prevBeat >= 5 && targetBeat >= 5)
+          ? 1.15
+          : (prevBeat === 4 && targetBeat === 5) ||
+            (prevBeat === 5 && targetBeat === 4)
+          ? 1.1
+          : (prevBeat === 3 && targetBeat === 4) ||
+            (prevBeat === 4 && targetBeat === 3)
+          ? 0.95
+          : (prevBeat === 2 && targetBeat === 3) ||
+            (prevBeat === 3 && targetBeat === 2)
+          ? 1.05
+          : (prevBeat === 1 && targetBeat === 2) ||
+            (prevBeat === 2 && targetBeat === 1)
+          ? 0.58
+          : 0.8;
+
       gsap.to(scrollTweenObj, {
         y: targetY,
-        duration: 0.82,
+        duration,
         ease: "power2.inOut",
         onUpdate: () => {
-          window.scrollTo(0, scrollTweenObj.y);
+          window.scrollTo(0, Math.round(scrollTweenObj.y));
           ScrollTrigger.update();
+          syncFixedStage();
         },
         onComplete: () => {
           window.scrollTo(0, targetY);
           ScrollTrigger.update();
+          syncFixedStage();
           isAnimating = false;
-          setIsTransitionLocked(false);
-          // Brief cooldown so trackpad inertia tail doesn't immediately re-trigger
-          wheelCooldownUntil = performance.now() + 260;
+          // Brief cooldown so trackpad inertia tail doesn't immediately skip a beat
+          wheelCooldownUntil = performance.now() + 220;
         },
       });
     };
@@ -80,9 +179,9 @@ export default function HomePage() {
     const handleWheel = (e: WheelEvent) => {
       if (activeDialog) return;
 
-      // Always prevent native free-scroll between Section 1 and Section 2 so it never stops in the middle
-      const s2Top = getSection2Top();
-      if (window.scrollY <= s2Top + 10) {
+      const stops = getBeatStops();
+      const maxBeatY = stops[MAX_BEAT];
+      if (window.scrollY <= maxBeatY + 10) {
         e.preventDefault();
       }
 
@@ -92,10 +191,10 @@ export default function HomePage() {
       // Ignore tiny trackpad jitter
       if (Math.abs(e.deltaY) < 6) return;
 
-      if (e.deltaY > 0 && currentSection === 0) {
-        snapToSection(1);
-      } else if (e.deltaY < 0 && currentSection === 1) {
-        snapToSection(0);
+      if (e.deltaY > 0 && currentBeat < MAX_BEAT) {
+        snapToBeat((currentBeat + 1) as BeatIndex);
+      } else if (e.deltaY < 0 && currentBeat > 0) {
+        snapToBeat((currentBeat - 1) as BeatIndex);
       }
     };
 
@@ -105,14 +204,14 @@ export default function HomePage() {
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
 
       if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") {
-        if (currentSection === 0) {
+        if (currentBeat < MAX_BEAT) {
           e.preventDefault();
-          if (!isAnimating) snapToSection(1);
+          if (!isAnimating) snapToBeat((currentBeat + 1) as BeatIndex);
         }
       } else if (e.key === "ArrowUp" || e.key === "PageUp") {
-        if (currentSection === 1) {
+        if (currentBeat > 0) {
           e.preventDefault();
-          if (!isAnimating) snapToSection(0);
+          if (!isAnimating) snapToBeat((currentBeat - 1) as BeatIndex);
         }
       }
     };
@@ -131,37 +230,40 @@ export default function HomePage() {
       e.preventDefault();
       if (isAnimating) return;
 
-      if (deltaY > 0 && currentSection === 0) {
-        snapToSection(1);
-      } else if (deltaY < 0 && currentSection === 1) {
-        snapToSection(0);
+      if (deltaY > 0 && currentBeat < MAX_BEAT) {
+        touchStartY = e.touches[0].clientY;
+        snapToBeat((currentBeat + 1) as BeatIndex);
+      } else if (deltaY < 0 && currentBeat > 0) {
+        touchStartY = e.touches[0].clientY;
+        snapToBeat((currentBeat - 1) as BeatIndex);
       }
     };
 
-    // Fallback if user drags the browser scrollbar directly and releases in the middle
+    // Fallback if user drags the browser scrollbar directly and releases between beats
     const handleNativeScroll = () => {
+      syncFixedStage();
       if (isAnimating) return;
       if (scrollbarSnapTimer) clearTimeout(scrollbarSnapTimer);
       scrollbarSnapTimer = setTimeout(() => {
         if (isAnimating) return;
-        const s2Top = getSection2Top();
+        const stops = getBeatStops();
         const y = window.scrollY;
-        if (y > 4 && y < s2Top - 4) {
-          const target: 0 | 1 = y >= s2Top * 0.5 ? 1 : 0;
-          snapToSection(target);
-        } else if (y <= 4) {
-          currentSection = 0;
-        } else if (y >= s2Top - 4) {
-          currentSection = 1;
+        const nearest = getNearestBeat(y);
+        if (Math.abs(y - stops[nearest]) > 6 && y <= stops[MAX_BEAT] + 20) {
+          snapToBeat(nearest);
+        } else {
+          currentBeat = nearest;
         }
-      }, 90);
+      }, 110);
     };
 
+    syncFixedStage();
     window.addEventListener("wheel", handleWheel, { passive: false });
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
     window.addEventListener("touchmove", handleTouchMove, { passive: false });
     window.addEventListener("scroll", handleNativeScroll, { passive: true });
+    window.addEventListener("resize", syncFixedStage);
 
     return () => {
       if (scrollbarSnapTimer) clearTimeout(scrollbarSnapTimer);
@@ -171,8 +273,9 @@ export default function HomePage() {
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("scroll", handleNativeScroll);
+      window.removeEventListener("resize", syncFixedStage);
     };
-  }, [activeDialog]);
+  }, [activeDialog, syncFixedStage]);
 
   const handleSpend = useCallback(
     (tier: 20 | 50 | 100, customEarnedDelta?: number) => {
@@ -208,7 +311,10 @@ export default function HomePage() {
           className="relative w-full overflow-x-clip"
         >
           {/* Desktop Fixed Shared Typewriter Stage (spans Section 1 & Section 2 so the exact same typewriter stays in view and transitions on scroll) */}
-          <div className="pointer-events-none hidden lg:fixed lg:inset-x-0 lg:top-0 lg:z-30 lg:flex lg:h-screen lg:w-full lg:items-center lg:overflow-hidden">
+          <div
+            ref={desktopFixedStageRef}
+            className="pointer-events-none hidden lg:fixed lg:inset-x-0 lg:top-0 lg:z-30 lg:flex lg:h-screen lg:w-full lg:items-center lg:overflow-hidden"
+          >
             <div className="mx-auto grid w-full max-w-[1560px] grid-cols-12 items-center gap-8 px-6 sm:px-10 lg:gap-10 lg:px-16 xl:px-24">
               <div className="col-span-6 col-start-7 w-full">
                 <TypewriterStage
@@ -240,6 +346,8 @@ export default function HomePage() {
             isTransitionLocked={isTransitionLocked}
           />
         </div>
+
+        <ProcessSection />
       </main>
 
       {/* Accessible lightweight dialog for Free Audit / Start the conversation CTA clicks */}

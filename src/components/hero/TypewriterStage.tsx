@@ -782,7 +782,10 @@ export default function TypewriterStage({
   const socket100Ref = useRef<HTMLSpanElement | null>(null);
   const hoveredOrbRef = useRef<OrbTier | null>(null);
   const heroCountersRef = useRef<HTMLDivElement | null>(null);
+  const smokeCanvasWrapRef = useRef<HTMLDivElement | null>(null);
   const scrollProgressRef = useRef<number>(0);
+  const masterUnitsRef = useRef<number>(0);
+  const inDashRef = useRef<boolean>(false);
   const [inDashboardMode, setInDashboardMode] = useState<boolean>(false);
 
   // Refs for dynamic physics SVG wire paths
@@ -841,7 +844,9 @@ export default function TypewriterStage({
     }
     setIsBegging(false);
     idleTimerRef.current = setTimeout(() => {
-      setIsBegging(true);
+      if (masterUnitsRef.current <= 0.1) {
+        setIsBegging(true);
+      }
     }, 4000);
   }, []);
 
@@ -977,8 +982,12 @@ export default function TypewriterStage({
         });
       });
 
-      // Tilt the typewriter monolith toward cursor
-      if (typewriterTiltRef.current && typewriterGroupRef.current) {
+      // Subtle 2D parallax on typewriter monolith when in Hero view only
+      if (
+        typewriterTiltRef.current &&
+        typewriterGroupRef.current &&
+        masterUnitsRef.current < 0.05
+      ) {
         const twRect = typewriterGroupRef.current.getBoundingClientRect();
         const twCenterX = twRect.left + twRect.width / 2;
         const twCenterY = twRect.top + twRect.height / 2;
@@ -993,12 +1002,8 @@ export default function TypewriterStage({
         );
 
         gsap.to(typewriterTiltRef.current, {
-          rotateY: normX * 1.4,
-          rotateX: -normY * 1.1,
-          rotation: normX * 0.3,
-          x: normX * 1.75,
-          y: normY * 1,
-          transformPerspective: 1200,
+          x: normX * 1.5,
+          y: normY * 0.9,
           duration: 0.65,
           ease: "power2.out",
           overwrite: "auto",
@@ -1012,10 +1017,10 @@ export default function TypewriterStage({
     return () => window.removeEventListener("mousemove", handleGlobalMouseMove);
   }, [reducedMotion]);
 
-  // Scroll handoff from Section 1 (Hero) into Section 2 (Dashboard):
-  // The SAME typewriter slides right & down so ~35% is cropped by the right edge,
-  // and the SAME 3 cards ($20, $50, $100) form a vertical stack to the left of the typewriter,
-  // still connected by their live wires into the left side of the typewriter.
+  // Scroll handoff from Section 1 (Hero) -> Section 2 (Dashboard) -> Partnership Lockup:
+  // - Segment 1 (0 -> 1.0 vh): Hero to Section 2 Dashboard (typewriter bottom-right + 3 stacked cards on left)
+  // - Segment 2 (1.0 -> 1.6 vh): Section 2 Hold while "together" turns italic & orange
+  // - Segment 3 (1.6 -> 2.6 vh): 3 cards & wires fade out while the SAME typewriter glides left of center to partner with Steward
   useEffect(() => {
     if (reducedMotion || !handoffTriggerRef?.current || !stageRef.current) {
       return;
@@ -1025,36 +1030,73 @@ export default function TypewriterStage({
 
     const ctx = gsap.context(() => {
       const targetScale = 0.62;
+      const partnerScale = 0.44;
+      const totalScrollMultiplier = 2.6;
+
+      const syncOrbPointerEvents = (canClick: boolean) => {
+        const val = canClick ? "auto" : "none";
+        if (orb20PosRef.current) orb20PosRef.current.style.pointerEvents = val;
+        if (orb50PosRef.current) orb50PosRef.current.style.pointerEvents = val;
+        if (orb100PosRef.current) orb100PosRef.current.style.pointerEvents = val;
+        if (typewriterGroupRef.current) {
+          typewriterGroupRef.current.style.pointerEvents = val;
+        }
+      };
 
       const tl = gsap.timeline({
+        defaults: { force3D: false },
         scrollTrigger: {
           trigger: triggerEl,
           start: "top top",
-          end: () => `+=${window.innerHeight}`,
+          end: () => `+=${window.innerHeight * totalScrollMultiplier}`,
           scrub: true,
           invalidateOnRefresh: true,
+          onRefresh: () => {
+            measureAllAlignments();
+          },
           onUpdate: (self) => {
-            scrollProgressRef.current = self.progress;
-            setInDashboardMode(self.progress > 0.5);
-            const inMotion = self.progress > 0.04 && self.progress < 0.92;
-            onTransitionLockChange?.(inMotion);
+            const masterUnits = self.progress * totalScrollMultiplier;
+            masterUnitsRef.current = masterUnits;
+            // Hero -> Dashboard wire interpolation progress (0 to 1 over the first 1.0 vh)
+            scrollProgressRef.current = Math.min(1, masterUnits);
+
+            syncOrbPointerEvents(masterUnits < 1.75);
+
+            if (masterUnits >= 0.05 && typewriterTiltRef.current) {
+              gsap.set(typewriterTiltRef.current, { x: 0, y: 0, rotation: 0 });
+            }
+
+            const nextDash = masterUnits > 0.5;
+            if (nextDash !== inDashRef.current) {
+              inDashRef.current = nextDash;
+              setInDashboardMode(nextDash);
+            }
           },
           onLeave: () => {
             scrollProgressRef.current = 1;
-            setInDashboardMode(true);
-            onTransitionLockChange?.(false);
+            masterUnitsRef.current = totalScrollMultiplier;
+            syncOrbPointerEvents(false);
+            if (!inDashRef.current) {
+              inDashRef.current = true;
+              setInDashboardMode(true);
+            }
           },
-          onEnterBack: () => {
-            onTransitionLockChange?.(false);
-          },
+          onEnterBack: () => {},
           onLeaveBack: () => {
             scrollProgressRef.current = 0;
-            setInDashboardMode(false);
-            onTransitionLockChange?.(false);
+            masterUnitsRef.current = 0;
+            syncOrbPointerEvents(true);
+            if (inDashRef.current) {
+              inDashRef.current = false;
+              setInDashboardMode(false);
+            }
           },
         },
       });
 
+      // =====================================================================
+      // SEGMENT 1 (0 -> 1.0): Section 1 (Hero) -> Section 2 (Dashboard)
+      // =====================================================================
       // 1. Move the 3 buttons from their arch above the typewriter into a vertical stack on the left of the typewriter
       if (orb20PosRef.current) {
         tl.to(
@@ -1099,17 +1141,112 @@ export default function TypewriterStage({
         );
       }
 
-      // 2. Scale down the SAME typewriter and align its right edge flush with the right edge of the text block above it
+      // 2. Scale down the SAME typewriter and align it to the Section 2 copy block above it:
+      //    - right edge flush with the right edge of the right-aligned headline/copy
+      //    - top sitting a consistent gap below the last paragraph
+      //    Cached on refresh to eliminate layout thrashing & jitter during scrolling.
+      let cachedDashboardOffset = { x: 0, y: 94 };
+      let cachedPartnerOffset = { x: -320, y: 16 };
+
+      const measureDashboardAlignment = () => {
+        const stageEl = stageRef.current;
+        const twEl = typewriterGroupRef.current;
+        const fallback = {
+          x: Math.round(
+            ((stageEl?.clientWidth ?? 680) -
+              (twEl?.offsetWidth ?? 630) * targetScale) /
+              2 -
+              6
+          ),
+          y: 94,
+        };
+        if (!stageEl || !twEl) return fallback;
+
+        const anchor = document.querySelector<HTMLElement>(
+          '[data-typewriter-anchor="dashboard-copy"]'
+        );
+        const sticky = document.getElementById("dashboard")
+          ?.firstElementChild as HTMLElement | null;
+        if (!anchor || !sticky) return fallback;
+
+        let ax = 0;
+        let ay = 0;
+        let node: HTMLElement | null = anchor;
+        while (node && node !== sticky) {
+          ax += node.offsetLeft;
+          ay += node.offsetTop;
+          node = node.offsetParent as HTMLElement | null;
+        }
+        if (node !== sticky) return fallback;
+
+        const anchorRight = ax + anchor.offsetWidth;
+        const anchorBottom = ay + anchor.offsetHeight;
+
+        const stageRect = stageEl.getBoundingClientRect();
+        const stageH = stageEl.clientHeight || 650;
+        const twW = twEl.offsetWidth;
+        const twH = twEl.offsetHeight;
+        const untransformedCenterX = stageRect.left + stageRect.width / 2;
+        const untransformedCenterY =
+          window.innerHeight * 0.5 + stageH * 0.5 - 4 - twH * 0.5;
+        const scaledW = twW * targetScale;
+        const scaledH = twH * targetScale;
+
+        const targetCenterX = anchorRight - scaledW / 2;
+
+        const gap = 28;
+        const bottomMargin = 28;
+        let targetTop = anchorBottom + gap;
+        const maxTop = window.innerHeight - bottomMargin - scaledH;
+        if (targetTop > maxTop) targetTop = Math.max(anchorBottom + 8, maxTop);
+        const targetCenterY = targetTop + scaledH / 2;
+
+        return {
+          x: Math.round(targetCenterX - untransformedCenterX),
+          y: Math.round(targetCenterY - untransformedCenterY),
+        };
+      };
+
+      const measurePartnerAlignment = () => {
+        if (!stageRef.current) return cachedPartnerOffset;
+        const stageRect = stageRef.current.getBoundingClientRect();
+        const stageCenterX = stageRect.left + stageRect.width * 0.5;
+        const viewportCenterX = window.innerWidth * 0.5;
+        const twW = typewriterGroupRef.current?.offsetWidth ?? 630;
+        const halfScaledTwW = (twW * partnerScale) * 0.5;
+        const gapFromPlus = window.innerWidth >= 1280 ? 74 : 64;
+        const targetScreenX = viewportCenterX - gapFromPlus - halfScaledTwW;
+
+        const stageH = stageRef.current?.clientHeight ?? 650;
+        const twH = typewriterGroupRef.current?.offsetHeight ?? 430;
+        const untransformedCenterY =
+          window.innerHeight * 0.5 + stageH * 0.5 - 4 - twH * 0.5;
+        const targetViewportY = window.innerHeight * 0.55;
+
+        return {
+          x: Math.round(targetScreenX - stageCenterX),
+          y: Math.round(targetViewportY - untransformedCenterY - 12),
+        };
+      };
+
+      const measureAllAlignments = () => {
+        cachedDashboardOffset = measureDashboardAlignment();
+        cachedPartnerOffset = measurePartnerAlignment();
+      };
+
+      measureAllAlignments();
+
       if (typewriterGroupRef.current) {
-        tl.to(
+        tl.fromTo(
           typewriterGroupRef.current,
           {
-            x: () => {
-              const stageW = stageRef.current?.clientWidth ?? 680;
-              const twW = typewriterGroupRef.current?.offsetWidth ?? 630;
-              return Math.round((stageW - twW * targetScale) / 2 - 6);
-            },
-            y: 94,
+            x: 0,
+            y: 0,
+            scale: 1,
+          },
+          {
+            x: () => cachedDashboardOffset.x,
+            y: () => cachedDashboardOffset.y,
             scale: targetScale,
             duration: 1,
             ease: "power2.inOut",
@@ -1129,6 +1266,28 @@ export default function TypewriterStage({
             ease: "power2.out",
           },
           0
+        );
+      }
+
+      // =====================================================================
+      // SEGMENT 2 (1.0 -> 1.6): Section 2 Hold while "together" turns italic & orange
+      // SEGMENT 3 (1.6 -> 2.6): Section 2 -> Partnership Lockup
+      // =====================================================================
+      // 4. Fade out the entire Section 2 stage (typewriter, connected $20/$50/$100 buttons,
+      //    wires, and smoke) as ONE unified group underneath the rising z-40 overlay
+      if (stageRef.current) {
+        tl.fromTo(
+          stageRef.current,
+          {
+            opacity: 1,
+          },
+          {
+            opacity: 0,
+            duration: 0.86,
+            ease: "power2.inOut",
+            immediateRender: false,
+          },
+          1.6
         );
       }
 
@@ -1219,6 +1378,8 @@ export default function TypewriterStage({
     const updateWires = () => {
       rafId = requestAnimationFrame(updateWires);
       if (!stageRef.current) return;
+      // Skip expensive DOM layout reads & SVG path string updates once wires have faded out in Partnership mode
+      if (masterUnitsRef.current > 2.05) return;
 
       const stageRect = stageRef.current.getBoundingClientRect();
       const p = scrollProgressRef.current;
@@ -1858,12 +2019,17 @@ export default function TypewriterStage({
           </g>
         </svg>
 
-        {/* LAYER 2: SMOKE & SPARKS CANVAS */}
-        <SmokeSparksCanvas
-          powerState={powerState}
-          thickerSmoke={hasCompletedPayoff}
-          reducedMotion={reducedMotion}
-        />
+        {/* LAYER 2: SMOKE & SPARKS CANVAS (fades out in Partnership lockup so smoke doesn't float over Steward) */}
+        <div
+          ref={smokeCanvasWrapRef}
+          className="pointer-events-none absolute inset-0 z-20"
+        >
+          <SmokeSparksCanvas
+            powerState={powerState}
+            thickerSmoke={hasCompletedPayoff}
+            reducedMotion={reducedMotion}
+          />
+        </div>
 
         {/* LAYER 3: THREE CAPITAL POWER INJECTOR NODES */}
         {/* NODE 1: +$20 (TOOLS & SUBS) */}
@@ -1871,7 +2037,7 @@ export default function TypewriterStage({
           ref={orb20PosRef}
           className="pointer-events-auto absolute left-[0%] top-[6%] z-30 sm:left-[1%] sm:top-[7%]"
         >
-          <div ref={orb20WrapRef}>
+          <div ref={orb20WrapRef} className="pointer-events-auto">
             <button
               ref={orb20BtnRef}
               type="button"
@@ -1879,7 +2045,7 @@ export default function TypewriterStage({
               onMouseMove={(e) => handleOrbMouseMove(e, 20, orb20BtnRef)}
               onMouseLeave={() => handleOrbMouseLeave(orb20BtnRef)}
               aria-label="Inject $20 into your business machine"
-              className={`group relative flex h-[80px] w-[112px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-colors duration-200 will-change-transform focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[88px] sm:w-[126px] sm:p-3 ${
+              className={`pointer-events-auto group relative flex h-[80px] w-[112px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[88px] sm:w-[126px] sm:p-3 ${
                 powerState === "surge20"
                   ? isLight
                     ? "bg-[#e89b3c] text-[#08080a] shadow-[0_0_28px_rgba(232,155,60,0.5)]"
@@ -1940,7 +2106,7 @@ export default function TypewriterStage({
           ref={orb50PosRef}
           className="pointer-events-auto absolute left-[36%] -top-[3%] z-30 sm:left-[37%] sm:-top-[2%]"
         >
-          <div ref={orb50WrapRef}>
+          <div ref={orb50WrapRef} className="pointer-events-auto">
             <button
               ref={orb50BtnRef}
               type="button"
@@ -1948,7 +2114,7 @@ export default function TypewriterStage({
               onMouseMove={(e) => handleOrbMouseMove(e, 50, orb50BtnRef)}
               onMouseLeave={() => handleOrbMouseLeave(orb50BtnRef)}
               aria-label="Inject $50 into your business machine"
-              className={`group relative flex h-[84px] w-[120px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-colors duration-200 will-change-transform focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[92px] sm:w-[134px] sm:p-3 ${
+              className={`pointer-events-auto group relative flex h-[84px] w-[120px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[92px] sm:w-[134px] sm:p-3 ${
                 powerState === "surge50"
                   ? isLight
                     ? "bg-[#e89b3c] text-[#08080a] shadow-[0_0_32px_rgba(232,155,60,0.5)]"
@@ -2010,7 +2176,7 @@ export default function TypewriterStage({
           ref={orb100PosRef}
           className="pointer-events-auto absolute left-[72%] top-[4%] z-30 sm:left-[73%] sm:top-[5%]"
         >
-          <div ref={orb100WrapRef}>
+          <div ref={orb100WrapRef} className="pointer-events-auto">
             <button
               ref={orb100BtnRef}
               type="button"
@@ -2018,7 +2184,7 @@ export default function TypewriterStage({
               onMouseMove={(e) => handleOrbMouseMove(e, 100, orb100BtnRef)}
               onMouseLeave={() => handleOrbMouseLeave(orb100BtnRef)}
               aria-label="Inject $100 into your business machine"
-              className={`group relative flex h-[92px] w-[132px] cursor-pointer flex-col justify-between rounded-xl p-3 text-left transition-colors duration-200 will-change-transform focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[100px] sm:w-[148px] sm:p-3.5 ${
+              className={`pointer-events-auto group relative flex h-[92px] w-[132px] cursor-pointer flex-col justify-between rounded-xl p-3 text-left transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[100px] sm:w-[148px] sm:p-3.5 ${
                 powerState === "surge100"
                   ? "bg-[#e89b3c] text-[#08080a] shadow-[0_0_45px_rgba(232,155,60,0.75)]"
                   : isLight
@@ -2080,13 +2246,11 @@ export default function TypewriterStage({
         {/* LAYER 4: AUTHENTIC VINTAGE MECHANICAL TYPEWRITER */}
         <div
           ref={typewriterGroupRef}
-          style={{ perspective: "1200px" }}
           className="pointer-events-auto absolute bottom-1 left-1/2 z-20 flex w-[360px] -translate-x-1/2 flex-col items-center sm:w-[510px] lg:w-[590px] xl:w-[630px]"
         >
           <div
             ref={typewriterTiltRef}
-            style={{ transformStyle: "preserve-3d" }}
-            className="flex w-full flex-col items-center will-change-transform"
+            className="flex w-full flex-col items-center"
           >
             {/* PLATEN PAPER SLOT VIEWPORT (Backpanel removed so wires route cleanly behind the typewriter) */}
             <div className="relative z-20 -mb-3.5 flex w-full flex-col items-center">
@@ -2173,7 +2337,7 @@ export default function TypewriterStage({
                   <div
                     ref={carriageHandleRef}
                     style={{ transformOrigin: "bottom left" }}
-                    className="pointer-events-none absolute bottom-2 left-full -ml-1 flex flex-col items-end will-change-transform"
+                    className="pointer-events-none absolute bottom-2 left-full -ml-1 flex flex-col items-end"
                   >
                     {/* Brass/Amber curved finger paddle */}
                     <div className="h-3.5 w-7 -rotate-12 rounded-full border border-black/30 bg-gradient-to-r from-[#f3b15c] via-[#e89b3c] to-[#b36a14] shadow-[0_2px_10px_rgba(232,155,60,0.5)] sm:h-4 sm:w-8" />

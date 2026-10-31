@@ -46,7 +46,7 @@ body {
   background-color: var(--bg-stage);
   color: var(--text-primary);
   font-family: var(--font-grotesk), -apple-system, BlinkMacSystemFont, sans-serif;
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.35s ease, color 0.35s ease;
 }

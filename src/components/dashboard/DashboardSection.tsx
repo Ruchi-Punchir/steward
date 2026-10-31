@@ -25,8 +25,21 @@ export default function DashboardSection({
   isTransitionLocked,
 }: DashboardSectionProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const stickyStageRef = useRef<HTMLDivElement | null>(null);
+  const dashboardBgBlurRef = useRef<HTMLDivElement | null>(null);
+  const backdropVignetteRef = useRef<HTMLDivElement | null>(null);
   const dashboardShellRef = useRef<HTMLDivElement | null>(null);
   const copyBlockRef = useRef<HTMLDivElement | null>(null);
+
+  // Refs for "Let's fix it together!" inline -> center headline handoff & Partnership lockup
+  const inlineFixPhraseRef = useRef<HTMLSpanElement | null>(null);
+  const inlineLetsFixRef = useRef<HTMLSpanElement | null>(null);
+  const inlineTogetherBaseRef = useRef<HTMLSpanElement | null>(null);
+  const inlineTogetherSerifRef = useRef<HTMLSpanElement | null>(null);
+  const floatingHeadlineRef = useRef<HTMLDivElement | null>(null);
+  const plusSignRef = useRef<HTMLDivElement | null>(null);
+  const stewardLockupRef = useRef<HTMLDivElement | null>(null);
+  const mobilePartnerTwRef = useRef<HTMLDivElement | null>(null);
 
   // Animated count-up display states for tiles
   const [displaySpent, setDisplaySpent] = useState<number>(spent);
@@ -115,7 +128,11 @@ export default function DashboardSection({
     prevEarnedRef.current = earned;
   }, [spent, earned]);
 
-  // Continuous scroll handoff animation for Dashboard (left) and Editorial Copy (top-right)
+  // Continuous scroll handoff animation:
+  // 1) Entry into Section 2 (top 100% -> top 0%): Dashboard & Copy slide in
+  // 2) Phase A inside Section 2 (0 -> 0.6 vh): "together" turns italic & orange (#e89b3c)
+  // 3) Phase B inside Section 2 (0.6 -> 1.6 vh): "Let's fix it together" glides to center,
+  //    background blurs & dims, and "+ Steward (Growth & Engineering Partner)" locks in next to the typewriter
   useEffect(() => {
     const sectionEl = sectionRef.current;
     if (!sectionEl) return;
@@ -124,7 +141,8 @@ export default function DashboardSection({
     if (mq.matches) return;
 
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
+      // Entry timeline as Section 2 scrolls into view from Section 1
+      const entryTl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionEl,
           start: "top 100%",
@@ -134,7 +152,7 @@ export default function DashboardSection({
       });
 
       if (dashboardShellRef.current) {
-        tl.fromTo(
+        entryTl.fromTo(
           dashboardShellRef.current,
           {
             x: -80,
@@ -153,7 +171,7 @@ export default function DashboardSection({
       }
 
       if (copyBlockRef.current) {
-        tl.fromTo(
+        entryTl.fromTo(
           copyBlockRef.current,
           {
             y: 36,
@@ -166,6 +184,234 @@ export default function DashboardSection({
             duration: 0.9,
           },
           0.1
+        );
+      }
+
+      // Measure exact offset of inline "Let's fix it together" relative to the center headline target (50% X, 24% Y)
+      // Evaluated ONLY on ScrollTrigger refresh/resize — never during scroll frames!
+      let cachedOffset = { x: 240, y: 36, scale: 0.31 };
+      const measureInlineOffset = () => {
+        const stageEl = stickyStageRef.current;
+        const inlineEl = inlineFixPhraseRef.current;
+        const floatEl = floatingHeadlineRef.current;
+        if (!stageEl || !inlineEl || !floatEl) return cachedOffset;
+
+        const stageRect = stageEl.getBoundingClientRect();
+        const inlineRect = inlineEl.getBoundingClientRect();
+        const copyY =
+          (gsap.getProperty(copyBlockRef.current, "y") as number) || 0;
+        const bgScale =
+          (gsap.getProperty(dashboardBgBlurRef.current, "scaleX") as number) ||
+          1;
+
+        const inlineCenterX =
+          (inlineRect.left - stageRect.left + inlineRect.width * 0.5) / bgScale;
+        const inlineCenterY =
+          (inlineRect.top - stageRect.top - copyY + inlineRect.height * 0.5) /
+          bgScale;
+
+        const targetCenterX = stageRect.width * 0.5;
+        const targetCenterY = stageRect.height * 0.24;
+
+        const naturalFloatW = floatEl.offsetWidth || 380;
+        const naturalInlineW = inlineEl.offsetWidth || 125;
+        const ratio = Math.max(
+          0.24,
+          Math.min(0.55, naturalInlineW / naturalFloatW)
+        );
+
+        cachedOffset = {
+          x: Math.round(inlineCenterX - targetCenterX),
+          y: Math.round(inlineCenterY - targetCenterY),
+          scale: +ratio.toFixed(3),
+        };
+        return cachedOffset;
+      };
+
+      measureInlineOffset();
+
+      // Pure GPU-accelerated GSAP Timeline for Section 2 -> Partnership Lockup (1.6 * vh total scroll)
+      const partnerTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionEl,
+          start: "top top",
+          end: () => `+=${window.innerHeight * 1.6}`,
+          scrub: true,
+          invalidateOnRefresh: true,
+          onRefresh: () => {
+            measureInlineOffset();
+          },
+        },
+      });
+
+      // -----------------------------------------------------------------
+      // PHASE A (0.0 -> 0.6): "together" smoothly crossfades into Instrument Serif italic orange (#e89b3c)
+      // -----------------------------------------------------------------
+      if (inlineLetsFixRef.current) {
+        partnerTl.to(
+          inlineLetsFixRef.current,
+          {
+            color: "var(--text-primary)",
+            duration: 0.48,
+            ease: "power2.out",
+          },
+          0.04
+        );
+      }
+
+      if (inlineTogetherBaseRef.current) {
+        partnerTl.to(
+          inlineTogetherBaseRef.current,
+          {
+            opacity: 0,
+            duration: 0.42,
+            ease: "power2.out",
+          },
+          0.04
+        );
+      }
+
+      if (inlineTogetherSerifRef.current) {
+        partnerTl.fromTo(
+          inlineTogetherSerifRef.current,
+          {
+            opacity: 0,
+            scale: 0.94,
+          },
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.48,
+            ease: "back.out(1.6)",
+          },
+          0.06
+        );
+      }
+
+      // -----------------------------------------------------------------
+      // PHASE B (0.6 -> 1.6): "Let's fix it together" lifts off and glides to center,
+      // background dims & blurs via GPU backdrop-filter, and "+ Steward" locks in
+      // -----------------------------------------------------------------
+      if (inlineFixPhraseRef.current) {
+        partnerTl.to(
+          inlineFixPhraseRef.current,
+          {
+            opacity: 0,
+            duration: 0.06,
+            ease: "none",
+          },
+          0.58
+        );
+      }
+
+      if (floatingHeadlineRef.current) {
+        partnerTl.fromTo(
+          floatingHeadlineRef.current,
+          {
+            opacity: 0,
+          },
+          {
+            opacity: 1,
+            duration: 0.05,
+            ease: "none",
+          },
+          0.58
+        );
+
+        partnerTl.fromTo(
+          floatingHeadlineRef.current,
+          {
+            x: () => measureInlineOffset().x,
+            y: () => measureInlineOffset().y,
+            scale: () => measureInlineOffset().scale,
+          },
+          {
+            x: 0,
+            y: 0,
+            scale: 1,
+            duration: 0.88,
+            ease: "power2.inOut",
+            immediateRender: true,
+          },
+          0.58
+        );
+      }
+
+      // GPU-composited scale & opacity fade on Section 2 Dashboard + vignette veil
+      if (dashboardBgBlurRef.current) {
+        partnerTl.to(
+          dashboardBgBlurRef.current,
+          {
+            opacity: 0.08,
+            scale: 0.96,
+            duration: 0.86,
+            ease: "power2.inOut",
+          },
+          0.6
+        );
+      }
+
+      if (backdropVignetteRef.current) {
+        partnerTl.to(
+          backdropVignetteRef.current,
+          {
+            opacity: 1,
+            duration: 0.86,
+            ease: "power2.inOut",
+          },
+          0.6
+        );
+      }
+
+      // Reveal "+" and "Steward / Growth & Engineering Partner" (1.02 -> 1.6)
+      if (plusSignRef.current) {
+        partnerTl.fromTo(
+          plusSignRef.current,
+          {
+            opacity: 0,
+            scale: 0.65,
+          },
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.55,
+            ease: "power2.out",
+          },
+          1.05
+        );
+      }
+
+      if (stewardLockupRef.current) {
+        partnerTl.fromTo(
+          stewardLockupRef.current,
+          {
+            opacity: 0,
+            x: 28,
+          },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 0.55,
+            ease: "power2.out",
+          },
+          1.05
+        );
+      }
+
+      if (mobilePartnerTwRef.current) {
+        partnerTl.fromTo(
+          mobilePartnerTwRef.current,
+          {
+            opacity: 0,
+            x: -28,
+          },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 0.55,
+            ease: "power2.out",
+          },
+          1.05
         );
       }
     }, sectionEl);
@@ -355,15 +601,24 @@ export default function DashboardSection({
       ref={sectionRef}
       id="dashboard"
       aria-labelledby="dashboard-heading"
-      className="relative flex min-h-screen w-full items-center overflow-x-clip py-16 lg:py-20"
+      className="relative h-[260vh] w-full"
     >
-      {/* Subtle ambient glow behind the dashboard */}
+      {/* Sticky Layer 1 (z-10): Section 2 Dashboard & Copy (sits below the lg:z-30 interactive Typewriter & Spend buttons) */}
       <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-[18%] top-1/2 h-[520px] w-[520px] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(232,155,60,0.05)_0%,rgba(8,8,10,0)_70%)] blur-3xl"
-      />
+        ref={stickyStageRef}
+        className="sticky top-0 z-10 flex h-screen w-full items-center overflow-hidden py-16 lg:py-20"
+      >
+        {/* Subtle ambient glow behind the dashboard */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute left-[18%] top-1/2 h-[520px] w-[520px] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(232,155,60,0.05)_0%,rgba(8,8,10,0)_70%)] blur-3xl"
+        />
 
-      <div className="relative z-20 mx-auto grid w-full max-w-[1560px] grid-cols-1 items-start gap-10 px-6 sm:px-10 lg:grid-cols-12 lg:gap-10 lg:px-16 xl:px-24">
+        {/* LAYER 1: Section 2 Dashboard & Editorial Copy (blurs and dims as "Let's fix it together" moves to center) */}
+        <div
+          ref={dashboardBgBlurRef}
+          className="relative z-10 mx-auto grid w-full max-w-[1560px] grid-cols-1 items-start gap-10 px-6 will-change-[filter,opacity,transform] sm:px-10 lg:grid-cols-12 lg:gap-10 lg:px-16 xl:px-24"
+        >
         {/* =====================================================================
             LEFT COLUMN (lg:col-span-6): 02 YOUR BUSINESS DASHBOARD CONTAINER
             Matches the user's reference wireframe:
@@ -818,6 +1073,7 @@ export default function DashboardSection({
           {/* TOP-RIGHT EDITORIAL COPY (Right-Aligned on Desktop as in Reference Image) */}
           <div
             ref={copyBlockRef}
+            data-typewriter-anchor="dashboard-copy"
             className="flex flex-col items-start text-left lg:ml-auto lg:max-w-[520px] lg:items-end lg:text-right"
           >
             <div className="mb-3 inline-flex items-center gap-2.5">
@@ -843,7 +1099,29 @@ export default function DashboardSection({
             <p className="mt-2.5 max-w-[480px] text-sm font-normal leading-[1.65] text-[var(--text-secondary)] sm:text-[16px]">
               Every new tool, agency and relaunch costs more, and none of them
               moves the one number that matters. Most stuck products break in
-              one specific place. Let&apos;s fix it together!
+              one specific place.{" "}
+              <span
+                ref={inlineFixPhraseRef}
+                className="inline-block whitespace-nowrap will-change-[opacity]"
+              >
+                <span ref={inlineLetsFixRef}>Let&apos;s fix it </span>
+                <span className="relative inline-grid items-baseline">
+                  {/* Upright base "together!" */}
+                  <span
+                    ref={inlineTogetherBaseRef}
+                    className="col-start-1 row-start-1 will-change-[opacity]"
+                  >
+                    together!
+                  </span>
+                  {/* Same Instrument Serif italic used in "Still not profitable.", highlighted in orange */}
+                  <span
+                    ref={inlineTogetherSerifRef}
+                    className="font-serif-editorial col-start-1 row-start-1 origin-center text-[1.24em] font-normal italic tracking-[-0.015em] text-[#e89b3c] opacity-0 drop-shadow-[0_0_16px_rgba(232,155,60,0.4)] will-change-[opacity,transform]"
+                  >
+                    together
+                  </span>
+                </span>
+              </span>
             </p>
           </div>
 
@@ -895,6 +1173,244 @@ export default function DashboardSection({
             aria-hidden="true"
             className="hidden pointer-events-none lg:block lg:h-[370px]"
           />
+        </div>
+        </div>
+      </div>
+
+      {/* Sticky Layer 2 (z-40): Vignette Overlay & Partnership Lockup (sits ABOVE the lg:z-30 Section 2 Typewriter & Spend buttons) */}
+      <div className="pointer-events-none sticky top-0 z-40 -mt-[100vh] flex h-screen w-full items-center overflow-hidden">
+        {/* LAYER 2: GPU-Composited Vignette Veil (above Section 2 typewriter & buttons) */}
+        <div
+          ref={backdropVignetteRef}
+          aria-hidden="true"
+          className={`pointer-events-none absolute inset-0 z-20 opacity-0 will-change-[opacity] ${
+            isLight
+              ? "bg-[radial-gradient(circle_at_center,rgba(245,242,235,0.88)_0%,rgba(245,242,235,0.98)_100%)]"
+              : "bg-[radial-gradient(circle_at_center,rgba(8,8,10,0.88)_0%,rgba(8,8,10,0.98)_100%)]"
+          }`}
+        />
+
+        {/* LAYER 3: PARTNERSHIP LOCKUP OVERLAY (Matches User Mockup & Section 2 Headline Typography) */}
+        <div className="pointer-events-none absolute inset-0 z-40">
+          {/* Top-Center Headline: Same font & size as "You keep paying. Still not profitable." */}
+          <div
+            ref={floatingHeadlineRef}
+            className="pointer-events-none absolute left-1/2 top-[24%] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap text-4xl font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text-primary)] opacity-0 will-change-transform sm:text-5xl xl:text-[3.5rem]"
+          >
+            Let&apos;s fix it{" "}
+            <span className="font-serif-editorial text-[1.05em] font-normal italic tracking-[-0.015em] text-[#e89b3c] drop-shadow-[0_0_24px_rgba(232,155,60,0.32)]">
+              together
+            </span>
+          </div>
+
+          {/* Static Partner Typewriter fixed alongside "+ Steward" across all viewports */}
+          <div
+            ref={mobilePartnerTwRef}
+            aria-hidden="true"
+            className="pointer-events-none absolute right-1/2 top-[53%] mr-[40px] flex -translate-y-1/2 flex-col items-center opacity-0 will-change-transform sm:mr-[56px] lg:mr-[64px] xl:mr-[74px]"
+          >
+            {/* Scaled static replica of the Vintage Typewriter so it never flickers on scroll */}
+            <div className="flex w-[150px] flex-col items-center sm:w-[210px] lg:w-[260px] xl:w-[278px]">
+              {/* Emerging $1 Bill */}
+              <div className="relative z-10 -mb-1.5 flex h-[48px] w-[112px] items-end justify-center overflow-hidden sm:h-[64px] sm:w-[152px] lg:h-[76px] lg:w-[190px] xl:h-[80px] xl:w-[200px]">
+                <div
+                  style={{ transform: "translateY(42%) rotate(-1.1deg)" }}
+                  className="relative h-full w-full"
+                >
+                  <DollarBillGraphic idPrefix="static-partner-bill" />
+                </div>
+              </div>
+
+              {/* 1. Vintage Carriage Platen Roller + Chrome Thumb Wheels */}
+              <div className="relative z-20 mx-auto flex w-[96%] items-center justify-center">
+                <div className="flex shrink-0 items-center">
+                  <div
+                    className={`flex h-3.5 w-2 flex-col justify-between rounded-l-xs border-y border-l py-0.5 sm:h-4 sm:w-2.5 ${
+                      isLight
+                        ? "border-black/30 bg-gradient-to-b from-[#f4f1ea] via-[#b8b3a8] to-[#78746a]"
+                        : "border-white/20 bg-gradient-to-b from-[#d8d4cc] via-[#7e7b74] to-[#3a3936]"
+                    }`}
+                  >
+                    <span className="h-px w-full bg-black/35" />
+                    <span className="h-px w-full bg-black/35" />
+                  </div>
+                  <div className="h-1.5 w-1 bg-gradient-to-b from-[#d4d0c8] to-[#5c5952]" />
+                </div>
+
+                <div className="relative flex h-4.5 flex-1 flex-col items-center justify-start rounded-xs border-y border-black/60 bg-gradient-to-b from-[#34343c] via-[#1c1c22] to-[#0e0e12] shadow-md sm:h-5">
+                  <div className="h-1 w-[74%] rounded-b-full bg-black" />
+                  <div className="mt-0.5 flex w-[74%] items-center justify-between border-t border-[#d8d4cc]/80 px-3">
+                    <span className="-mt-0.5 h-1.5 w-2 rounded-xs bg-[#2c2b28]" />
+                    <span className="-mt-0.5 h-1.5 w-2 rounded-xs bg-[#2c2b28]" />
+                  </div>
+                </div>
+
+                <div className="relative flex shrink-0 items-center">
+                  <div className="h-1.5 w-1 bg-gradient-to-b from-[#d4d0c8] to-[#5c5952]" />
+                  <div
+                    className={`flex h-3.5 w-2 flex-col justify-between rounded-r-xs border-y border-r py-0.5 sm:h-4 sm:w-2.5 ${
+                      isLight
+                        ? "border-black/30 bg-gradient-to-b from-[#f4f1ea] via-[#b8b3a8] to-[#78746a]"
+                        : "border-white/20 bg-gradient-to-b from-[#d8d4cc] via-[#7e7b74] to-[#3a3936]"
+                    }`}
+                  >
+                    <span className="h-px w-full bg-black/35" />
+                    <span className="h-px w-full bg-black/35" />
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. Upper Ribbon Spool Hood & Typebar Basket */}
+              <div
+                className={`relative z-20 -mt-0.5 flex w-[88%] flex-col items-center rounded-t-[14px] border-x border-t px-2.5 pt-1.5 pb-1 ${
+                  isLight
+                    ? "border-black/20 bg-gradient-to-b from-[#f5f0e4] to-[#e5decb]"
+                    : "border-white/15 bg-gradient-to-b from-[#2a2a33] to-[#1c1c23]"
+                }`}
+              >
+                <div className="relative z-10 flex w-full items-center justify-between">
+                  <div
+                    className={`flex h-4.5 w-4.5 items-center justify-center rounded-full border sm:h-5.5 sm:w-5.5 ${
+                      isLight
+                        ? "border-[#8c867a] bg-[#22211f]"
+                        : "border-[#5a5852] bg-[#0c0c10]"
+                    }`}
+                  >
+                    <div className="h-2 w-2 rounded-full bg-[#b8b3a8]" />
+                  </div>
+
+                  <div className="flex flex-col items-center">
+                    <div className="mb-1 flex h-3 w-16 items-start justify-center overflow-hidden rounded-b-full border border-black/50 bg-[#0b0b0e] sm:h-3.5 sm:w-22">
+                      <div className="h-1.5 w-2 rounded-b-xs border-x border-b border-[#e89b3c]/80 bg-[#2a2825]" />
+                    </div>
+                    <div className="flex items-center gap-1 rounded-xs border border-[#e89b3c]/60 bg-gradient-to-b from-[#24201a] to-[#14120e] px-1.5 py-0.5">
+                      <span className="h-1 w-1 rounded-full bg-[#e89b3c]" />
+                      <span className="font-mono-label text-[5.5px] font-bold uppercase tracking-[0.22em] text-[#f3b15c] sm:text-[6.5px]">
+                        YOUR BUSINESS
+                      </span>
+                      <span className="h-1 w-1 rounded-full bg-[#e89b3c]" />
+                    </div>
+                  </div>
+
+                  <div
+                    className={`flex h-4.5 w-4.5 items-center justify-center rounded-full border sm:h-5.5 sm:w-5.5 ${
+                      isLight
+                        ? "border-[#8c867a] bg-[#22211f]"
+                        : "border-[#5a5852] bg-[#0c0c10]"
+                    }`}
+                  >
+                    <div className="h-2 w-2 rounded-full bg-[#b8b3a8]" />
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Lower Keybed Housing Terminal & Spacebar */}
+              <div
+                className={`relative z-20 -mt-0.5 w-full rounded-t-lg rounded-b-xl border px-2.5 pt-2 pb-2.5 ${
+                  isLight
+                    ? "border-black/20 bg-gradient-to-b from-[#ede6d6] via-[#e2dac8] to-[#d2c9b4] shadow-[0_14px_30px_rgba(20,20,19,0.16)]"
+                    : "border-white/12 bg-gradient-to-b from-[#22222b] via-[#15151b] to-[#0c0c10] shadow-[0_18px_38px_rgba(0,0,0,0.78)]"
+                }`}
+              >
+                <div className="mb-1.5 flex items-center justify-between px-0.5">
+                  <span
+                    className={`font-mono-label text-[5px] uppercase tracking-[0.14em] sm:text-[6px] ${
+                      isLight ? "text-[#6e6a62]" : "text-[#8e8a80]"
+                    }`}
+                  >
+                    ⚡ FUEL: LOW — FEED $ TO RUN
+                  </span>
+                  <div className="flex items-center gap-0.5">
+                    <span className="h-1 w-1.5 rounded-[1px] bg-[#e89b3c]" />
+                    <span className="h-1 w-1.5 rounded-[1px] bg-current/15" />
+                    <span className="h-1 w-1.5 rounded-[1px] bg-current/15" />
+                    <span className="h-1 w-1.5 rounded-[1px] bg-current/15" />
+                  </div>
+                </div>
+
+                {/* Recessed Terminal Screen */}
+                <div
+                  className={`rounded-md border p-1.5 sm:p-2 ${
+                    isLight
+                      ? "border-black/15 bg-[#f7f3eb]"
+                      : "border-white/10 bg-[#07070a]"
+                  }`}
+                >
+                  <div
+                    className={`mb-1 flex items-center justify-between border-b pb-0.5 ${
+                      isLight ? "border-black/10" : "border-white/[0.07]"
+                    }`}
+                  >
+                    <div className="flex items-center gap-1">
+                      <span className="h-1 w-1 rounded-full bg-current/25" />
+                      <span className="h-1 w-1 rounded-full bg-current/25" />
+                      <span className="h-1 w-1 rounded-full bg-[#e89b3c]" />
+                    </div>
+                    <span className="font-mono-label text-[5px] uppercase tracking-[0.16em] opacity-60">
+                      tty://spend.log
+                    </span>
+                    <span className="font-mono-label text-[5px] uppercase tracking-[0.14em] opacity-55">
+                      READY
+                    </span>
+                  </div>
+
+                  <div className="space-y-0.5 text-left font-mono-label text-[5.5px] leading-tight sm:text-[6.5px]">
+                    <div className="truncate opacity-60">&gt; business.sys ready</div>
+                    <div className="truncate opacity-60">&gt; awaiting partner lockup...</div>
+                    <div
+                      className={`truncate rounded px-1 py-0.5 font-semibold ${
+                        isLight
+                          ? "border-l border-[#b86409] bg-[#e89b3c]/20 text-[#8a4600]"
+                          : "border-l border-[#e89b3c] bg-[#e89b3c]/20 text-[#f4f0ea]"
+                      }`}
+                    >
+                      ▸ Steward connected.
+                    </div>
+                  </div>
+                </div>
+
+                {/* Shift Keys + Spacebar */}
+                <div className="mt-1.5 flex items-center justify-center gap-2 px-1">
+                  <div className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-[#9e988c] bg-[#262522] text-[4px] font-bold text-[#f4f0ea]">
+                    SHIFT
+                  </div>
+                  <div className="h-2 flex-1 rounded-xs border border-black/40 bg-gradient-to-b from-[#33312d] to-[#181715]" />
+                  <div className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-[#9e988c] bg-[#262522] text-[4px] font-bold text-[#f4f0ea]">
+                    LOCK
+                  </div>
+                </div>
+              </div>
+
+              {/* Rubber Desk Feet */}
+              <div className="mx-auto flex w-[84%] justify-between px-3">
+                <div className="h-1 w-5 rounded-b-xs bg-[#141416]" />
+                <div className="h-1 w-5 rounded-b-xs bg-[#141416]" />
+              </div>
+            </div>
+          </div>
+
+          {/* Center "+" Sign */}
+          <div
+            ref={plusSignRef}
+            aria-hidden="true"
+            className="pointer-events-none absolute left-1/2 top-[55%] flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center opacity-0 will-change-transform"
+          >
+            <span className="absolute h-px w-8 bg-[var(--text-primary)]/85 sm:w-10 lg:w-11" />
+            <span className="absolute h-8 w-px bg-[var(--text-primary)]/85 sm:h-10 lg:h-11" />
+          </div>
+
+          {/* Right-of-Center "Steward / Growth & Engineering Partner" Lockup (exact 64px lg / 74px xl gap from "+") */}
+          <div
+            ref={stewardLockupRef}
+            className="pointer-events-none absolute left-1/2 top-[55%] ml-[40px] flex -translate-y-1/2 flex-col items-center text-center opacity-0 will-change-transform sm:ml-[56px] lg:ml-[64px] xl:ml-[74px]"
+          >
+            <span className="text-3xl font-medium tracking-[-0.025em] text-[var(--text-primary)] sm:text-4xl lg:text-[2.75rem]">
+              Steward
+            </span>
+            <span className="mt-1.5 whitespace-nowrap text-xs font-normal tracking-[-0.01em] text-[var(--text-secondary)] sm:text-sm lg:text-[15px]">
+              Growth &amp; Engineering Partner
+            </span>
+          </div>
         </div>
       </div>
     </section>
