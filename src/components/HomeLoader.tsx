@@ -331,18 +331,18 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
               transform: "scale(0.48)",
               transformOrigin: "center center",
             }}
-            className="pointer-events-none flex w-[360px] flex-col items-center will-change-transform sm:w-[510px] lg:w-[590px] xl:w-[630px]"
+            className="pointer-events-none flex w-[340px] flex-col items-center will-change-transform sm:w-[460px] lg:w-[510px] xl:w-[550px] 2xl:w-[610px]"
           >
             {/* PLATEN PAPER SLOT VIEWPORT + Emerging $1 Bill (matches Section 1 1:1) */}
             <div className="relative z-20 -mb-3.5 flex w-full flex-col items-center">
-              <div className="relative z-10 flex h-[126px] w-[280px] items-end justify-center overflow-hidden sm:h-[158px] sm:w-[376px] lg:h-[172px] lg:w-[428px] xl:h-[180px] xl:w-[454px]">
+              <div className="relative z-10 flex h-[118px] w-[264px] items-end justify-center overflow-hidden sm:h-[144px] sm:w-[344px] lg:h-[156px] lg:w-[376px] xl:h-[166px] xl:w-[404px] 2xl:h-[178px] 2xl:w-[444px]">
                 <div
                   style={{
                     transform: `translateY(${
                       70 + (1 - progress / 100) * 22
                     }%) rotate(-1.1deg)`,
                   }}
-                  className="relative h-[126px] w-[280px] transition-transform duration-300 ease-out sm:h-[158px] sm:w-[376px] lg:h-[172px] lg:w-[428px] xl:h-[180px] xl:w-[454px]"
+                  className="relative h-[118px] w-[264px] transition-transform duration-300 ease-out sm:h-[144px] sm:w-[344px] lg:h-[156px] lg:w-[376px] xl:h-[166px] xl:w-[404px] 2xl:h-[178px] 2xl:w-[444px]"
                 >
                   <DollarBillGraphic idPrefix="loader-bill" />
                 </div>
@@ -373,10 +373,10 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
                 {/* Ribbed Rubber Platen Roller Cylinder + Chrome Paper Bail */}
                 <div className="relative flex h-9 flex-1 flex-col items-center justify-start rounded-sm border-y border-black/60 bg-gradient-to-b from-[#34343c] via-[#1c1c22] to-[#0e0e12] shadow-[0_6px_14px_rgba(0,0,0,0.55),inset_0_2px_4px_rgba(255,255,255,0.12)] sm:h-11">
                   {/* Dark paper slot throat matched to exact bill width */}
-                  <div className="h-2 w-[282px] rounded-b-full bg-black shadow-[inset_0_2px_5px_rgba(0,0,0,1)] sm:h-2.5 sm:w-[378px] lg:w-[430px] xl:w-[456px]" />
+                  <div className="h-2 w-[266px] rounded-b-full bg-black shadow-[inset_0_2px_5px_rgba(0,0,0,1)] sm:h-2.5 sm:w-[346px] lg:w-[378px] xl:w-[406px] 2xl:w-[446px]" />
 
                   {/* Chrome Paper Bail Rod with Twin Rubber Rollers */}
-                  <div className="mt-1.5 flex w-[282px] items-center justify-between border-t-2 border-[#d8d4cc]/80 px-5 shadow-[0_1px_3px_rgba(0,0,0,0.8)] sm:w-[378px] sm:px-8 lg:w-[430px] xl:w-[456px]">
+                  <div className="mt-1.5 flex w-[266px] items-center justify-between border-t-2 border-[#d8d4cc]/80 px-5 shadow-[0_1px_3px_rgba(0,0,0,0.8)] sm:w-[346px] sm:px-8 lg:w-[378px] xl:w-[406px] 2xl:w-[446px]">
                     <span className="-mt-1.5 h-3 w-4 rounded-xs border border-black/60 bg-gradient-to-b from-[#4a4842] to-[#1e1d1a] sm:h-3.5 sm:w-5" />
                     <span className="-mt-1.5 h-3 w-4 rounded-xs border border-black/60 bg-gradient-to-b from-[#4a4842] to-[#1e1d1a] sm:h-3.5 sm:w-5" />
                   </div>
@@ -669,9 +669,9 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
           style={{ textWrap: "balance" }}
           className="mt-2 max-w-[20ch] text-balance text-3xl font-semibold leading-[1.08] tracking-[-0.035em] text-[var(--text-primary)] sm:text-4xl lg:text-5xl xl:text-[3.35rem]"
         >
-          Imagine this typewriter is{" "}
+          Imagine this represent{" "}
           <span className="font-serif-editorial text-[1.08em] font-normal italic tracking-[-0.01em] text-[#e89b3c]">
-            your business.
+            your business
           </span>
         </p>
       </div>

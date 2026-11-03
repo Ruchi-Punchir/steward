@@ -1,7 +1,10 @@
 import React from "react";
 import Link from "next/link";
 import { requireAdminPage } from "@/lib/admin/auth";
-import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import {
+  createSupabaseAdminClient,
+  createSupabaseServerClient,
+} from "@/lib/supabase/server";
 import AdminShell from "@/components/admin/AdminShell";
 import {
   formatLeadAge,
@@ -13,6 +16,7 @@ import {
 import type { LeadStatus } from "@/app/admin/leads/actions";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface AdminLeadsPageProps {
   searchParams: Promise<{
@@ -34,23 +38,20 @@ export default async function AdminLeadsPage({
   const sourceFilter = (params.source ?? "all").trim();
   const searchQuery = (params.q ?? "").trim().toLowerCase();
 
-  const supabase = createSupabaseAdminClient();
+  const supabase =
+    createSupabaseAdminClient() ?? (await createSupabaseServerClient());
   let allLeads: LeadRecord[] = [];
   let fetchError: string | null = null;
 
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("leads")
-      .select("*")
-      .order("created_at", { ascending: false });
+  const { data, error } = await supabase
+    .from("leads")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-    if (error) {
-      fetchError = error.message;
-    } else if (data) {
-      allLeads = data as LeadRecord[];
-    }
-  } else {
-    fetchError = "Supabase service role client is not configured.";
+  if (error) {
+    fetchError = error.message;
+  } else if (data) {
+    allLeads = data as LeadRecord[];
   }
 
   // --- Summary Strip Calculations (No charts) ---

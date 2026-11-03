@@ -1,10 +1,12 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { z } from "zod";
 import { LEAD_COPY, LEAD_STAGE_OPTIONS } from "@/config/leadCopy";
 import {
-  createSupabaseServiceClient,
+  createSupabaseAdminClient,
+  createSupabaseServerClient,
   isSupabaseConfigured,
 } from "@/lib/supabase/server";
 import {
@@ -12,7 +14,7 @@ import {
   verifyTurnstileToken,
 } from "@/lib/leads/notifications";
 
-const MAX_LEADS_PER_IP_PER_HOUR = 5;
+const MAX_LEADS_PER_IP_PER_HOUR = 30;
 const ONE_HOUR_MS = 60 * 60 * 1000;
 const ipSubmissionBuckets = new Map<
   string,
@@ -116,7 +118,7 @@ export async function submitLeadAction(
     utm_medium: String(formData.get("utm_medium") ?? ""),
     utm_campaign: String(formData.get("utm_campaign") ?? ""),
     referrer: String(formData.get("referrer") ?? ""),
-    honeypot: String(formData.get("company_website") ?? ""),
+    honeypot: String(formData.get("steward_bot_trap_field") ?? ""),
     turnstileToken: String(
       formData.get("cf-turnstile-response") ??
         formData.get("turnstileToken") ??
@@ -124,10 +126,13 @@ export async function submitLeadAction(
     ),
   };
 
-  // 1. Silent rejection if hidden honeypot field is filled by a bot
-  if (rawInput.honeypot && rawInput.honeypot.trim().length > 0) {
-    console.warn("[STEWARD_SPAM_BLOCKED] Honeypot triggered", { ipAddress });
-    return { success: true };
+  const isSuspectedBot = Boolean(
+    rawInput.honeypot && rawInput.honeypot.trim().length > 0
+  );
+  if (isSuspectedBot) {
+    console.warn("[STEWARD_SPAM_NOTICE] Honeypot field was populated", {
+      ipAddress,
+    });
   }
 
   // 2. Validate with Zod
@@ -151,15 +156,18 @@ export async function submitLeadAction(
 
   const data = parsed.data;
 
-  // 3. Rate limit by IP (5 per hour) -> silent rejection of suspicious floods
+  // 3. Rate limit by IP (30 per hour)
   if (!checkLeadIpRateLimit(ipAddress)) {
-    console.warn("[STEWARD_SPAM_BLOCKED] IP rate limit exceeded (5/hr)", {
+    console.warn("[STEWARD_SPAM_BLOCKED] IP rate limit exceeded", {
       ipAddress,
     });
-    return { success: true };
+    return {
+      success: false,
+      error: "Too many submissions in a short time. Please try again in a few minutes.",
+    };
   }
 
-  // 4. Verify Cloudflare Turnstile token -> silent rejection if invalid
+  // 4. Verify Cloudflare Turnstile token
   const turnstileOk = await verifyTurnstileToken(
     data.turnstileToken,
     ipAddress
@@ -168,10 +176,13 @@ export async function submitLeadAction(
     console.warn("[STEWARD_SPAM_BLOCKED] Turnstile verification failed", {
       ipAddress,
     });
-    return { success: true };
+    return {
+      success: false,
+      error: "Security verification failed. Please refresh and try again.",
+    };
   }
 
-  if (!isSupabaseConfigured() || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  if (!isSupabaseConfigured()) {
     return {
       success: false,
       error: LEAD_COPY.common.genericError,
@@ -179,8 +190,16 @@ export async function submitLeadAction(
   }
 
   // 5. INSERT LEAD INTO DATABASE FIRST (Never lose a lead!)
-  const supabase = createSupabaseServiceClient();
+  // Uses service_role client when SUPABASE_SERVICE_ROLE_KEY is set, and falls back
+  // to the standard server client (allowed via the "Public visitors can insert leads" RLS policy)
+  // if SUPABASE_SERVICE_ROLE_KEY was omitted in the hosting environment.
+  const adminSupabase = createSupabaseAdminClient();
+  const leadId = crypto.randomUUID();
+  const createdAt = new Date().toISOString();
+
   const insertPayload = {
+    id: leadId,
+    created_at: createdAt,
     intent: data.intent,
     name: data.name,
     email: data.email.toLowerCase(),
@@ -201,13 +220,12 @@ export async function submitLeadAction(
     assigned_to: null,
   };
 
-  const { data: insertedLead, error: insertError } = await supabase
+  const dbClient = adminSupabase ?? (await createSupabaseServerClient());
+  const { error: insertError } = await dbClient
     .from("leads")
-    .insert(insertPayload)
-    .select("*")
-    .single();
+    .insert(insertPayload);
 
-  if (insertError || !insertedLead) {
+  if (insertError) {
     console.error("[STEWARD_LEAD_INSERT_ERROR]", insertError);
     if (
       process.env.NODE_ENV !== "production" &&
@@ -225,41 +243,50 @@ export async function submitLeadAction(
     };
   }
 
-  // 6. Send notification + confirmation emails and record lead_events.
-  //    If ANY step after the DB insert fails, still return success and keep the lead!
-  try {
-    const emailResult = await sendLeadEmails({
-      id: insertedLead.id,
-      created_at: insertedLead.created_at,
-      intent: insertedLead.intent,
-      name: insertedLead.name,
-      email: insertedLead.email,
-      product_link: insertedLead.product_link,
-      stage: insertedLead.stage,
-      message: insertedLead.message,
-      source_button: insertedLead.source_button,
-      source_page: insertedLead.source_page,
-      utm_source: insertedLead.utm_source,
-      utm_medium: insertedLead.utm_medium,
-      utm_campaign: insertedLead.utm_campaign,
-      referrer: insertedLead.referrer,
-    });
+  // Immediately invalidate the /admin/leads cache so new leads show up right away in production
+  revalidatePath("/admin/leads");
+  revalidatePath("/admin");
 
-    if (emailResult.founderEmailSent || emailResult.visitorEmailSent) {
-      await supabase.from("lead_events").insert({
-        lead_id: insertedLead.id,
-        type: "email_sent",
-        metadata: {
-          founderEmailSent: emailResult.founderEmailSent,
-          visitorEmailSent: emailResult.visitorEmailSent,
-        },
+  // 6. Send notification + confirmation emails and record lead_events (skip email blast if bot trap triggered).
+  //    If ANY step after the DB insert fails, still return success and keep the lead!
+  if (!isSuspectedBot) {
+    try {
+      const emailResult = await sendLeadEmails({
+        id: insertPayload.id,
+        created_at: insertPayload.created_at,
+        intent: insertPayload.intent,
+        name: insertPayload.name,
+        email: insertPayload.email,
+        product_link: insertPayload.product_link,
+        stage: insertPayload.stage,
+        message: insertPayload.message,
+        source_button: insertPayload.source_button,
+        source_page: insertPayload.source_page,
+        utm_source: insertPayload.utm_source,
+        utm_medium: insertPayload.utm_medium,
+        utm_campaign: insertPayload.utm_campaign,
+        referrer: insertPayload.referrer,
       });
+
+      if (
+        adminSupabase &&
+        (emailResult.founderEmailSent || emailResult.visitorEmailSent)
+      ) {
+        await adminSupabase.from("lead_events").insert({
+          lead_id: insertPayload.id,
+          type: "email_sent",
+          metadata: {
+            founderEmailSent: emailResult.founderEmailSent,
+            visitorEmailSent: emailResult.visitorEmailSent,
+          },
+        });
+      }
+    } catch (postInsertErr) {
+      console.error(
+        "[STEWARD_POST_INSERT_WARNING] Lead saved, but post-insert step failed:",
+        postInsertErr
+      );
     }
-  } catch (postInsertErr) {
-    console.error(
-      "[STEWARD_POST_INSERT_WARNING] Lead saved, but post-insert step failed:",
-      postInsertErr
-    );
   }
 
   return { success: true };

@@ -152,7 +152,7 @@ export function LeadFormContent({
       formData.set("utm_medium", attribution.utm_medium);
       formData.set("utm_campaign", attribution.utm_campaign);
       formData.set("referrer", attribution.referrer);
-      formData.set("company_website", honeypot);
+      formData.set("steward_bot_trap_field", honeypot);
 
       const res = await submitLeadAction(formData);
       if (!res.success) {
@@ -258,18 +258,20 @@ export function LeadFormContent({
       )}
 
       <form onSubmit={handleSubmit} noValidate className="mt-5 space-y-3.5">
-        {/* Hidden Honeypot Field for Spam Protection */}
+        {/* Hidden Honeypot Field for Spam Protection (named & tagged so browser autofill never touches it) */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -left-[9999px] top-0 h-0 w-0 overflow-hidden opacity-0"
         >
-          <label htmlFor="company_website">Company Website</label>
           <input
-            id="company_website"
-            name="company_website"
+            id="steward_bot_trap_field"
+            name="steward_bot_trap_field"
             type="text"
             tabIndex={-1}
-            autoComplete="off"
+            autoComplete="new-password"
+            data-1p-ignore="true"
+            data-lpignore="true"
+            data-form-type="other"
             value={honeypot}
             onChange={(e) => setHoneypot(e.target.value)}
           />

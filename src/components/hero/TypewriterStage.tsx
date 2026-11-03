@@ -1947,7 +1947,7 @@ export default function TypewriterStage({
       {/* Minimalist Full-Bleed Typewriter & Nodes Stage */}
       <div
         ref={stageRef}
-        className="relative h-[510px] w-full sm:h-[600px] lg:h-[650px]"
+        className="relative h-[500px] w-full sm:h-[560px] lg:h-[580px] xl:h-[610px] 2xl:h-[640px]"
       >
         {/* Subtle ambient backlight */}
         <div
@@ -2094,7 +2094,7 @@ export default function TypewriterStage({
         {/* NODE 1: +$20 (TOOLS & SUBS) */}
         <div
           ref={orb20PosRef}
-          className="pointer-events-auto absolute left-[0%] top-[6%] z-30 sm:left-[1%] sm:top-[7%]"
+          className="pointer-events-auto absolute left-[0%] top-[8%] z-30 sm:left-[1%] sm:top-[9%]"
         >
           <div ref={orb20WrapRef} className="pointer-events-auto">
             <button
@@ -2198,7 +2198,7 @@ export default function TypewriterStage({
         {/* NODE 2: +$50 (ADS & GROWTH) */}
         <div
           ref={orb50PosRef}
-          className="pointer-events-auto absolute left-[36%] -top-[3%] z-30 sm:left-[37%] sm:-top-[2%]"
+          className="pointer-events-auto absolute left-[36%] top-[3%] z-30 sm:left-[37%] sm:top-[4%]"
         >
           <div ref={orb50WrapRef} className="pointer-events-auto">
             <button
@@ -2302,7 +2302,7 @@ export default function TypewriterStage({
         {/* NODE 3: +$100 (DEVS & REBUILD) */}
         <div
           ref={orb100PosRef}
-          className="pointer-events-auto absolute left-[72%] top-[4%] z-30 sm:left-[73%] sm:top-[5%]"
+          className="pointer-events-auto absolute left-[72%] top-[6%] z-30 sm:left-[73%] sm:top-[7%]"
         >
           <div ref={orb100WrapRef} className="pointer-events-auto">
             <button
@@ -2409,7 +2409,7 @@ export default function TypewriterStage({
         <div
           ref={typewriterGroupRef}
           data-typewriter-hero="true"
-          className="pointer-events-auto absolute bottom-1 left-1/2 z-20 flex w-[360px] -translate-x-1/2 flex-col items-center sm:w-[510px] lg:w-[590px] xl:w-[630px]"
+          className="pointer-events-auto absolute bottom-1 left-1/2 z-20 flex w-[340px] -translate-x-1/2 flex-col items-center sm:w-[460px] lg:w-[510px] xl:w-[550px] 2xl:w-[610px] [@media(max-height:820px)]:origin-bottom [@media(max-height:820px)]:scale-[0.88]"
         >
           <div
             ref={typewriterTiltRef}
@@ -2419,13 +2419,13 @@ export default function TypewriterStage({
             {/* PLATEN PAPER SLOT VIEWPORT (Backpanel removed so wires route cleanly behind the typewriter) */}
             <div className="relative z-20 -mb-3.5 flex w-full flex-col items-center">
               {/* Emerging $1 Bill */}
-              <div className="relative z-10 flex h-[126px] w-[280px] items-end justify-center overflow-hidden sm:h-[158px] sm:w-[376px] lg:h-[172px] lg:w-[428px] xl:h-[180px] xl:w-[454px]">
+              <div className="relative z-10 flex h-[118px] w-[264px] items-end justify-center overflow-hidden sm:h-[144px] sm:w-[344px] lg:h-[156px] lg:w-[376px] xl:h-[166px] xl:w-[404px] 2xl:h-[178px] 2xl:w-[444px]">
                 <div
                   data-testid="dollar-bill"
                   style={{
                     transform: `translateY(${hiddenFraction}%) rotate(-1.1deg)`,
                   }}
-                  className="relative h-[126px] w-[280px] transition-transform duration-500 ease-out sm:h-[158px] sm:w-[376px] lg:h-[172px] lg:w-[428px] xl:h-[180px] xl:w-[454px]"
+                  className="relative h-[118px] w-[264px] transition-transform duration-500 ease-out sm:h-[144px] sm:w-[344px] lg:h-[156px] lg:w-[376px] xl:h-[166px] xl:w-[404px] 2xl:h-[178px] 2xl:w-[444px]"
                 >
                   <DollarBillGraphic idPrefix="active-bill" />
                 </div>
@@ -2456,10 +2456,10 @@ export default function TypewriterStage({
                 {/* Ribbed Rubber Platen Roller Cylinder + Chrome Paper Bail */}
                 <div className="relative flex h-9 flex-1 flex-col items-center justify-start rounded-sm border-y border-black/60 bg-gradient-to-b from-[#34343c] via-[#1c1c22] to-[#0e0e12] shadow-[0_6px_14px_rgba(0,0,0,0.55),inset_0_2px_4px_rgba(255,255,255,0.12)] sm:h-11">
                   {/* Dark paper slot throat matched to exact bill width */}
-                  <div className="h-2 w-[282px] rounded-b-full bg-black shadow-[inset_0_2px_5px_rgba(0,0,0,1)] sm:h-2.5 sm:w-[378px] lg:w-[430px] xl:w-[456px]" />
+                  <div className="h-2 w-[266px] rounded-b-full bg-black shadow-[inset_0_2px_5px_rgba(0,0,0,1)] sm:h-2.5 sm:w-[346px] lg:w-[378px] xl:w-[406px] 2xl:w-[446px]" />
 
                   {/* Chrome Paper Bail Rod with Twin Rubber Rollers */}
-                  <div className="mt-1.5 flex w-[282px] items-center justify-between border-t-2 border-[#d8d4cc]/80 px-5 shadow-[0_1px_3px_rgba(0,0,0,0.8)] sm:w-[378px] sm:px-8 lg:w-[430px] xl:w-[456px]">
+                  <div className="mt-1.5 flex w-[266px] items-center justify-between border-t-2 border-[#d8d4cc]/80 px-5 shadow-[0_1px_3px_rgba(0,0,0,0.8)] sm:w-[346px] sm:px-8 lg:w-[378px] xl:w-[406px] 2xl:w-[446px]">
                     <span className="-mt-1.5 h-3 w-4 rounded-xs border border-black/60 bg-gradient-to-b from-[#4a4842] to-[#1e1d1a] sm:h-3.5 sm:w-5" />
                     <span className="-mt-1.5 h-3 w-4 rounded-xs border border-black/60 bg-gradient-to-b from-[#4a4842] to-[#1e1d1a] sm:h-3.5 sm:w-5" />
                   </div>

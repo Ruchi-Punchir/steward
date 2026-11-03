@@ -52,19 +52,21 @@ export default function HeroSection({
           <h1
             id="hero-heading"
             style={{ textWrap: "balance" }}
-            className="max-w-[16ch] text-balance text-[2.6rem] font-semibold leading-[1.04] tracking-[-0.035em] text-[var(--text-primary)] sm:text-5xl lg:text-[3.55rem] xl:text-[4.15rem] 2xl:text-[4.65rem]"
+            className="max-w-[18ch] text-balance text-[2.45rem] font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text-primary)] sm:text-5xl lg:text-[3.35rem] xl:text-[3.9rem] 2xl:text-[4.35rem]"
           >
-            <span className="sm:whitespace-nowrap">
-              Shipping is <span className="whitespace-nowrap">easy now.</span>
-            </span>{" "}
-            <span className="font-serif-editorial mt-1 block text-[1.08em] font-normal italic tracking-[-0.01em] text-[#e89b3c]">
-              Selling isn&apos;t.
+            Your revenue is the{" "}
+            <span className="font-serif-editorial mt-1 block text-[1.06em] font-normal italic tracking-[-0.01em] text-[#e89b3c]">
+              only metric we care about.
             </span>
           </h1>
 
           <p className="mt-6 max-w-lg text-base font-normal leading-[1.68] text-[var(--text-secondary)] sm:text-[17px]">
-            Anyone can build and launch in a weekend. Getting paid is the hard
-            part. We find out why your product isn&apos;t earning, and fix it.
+            We help you understand why your product isn&apos;t growing to its
+            potential, find the gaps holding it back and turn them into{" "}
+            <span className="inline-block rounded bg-[#e89b3c]/15 px-1.5 py-0.5 font-mono-label text-[0.88em] font-semibold tracking-[0.08em] text-[#e89b3c]">
+              REAL REVENUE
+            </span>
+            .
           </p>
 
           <div className="mt-9 flex flex-wrap items-center gap-3.5">
@@ -110,7 +112,7 @@ export default function HeroSection({
           </div>
           <div
             aria-hidden="true"
-            className="hidden lg:block lg:h-[680px] lg:w-full"
+            className="hidden lg:block lg:h-[580px] lg:w-full xl:h-[610px] 2xl:h-[640px]"
           />
         </div>
       </div>

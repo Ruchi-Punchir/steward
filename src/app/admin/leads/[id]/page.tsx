@@ -2,7 +2,10 @@ import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdminPage } from "@/lib/admin/auth";
-import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import {
+  createSupabaseAdminClient,
+  createSupabaseServerClient,
+} from "@/lib/supabase/server";
 import AdminShell from "@/components/admin/AdminShell";
 import LeadDetailClient from "@/app/admin/leads/[id]/LeadDetailClient";
 import {
@@ -14,6 +17,7 @@ import {
 } from "@/lib/leads/format";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface AdminLeadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -25,10 +29,8 @@ export default async function AdminLeadDetailPage({
   const admin = await requireAdminPage();
   const { id } = await params;
 
-  const supabase = createSupabaseAdminClient();
-  if (!supabase) {
-    notFound();
-  }
+  const supabase =
+    createSupabaseAdminClient() ?? (await createSupabaseServerClient());
 
   const { data: leadData, error: leadErr } = await supabase
     .from("leads")

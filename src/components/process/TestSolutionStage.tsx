@@ -537,11 +537,11 @@ export default function TestSolutionStage({
   const isLaunchModeActive = launchProgress >= 0.45 && !isIterateModeActive;
 
   // Shared typewriter horizontal & vertical translation:
-  // - Stage 3 (moveT = 0, iterateMoveT = 0): x = -115px (left of bills), y = -14px
-  // - Stage 4 (moveT = 1, iterateMoveT = 0): x = +245px (right of graph), y = +32px
-  // - Stage 5 (moveT = 1, iterateMoveT = 1): x = +15px (centered alone on stage), y = +24px (room above for continuous money stream)
+  // - Stage 3 (moveT = 0, iterateMoveT = 0): x = -115px (left of bills), y = -42px (raised to reduce top gap)
+  // - Stage 4 (moveT = 1, iterateMoveT = 0): x = +245px (right of graph), y = +22px
+  // - Stage 5 (moveT = 1, iterateMoveT = 1): x = +15px (centered alone on stage), y = +14px (room above for continuous money stream)
   const typewriterX = -115 + 360 * moveT - 230 * iterateMoveT;
-  const typewriterY = -14 + 46 * moveT - 8 * iterateMoveT;
+  const typewriterY = -42 + 64 * moveT - 8 * iterateMoveT;
 
   // Stage 5 ("Iterate and scale"): 5-Part "Jetpower Optimus Prime" Mech-Armor Assembly -> Continuous Money Printing loop
   useEffect(() => {
@@ -2233,13 +2233,13 @@ export default function TestSolutionStage({
             ref={platenSlotAnchorRef}
             className="relative z-20 -mb-2.5 flex w-full flex-col items-center"
           >
-            <div className="relative z-10 flex h-[92px] w-[200px] items-end justify-center overflow-hidden sm:h-[104px] sm:w-[236px] lg:h-[110px] lg:w-[254px]">
+            <div className="relative z-10 flex h-[68px] w-[200px] items-end justify-center overflow-hidden sm:h-[78px] sm:w-[236px] lg:h-[84px] lg:w-[254px]">
               <div
                 ref={platenBillWrapRef}
                 style={{
                   transform: "translateY(40%) rotate(-1.1deg)",
                 }}
-                className="relative h-full w-full"
+                className="relative h-[92px] w-full sm:h-[104px] lg:h-[110px]"
               >
                 {platenUsesNewBill || isLaunchModeActive || isIterateModeActive ? (
                   <CrispDollarBillGraphic idPrefix="shared-platen-new-bill" />
@@ -2646,20 +2646,22 @@ export default function TestSolutionStage({
             type="button"
             onClick={handleRunTest}
             disabled={isTesting}
-            className={`group relative inline-flex h-[36px] w-[132px] cursor-pointer items-center justify-between rounded-lg px-3.5 transition-all duration-200 active:scale-[0.97] disabled:cursor-wait sm:w-[144px] ${
-              isTesting
-                ? "bg-[#e89b3c] text-[#08080a] ring-1 ring-[#e89b3c] shadow-[0_0_24px_rgba(232,155,60,0.5)]"
-                : isLight
-                ? "bg-[#fbf9f5] text-[#141413] ring-1 ring-[#e89b3c]/45 shadow-[0_10px_22px_rgba(20,20,19,0.09),0_2px_5px_rgba(20,20,19,0.04)] hover:bg-[#e89b3c] hover:text-[#08080a] hover:ring-[#e89b3c] hover:shadow-[0_0_24px_rgba(232,155,60,0.4)]"
-                : "bg-[#111116] text-[#f4f0ea] ring-1 ring-[#e89b3c]/35 shadow-[0_12px_28px_rgba(0,0,0,0.7)] hover:bg-[#e89b3c] hover:text-[#08080a] hover:ring-[#e89b3c] hover:shadow-[0_0_26px_rgba(232,155,60,0.45)]"
-            } ${!hasTested && !isTesting ? "orb-begging" : ""}`}
+            className={`group relative inline-flex h-[36px] w-[132px] cursor-pointer items-center justify-between rounded-lg border border-[#f3b15c] bg-[#e89b3c] px-3.5 text-[#08080a] shadow-[0_0_24px_rgba(232,155,60,0.6),inset_0_0_10px_rgba(255,255,255,0.22)] transition-all duration-200 hover:border-[#e89b3c] hover:bg-[#111116] hover:text-[#f4f0ea] hover:shadow-[0_0_28px_rgba(232,155,60,0.45)] active:scale-[0.97] disabled:cursor-wait sm:w-[144px] ${
+              !hasTested && !isTesting ? "orb-begging" : ""
+            }`}
           >
-            <span className="flex items-center gap-2">
+            {/* Glowing border aura animation */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute -inset-[1px] rounded-lg border border-[#e89b3c] shadow-[0_0_18px_rgba(232,155,60,0.75)] animate-pulse"
+            />
+
+            <span className="relative z-10 flex items-center gap-2">
               <span
                 className={`h-1.5 w-1.5 rounded-full transition-colors ${
                   isTesting
-                    ? "animate-ping bg-[#08080a]"
-                    : "bg-[#e89b3c] shadow-[0_0_6px_#e89b3c] group-hover:bg-[#08080a] group-hover:shadow-none"
+                    ? "animate-ping bg-[#08080a] group-hover:bg-[#e89b3c]"
+                    : "bg-[#08080a] group-hover:bg-[#e89b3c] group-hover:shadow-[0_0_6px_#e89b3c]"
                 }`}
               />
               <span className="font-mono-label text-[10.5px] font-semibold uppercase tracking-[0.2em]">
@@ -2667,7 +2669,7 @@ export default function TestSolutionStage({
               </span>
             </span>
 
-            <span className="font-mono-label text-[10.5px] opacity-80 transition-transform duration-200 group-hover:translate-x-0.5">
+            <span className="relative z-10 font-mono-label text-[10.5px] opacity-85 transition-transform duration-200 group-hover:translate-x-0.5">
               →
             </span>
           </button>
@@ -2681,7 +2683,7 @@ export default function TestSolutionStage({
       <div
         style={{
           opacity: testAccessoriesOpacity,
-          transform: `translate(${(260 + (1 - testAccessoriesOpacity) * 24).toFixed(1)}px, -10px)`,
+          transform: `translate(${(260 + (1 - testAccessoriesOpacity) * 24).toFixed(1)}px, -24px)`,
           pointerEvents: isTestModeInteractive ? "auto" : "none",
         }}
         className="absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-start gap-4 sm:gap-5"

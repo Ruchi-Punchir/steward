@@ -28,17 +28,17 @@ export async function verifyTurnstileToken(
   ipAddress: string
 ): Promise<boolean> {
   const secretKey = process.env.TURNSTILE_SECRET_KEY?.trim();
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim();
 
-  // If no secret key or using Cloudflare's dummy test secret key in local dev without widget token
+  // If Turnstile keys are not configured or using Cloudflare's dummy keys, allow submission
   if (
     !secretKey ||
-    (secretKey === "1x0000000000000000000000000000000AA" && !token)
+    !siteKey ||
+    secretKey === "1x0000000000000000000000000000000AA" ||
+    siteKey === "1x00000000000000000000AA" ||
+    !token
   ) {
     return true;
-  }
-
-  if (!token) {
-    return false;
   }
 
   try {

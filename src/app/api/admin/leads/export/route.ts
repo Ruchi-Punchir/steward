@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/admin/auth";
-import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import {
+  createSupabaseAdminClient,
+  createSupabaseServerClient,
+} from "@/lib/supabase/server";
 import type { LeadRecord } from "@/lib/leads/format";
 
 export const dynamic = "force-dynamic";
@@ -24,10 +27,8 @@ export async function GET() {
     return auth.response;
   }
 
-  const supabase = createSupabaseAdminClient();
-  if (!supabase) {
-    return new NextResponse("Database not configured", { status: 500 });
-  }
+  const supabase =
+    createSupabaseAdminClient() ?? (await createSupabaseServerClient());
 
   const { data, error } = await supabase
     .from("leads")

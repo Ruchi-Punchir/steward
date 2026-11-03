@@ -3,7 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { requireAdminApi } from "@/lib/admin/auth";
-import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import {
+  createSupabaseAdminClient,
+  createSupabaseServerClient,
+} from "@/lib/supabase/server";
 
 export type LeadStatus =
   | "new"
@@ -40,10 +43,8 @@ export async function updateLeadStatusAction(
     return { success: false, error: "Invalid status value." };
   }
 
-  const adminClient = createSupabaseAdminClient();
-  if (!adminClient) {
-    return { success: false, error: "Database service unavailable." };
-  }
+  const adminClient =
+    createSupabaseAdminClient() ?? (await createSupabaseServerClient());
 
   const { data: currentLead } = await adminClient
     .from("leads")
@@ -99,10 +100,8 @@ export async function updateLeadAssigneeAction(
     return { success: false, error: "Invalid assignee." };
   }
 
-  const adminClient = createSupabaseAdminClient();
-  if (!adminClient) {
-    return { success: false, error: "Database service unavailable." };
-  }
+  const adminClient =
+    createSupabaseAdminClient() ?? (await createSupabaseServerClient());
 
   const { error } = await adminClient
     .from("leads")
@@ -141,10 +140,8 @@ export async function addLeadNoteAction(
     };
   }
 
-  const adminClient = createSupabaseAdminClient();
-  if (!adminClient) {
-    return { success: false, error: "Database service unavailable." };
-  }
+  const adminClient =
+    createSupabaseAdminClient() ?? (await createSupabaseServerClient());
 
   const { data: noteRow, error: noteErr } = await adminClient
     .from("lead_notes")
@@ -185,10 +182,8 @@ export async function deleteLeadAction(
     notFound();
   }
 
-  const adminClient = createSupabaseAdminClient();
-  if (!adminClient) {
-    return { success: false, error: "Database service unavailable." };
-  }
+  const adminClient =
+    createSupabaseAdminClient() ?? (await createSupabaseServerClient());
 
   const { error } = await adminClient.from("leads").delete().eq("id", leadId);
 

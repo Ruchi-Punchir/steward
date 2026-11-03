@@ -829,7 +829,7 @@ export default function ProcessSection({ onAuditClick }: ProcessSectionProps) {
             Uses ONE single front-view typewriter across all three stages */}
         <div
           style={{
-            top: "235px",
+            top: "165px",
             bottom: "88px",
             pointerEvents: testProgress > 0.55 ? "auto" : "none",
           }}
