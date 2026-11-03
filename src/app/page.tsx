@@ -26,13 +26,14 @@ export default function HomePage() {
     sourceButton: string;
   } | null>(null);
   const [isLoaderActive, setIsLoaderActive] = useState<boolean>(true);
+  const snapToBeatRef = useRef<((beat: number) => void) | null>(null);
 
   const handleLoaderComplete = useCallback(() => {
     window.scrollTo(0, 0);
-    // Brief buffer so trackpad inertia from the loader dismissal scroll doesn't skip Section 1
+    // Buffer so trackpad inertia from the loader dismissal scroll never skips Section 1
     setTimeout(() => {
       setIsLoaderActive(false);
-    }, 180);
+    }, 320);
   }, []);
 
   useEffect(() => {
@@ -83,8 +84,15 @@ export default function HomePage() {
     type BeatIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
     const MAX_BEAT: BeatIndex = 12;
     let isAnimating = false;
-    let wheelCooldownUntil = 0;
+    let minDwellUntil = performance.now() + 450;
+    let programmaticScrollGuardUntil = 0;
+    let gestureLocked = false;
+    let lockedDirection = 0;
+    let lastWheelEventTime = 0;
+    let prevAbsDelta = 0;
+    let minAbsDeltaDuringLock = Infinity;
     let touchStartY = 0;
+    let touchGestureConsumed = false;
     let scrollbarSnapTimer: ReturnType<typeof setTimeout> | null = null;
     const scrollTweenObj = { y: window.scrollY };
 
@@ -173,40 +181,54 @@ export default function HomePage() {
 
       // Custom pacing per story beat
       const duration =
-        (prevBeat >= 5 && targetBeat >= 5)
-          ? 1.15
+        Math.abs(targetBeat - prevBeat) > 1
+          ? 1.05
+          : prevBeat >= 5 && targetBeat >= 5
+          ? 0.92
           : (prevBeat === 4 && targetBeat === 5) ||
             (prevBeat === 5 && targetBeat === 4)
-          ? 1.1
+          ? 0.9
           : (prevBeat === 3 && targetBeat === 4) ||
             (prevBeat === 4 && targetBeat === 3)
-          ? 0.95
+          ? 0.88
           : (prevBeat === 2 && targetBeat === 3) ||
             (prevBeat === 3 && targetBeat === 2)
-          ? 1.05
+          ? 0.92
           : (prevBeat === 1 && targetBeat === 2) ||
             (prevBeat === 2 && targetBeat === 1)
-          ? 0.58
-          : 0.8;
+          ? 0.62
+          : 0.78;
+
+      const now = performance.now();
+      // Mandatory post-arrival dwell (520ms) so the user always sees each story beat before advancing
+      minDwellUntil = now + duration * 1000 + 520;
+      programmaticScrollGuardUntil = now + duration * 1000 + 400;
 
       gsap.to(scrollTweenObj, {
         y: targetY,
         duration,
         ease: "power2.inOut",
         onUpdate: () => {
+          programmaticScrollGuardUntil = performance.now() + 350;
           window.scrollTo(0, Math.round(scrollTweenObj.y));
           ScrollTrigger.update();
           syncFixedStage();
         },
         onComplete: () => {
+          programmaticScrollGuardUntil = performance.now() + 400;
           window.scrollTo(0, targetY);
           ScrollTrigger.update();
           syncFixedStage();
           isAnimating = false;
-          // Brief cooldown so trackpad inertia tail doesn't immediately skip a beat
-          wheelCooldownUntil = performance.now() + 220;
         },
       });
+    };
+
+    snapToBeatRef.current = (beat: number) => {
+      const clamped = Math.max(0, Math.min(MAX_BEAT, Math.round(beat))) as BeatIndex;
+      gestureLocked = true;
+      minAbsDeltaDuringLock = Infinity;
+      snapToBeat(clamped);
     };
 
     const handleWheel = (e: WheelEvent) => {
@@ -219,14 +241,63 @@ export default function HomePage() {
       }
 
       const now = performance.now();
-      if (isAnimating || now < wheelCooldownUntil) return;
+      const absDelta = Math.abs(e.deltaY);
+      const dir = Math.sign(e.deltaY);
+      const timeSinceLastWheel = now - lastWheelEventTime;
+      lastWheelEventTime = now;
 
-      // Ignore tiny trackpad jitter
-      if (Math.abs(e.deltaY) < 6) return;
+      // Ignore tiny trackpad micro-jitter
+      if (absDelta < 7) {
+        prevAbsDelta = absDelta;
+        return;
+      }
+
+      // If currently animating or inside the mandatory story-beat dwell window:
+      // keep gestureLocked = true so any swipe made mid-transition (and its inertia tail)
+      // cannot auto-fire when the dwell window finishes.
+      if (isAnimating || now < minDwellUntil) {
+        gestureLocked = true;
+        lockedDirection = dir;
+        prevAbsDelta = absDelta;
+        minAbsDeltaDuringLock = Math.min(minAbsDeltaDuringLock, absDelta);
+        return;
+      }
+
+      // Check if an existing trackpad inertia lock can be released:
+      if (gestureLocked) {
+        minAbsDeltaDuringLock = Math.min(minAbsDeltaDuringLock, absDelta);
+
+        const isNewGestureAfterSilence = timeSinceLastWheel >= 135;
+        const isDirectionReversal = dir !== 0 && dir !== lockedDirection && absDelta >= 15;
+        // A deliberate fresh finger flick after inertia had already decayed
+        const isFreshAccelerationSpike =
+          minAbsDeltaDuringLock <= 20 &&
+          absDelta >= 26 &&
+          absDelta > prevAbsDelta * 1.55;
+
+        if (
+          isNewGestureAfterSilence ||
+          isDirectionReversal ||
+          isFreshAccelerationSpike
+        ) {
+          gestureLocked = false;
+        } else {
+          prevAbsDelta = absDelta;
+          return;
+        }
+      }
+
+      prevAbsDelta = absDelta;
 
       if (e.deltaY > 0 && currentBeat < MAX_BEAT) {
+        gestureLocked = true;
+        lockedDirection = 1;
+        minAbsDeltaDuringLock = absDelta;
         snapToBeat((currentBeat + 1) as BeatIndex);
       } else if (e.deltaY < 0 && currentBeat > 0) {
+        gestureLocked = true;
+        lockedDirection = -1;
+        minAbsDeltaDuringLock = absDelta;
         snapToBeat((currentBeat - 1) as BeatIndex);
       }
     };
@@ -236,15 +307,20 @@ export default function HomePage() {
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
 
+      const now = performance.now();
       if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") {
         if (currentBeat < MAX_BEAT) {
           e.preventDefault();
-          if (!isAnimating) snapToBeat((currentBeat + 1) as BeatIndex);
+          if (!isAnimating && now >= minDwellUntil) {
+            snapToBeat((currentBeat + 1) as BeatIndex);
+          }
         }
       } else if (e.key === "ArrowUp" || e.key === "PageUp") {
         if (currentBeat > 0) {
           e.preventDefault();
-          if (!isAnimating) snapToBeat((currentBeat - 1) as BeatIndex);
+          if (!isAnimating && now >= minDwellUntil) {
+            snapToBeat((currentBeat - 1) as BeatIndex);
+          }
         }
       }
     };
@@ -252,42 +328,64 @@ export default function HomePage() {
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length > 0) {
         touchStartY = e.touches[0].clientY;
+        touchGestureConsumed = false;
       }
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       if (activeDialog || isLoaderActive || e.touches.length === 0) return;
       const deltaY = touchStartY - e.touches[0].clientY;
-      if (Math.abs(deltaY) < 24) return;
+      if (Math.abs(deltaY) < 28) return;
 
       e.preventDefault();
-      if (isAnimating) return;
+      const now = performance.now();
+      if (isAnimating || now < minDwellUntil || touchGestureConsumed) return;
 
       if (deltaY > 0 && currentBeat < MAX_BEAT) {
+        touchGestureConsumed = true;
         touchStartY = e.touches[0].clientY;
         snapToBeat((currentBeat + 1) as BeatIndex);
       } else if (deltaY < 0 && currentBeat > 0) {
+        touchGestureConsumed = true;
         touchStartY = e.touches[0].clientY;
         snapToBeat((currentBeat - 1) as BeatIndex);
       }
     };
 
-    // Fallback if user drags the browser scrollbar directly and releases between beats
+    // Fallback ONLY if user manually drags the browser scrollbar thumb and releases between beats
     const handleNativeScroll = () => {
       syncFixedStage();
-      if (isAnimating || isLoaderActive) return;
+      const now = performance.now();
+      if (
+        isAnimating ||
+        isLoaderActive ||
+        now < programmaticScrollGuardUntil
+      ) {
+        return;
+      }
       if (scrollbarSnapTimer) clearTimeout(scrollbarSnapTimer);
       scrollbarSnapTimer = setTimeout(() => {
-        if (isAnimating || isLoaderActive) return;
+        if (
+          isAnimating ||
+          isLoaderActive ||
+          performance.now() < programmaticScrollGuardUntil
+        ) {
+          return;
+        }
         const stops = getBeatStops();
         const y = window.scrollY;
         const nearest = getNearestBeat(y);
-        if (Math.abs(y - stops[nearest]) > 6 && y <= stops[MAX_BEAT] + 20) {
+        // Only snap if the user manually dragged the scrollbar significantly off the current beat stop
+        if (
+          Math.abs(y - stops[currentBeat]) > 45 &&
+          Math.abs(y - stops[nearest]) > 8 &&
+          y <= stops[MAX_BEAT] + 20
+        ) {
           snapToBeat(nearest);
         } else {
           currentBeat = nearest;
         }
-      }, 110);
+      }, 180);
     };
 
     syncFixedStage();
@@ -394,6 +492,9 @@ export default function HomePage() {
           onAuditClick={(sourceButton = "close-section") =>
             setActiveDialog({ intent: "audit", sourceButton })
           }
+          onStepSelect={(stepIndex) => {
+            snapToBeatRef.current?.(5 + stepIndex);
+          }}
         />
       </main>
 

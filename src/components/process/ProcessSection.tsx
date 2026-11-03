@@ -41,9 +41,13 @@ const PROCESS_STEPS = [
 
 interface ProcessSectionProps {
   onAuditClick?: (sourceButton?: string) => void;
+  onStepSelect?: (stepIndex: number) => void;
 }
 
-export default function ProcessSection({ onAuditClick }: ProcessSectionProps) {
+export default function ProcessSection({
+  onAuditClick,
+  onStepSelect,
+}: ProcessSectionProps) {
   const { theme } = useTheme();
   const isLight = theme === "light";
 
@@ -846,7 +850,7 @@ export default function ProcessSection({ onAuditClick }: ProcessSectionProps) {
         {/* BOTTOM 5-STAGE PROCESS BAR */}
         <div
           ref={bottomBarRef}
-          className="pointer-events-none relative z-20 mx-auto w-full max-w-[1560px] px-6 sm:px-10 lg:px-16 xl:px-24"
+          className="pointer-events-auto relative z-40 mx-auto w-full max-w-[1560px] px-6 sm:px-10 lg:px-16 xl:px-24"
         >
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-5 sm:gap-6 lg:gap-8">
             {PROCESS_STEPS.map((step, idx) => {
@@ -855,9 +859,14 @@ export default function ProcessSection({ onAuditClick }: ProcessSectionProps) {
               const isCompletedStage = activeStage > stageNum;
 
               return (
-                <div key={step.id} className="flex flex-col">
+                <button
+                  key={step.id}
+                  type="button"
+                  onClick={() => onStepSelect?.(idx)}
+                  className="group flex cursor-pointer flex-col text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
+                >
                   <span
-                    className={`mb-2.5 font-mono-label text-xs tracking-[0.04em] transition-colors duration-300 sm:text-sm ${
+                    className={`mb-2.5 font-mono-label text-xs tracking-[0.04em] transition-colors duration-300 group-hover:text-[#e89b3c] sm:text-sm ${
                       isCurrentStage
                         ? "font-semibold text-[var(--text-primary)]"
                         : isCompletedStage
@@ -870,8 +879,10 @@ export default function ProcessSection({ onAuditClick }: ProcessSectionProps) {
 
                   {/* Step Bottom Progress Track (thin underline that fills with orange on scroll) */}
                   <div
-                    className={`relative h-[1.5px] w-full overflow-hidden rounded-full ${
-                      isLight ? "bg-black/15" : "bg-white/20"
+                    className={`relative h-[1.5px] w-full overflow-hidden rounded-full transition-colors duration-200 ${
+                      isLight
+                        ? "bg-black/15 group-hover:bg-black/30"
+                        : "bg-white/20 group-hover:bg-white/35"
                     }`}
                   >
                     {idx === 0 && (
@@ -910,7 +921,7 @@ export default function ProcessSection({ onAuditClick }: ProcessSectionProps) {
                       />
                     )}
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
