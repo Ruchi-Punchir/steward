@@ -4,8 +4,8 @@ import React from "react";
 import TypewriterStage from "./TypewriterStage";
 
 interface HeroSectionProps {
-  onAuditClick?: () => void;
-  onConversationClick?: () => void;
+  onAuditClick?: (sourceButton?: string) => void;
+  onConversationClick?: (sourceButton?: string) => void;
   externalSpent?: number;
   externalEarned?: number;
   onSpend?: (tier: 20 | 50 | 100, earnedDelta?: number) => void;
@@ -70,7 +70,12 @@ export default function HeroSection({
           <div className="mt-9 flex flex-wrap items-center gap-3.5">
             <button
               type="button"
-              onClick={onAuditClick}
+              data-cta-source="hero"
+              onClick={(e) =>
+                onAuditClick?.(
+                  e.currentTarget.getAttribute("data-cta-source") ?? "hero"
+                )
+              }
               className="cursor-pointer rounded-full bg-[#e89b3c] px-7 py-3.5 font-mono-label text-xs font-medium uppercase tracking-[0.16em] text-[#08080a] transition-all duration-200 hover:bg-[var(--text-primary)] hover:text-[var(--bg-stage)] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
             >
               Get a free audit
@@ -78,7 +83,12 @@ export default function HeroSection({
 
             <button
               type="button"
-              onClick={onConversationClick}
+              data-cta-source="hero"
+              onClick={(e) =>
+                onConversationClick?.(
+                  e.currentTarget.getAttribute("data-cta-source") ?? "hero"
+                )
+              }
               className="cursor-pointer rounded-full border border-[var(--btn-secondary-border)] bg-[var(--btn-secondary-bg)] px-7 py-3.5 font-mono-label text-xs font-medium uppercase tracking-[0.16em] text-[var(--text-primary)] transition-all duration-200 hover:border-[#e89b3c] hover:bg-[#e89b3c] hover:text-[#08080a] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
             >
               Start the conversation

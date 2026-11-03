@@ -354,25 +354,44 @@ export default function ExplodedTypewriter3D({
             />
           </pattern>
 
-          {/* Aged Green Dollar Bill Gradient */}
+          {/* Aged Green Dollar Bill Gradient (Matches DollarBillGraphic in TypewriterStage) */}
           <linearGradient id="iso-bill-grad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#d9e5cc" />
             <stop offset="50%" stopColor="#b9cca9" />
             <stop offset="100%" stopColor="#9ab089" />
           </linearGradient>
 
-          {/* Dark Cast-Iron / Enamel Chassis Gradient */}
-          <linearGradient id="iso-chassis-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={isLight ? "#3a3833" : "#2c2c36"} />
-            <stop offset="55%" stopColor={isLight ? "#262522" : "#191920"} />
-            <stop offset="100%" stopColor={isLight ? "#181715" : "#0e0e13"} />
+          {/* Ribbed Rubber Platen Roller Cylinder Gradient (Matches Section 1 & 2 Platen Roller) */}
+          <linearGradient id="iso-chassis-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#34343c" />
+            <stop offset="52%" stopColor="#1c1c22" />
+            <stop offset="100%" stopColor="#0e0e12" />
           </linearGradient>
 
-          {/* Machined Steel / Aluminium Sub-Frame Gradient */}
+          {/* Knurled Chrome Thumb Wheels, Pinch Rollers & Gears Gradient (Matches Section 1 & 2 Chrome Knobs) */}
           <linearGradient id="iso-steel-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor={isLight ? "#e5dfd3" : "#4a4844"} />
-            <stop offset="50%" stopColor={isLight ? "#c8c0b0" : "#2f2e2b"} />
-            <stop offset="100%" stopColor={isLight ? "#9e9688" : "#1c1b19"} />
+            <stop offset="0%" stopColor={isLight ? "#f4f1ea" : "#d8d4cc"} />
+            <stop offset="50%" stopColor={isLight ? "#b8b3a8" : "#7e7b74"} />
+            <stop offset="100%" stopColor={isLight ? "#78746a" : "#3a3936"} />
+          </linearGradient>
+
+          {/* Upper Ribbon Spool Hood Gradient (Matches Section 1 & 2 Upper Hood) */}
+          <linearGradient id="iso-upper-hood-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor={isLight ? "#f5f0e4" : "#2a2a33"} />
+            <stop offset="100%" stopColor={isLight ? "#e5decb" : "#1c1c23"} />
+          </linearGradient>
+
+          {/* Lower Sloped Keybed Housing & Bezel Gradient (Matches Section 1 & 2 Keybed Bezel) */}
+          <linearGradient id="iso-keybed-bezel-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor={isLight ? "#ede6d6" : "#22222b"} />
+            <stop offset="52%" stopColor={isLight ? "#e2dac8" : "#15151b"} />
+            <stop offset="100%" stopColor={isLight ? "#d2c9b4" : "#0c0c10"} />
+          </linearGradient>
+
+          {/* Vintage Spacebar Gradient (Matches Section 1 & 2 Spacebar) */}
+          <linearGradient id="iso-spacebar-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor={isLight ? "#33312d" : "#32323d"} />
+            <stop offset="100%" stopColor={isLight ? "#181715" : "#14141a"} />
           </linearGradient>
         </defs>
 
@@ -428,22 +447,22 @@ export default function ExplodedTypewriter3D({
           opacity={(0.35 + p * 0.65) * nonProblemOpacity}
           style={{ pointerEvents: nonProblemOpacity < 0.1 ? "none" : "auto" }}
         >
-          {/* Isometric Perforated Steel Baseplate */}
+          {/* Isometric Perforated Baseplate (Matches bottom keybed chassis tone in Light & Dark modes) */}
           <polygon
             points="275,380 575,488 665,432 365,324"
-            fill={isLight ? "#dad3c5" : "#18181f"}
+            fill={isLight ? "#d2c9b4" : "#15151b"}
             stroke={isUnitActive(4) ? accentAmber : strokeBase}
             strokeWidth={isUnitActive(4) ? "1.8" : "1.1"}
           />
           <polygon
             points="275,380 575,488 575,495 275,387"
-            fill={isLight ? "#9e988c" : "#0e0e12"}
+            fill={isLight ? "#b8b09c" : "#0c0c10"}
             stroke={isUnitActive(4) ? accentAmber : strokeBase}
             strokeWidth="0.9"
           />
           <polygon
             points="575,488 665,432 665,439 575,495"
-            fill={isLight ? "#847e72" : "#09090c"}
+            fill={isLight ? "#9e9684" : "#08080b"}
             stroke={isUnitActive(4) ? accentAmber : strokeBase}
             strokeWidth="0.9"
           />
@@ -551,7 +570,7 @@ export default function ExplodedTypewriter3D({
               rx="12"
               ry="18"
               transform="rotate(20 336 171)"
-              fill="url(#iso-chassis-grad)"
+              fill="url(#iso-steel-grad)"
               stroke={isUnitActive(0) ? accentAmber : strokeBase}
               strokeWidth={isUnitActive(0) ? "2" : "1.2"}
             />
@@ -561,7 +580,7 @@ export default function ExplodedTypewriter3D({
               rx="6"
               ry="9"
               transform="rotate(20 332 170)"
-              fill={isLight ? "#383630" : "#111115"}
+              fill={isLight ? "#78746a" : "#3a3936"}
               stroke={isUnitActive(0) ? accentAmber : strokeBase}
               strokeWidth="1"
             />
@@ -786,7 +805,7 @@ export default function ExplodedTypewriter3D({
               rx="12"
               ry="18"
               transform="rotate(20 656 285)"
-              fill="url(#iso-chassis-grad)"
+              fill="url(#iso-steel-grad)"
               stroke={isUnitActive(0) ? accentAmber : strokeBase}
               strokeWidth={isUnitActive(0) ? "2" : "1.2"}
             />
@@ -1180,65 +1199,74 @@ export default function ExplodedTypewriter3D({
             style={{ pointerEvents: "all", cursor: "pointer" }}
           />
 
-          {/* Extruded 3D Top Thickness of the Upper Hood */}
+          {/* Extruded 3D Top Thickness of the Upper Hood (Matches Section 1 & 2 Upper Hood) */}
           <polygon
             points="296,246 610,360 624,350 310,236"
-            fill={isLight ? "#4a4842" : "#343440"}
+            fill={isLight ? "#faf6ec" : "#343440"}
             stroke={isUnitActive(2) ? accentAmber : strokeBase}
             strokeWidth="1.2"
           />
           {/* Right Side Depth Wall of the Upper Hood */}
           <polygon
             points="610,360 624,350 624,412 610,422"
-            fill="#101015"
+            fill={isLight ? "#d2c9b4" : "#14141b"}
             stroke={isUnitActive(2) ? accentAmber : strokeBase}
             strokeWidth="1.2"
           />
-          {/* Front Isometric Face of the Upper Hood */}
+          {/* Front Isometric Face of the Upper Hood (Warm Cream in Light Mode, Obsidian Slate in Dark Mode) */}
           <polygon
             points="296,246 610,360 610,422 296,308"
-            fill="url(#iso-chassis-grad)"
+            fill="url(#iso-upper-hood-grad)"
             stroke={isUnitActive(2) ? accentAmber : strokeBase}
             strokeWidth={isUnitActive(2) ? "2.4" : "1.4"}
           />
 
-          {/* Bichrome Horizontal Ribbon Stripe across the Hood */}
+          {/* Bichrome Red/Black Horizontal Ribbon Stripe across the Hood (Matches Section 1 & 2) */}
           <line
             x1="332"
-            y1="286"
+            y1="284"
             x2="574"
-            y2="374"
-            stroke="#e89b3c"
-            strokeWidth="1.6"
-            opacity="0.75"
+            y2="372"
+            stroke="#18181b"
+            strokeWidth="1.8"
+            opacity="0.82"
+          />
+          <line
+            x1="332"
+            y1="286.5"
+            x2="574"
+            y2="374.5"
+            stroke="#b93829"
+            strokeWidth="1.5"
+            opacity="0.88"
           />
 
-          {/* Left Spoked Ribbon Spool (#03-A: Value Proposition) */}
+          {/* Left Spoked Ribbon Spool (#03-A: Value Proposition — Matches Section 1 & 2 Spool) */}
           <g transform="translate(324, 282) skewY(20)">
             <circle
               cx="0"
               cy="0"
               r="18"
-              fill="#0d0d11"
-              stroke={isUnitActive(2) ? accentAmber : "#c8c2b4"}
-              strokeWidth="1.6"
+              fill={isLight ? "#22211f" : "#0c0c10"}
+              stroke={isUnitActive(2) ? accentAmber : isLight ? "#8c867a" : "#5a5852"}
+              strokeWidth="1.8"
             />
-            <line x1="-13" y1="0" x2="13" y2="0" stroke="#c8c2b4" strokeWidth="1.5" />
-            <line x1="0" y1="-13" x2="0" y2="13" stroke="#c8c2b4" strokeWidth="1.5" />
-            <circle cx="0" cy="0" r="4.5" fill="#e89b3c" />
+            <line x1="-13" y1="0" x2="13" y2="0" stroke="#9e9a90" strokeOpacity="0.65" strokeWidth="1.4" />
+            <line x1="0" y1="-13" x2="0" y2="13" stroke="#9e9a90" strokeOpacity="0.65" strokeWidth="1.4" />
+            <circle cx="0" cy="0" r="6" fill="url(#iso-steel-grad)" stroke="#181715" strokeWidth="0.8" />
           </g>
 
-          {/* Center Winged Emblem & Riveted "YOUR BUSINESS" Brass Plaque (#03-C: Brand Story) */}
+          {/* Center Open Typebar Basket & Riveted "YOUR BUSINESS" Brass Plaque (#03-C: Brand Story) */}
           <g transform="translate(452, 332) skewY(20)">
-            {/* Winged crest above plaque */}
+            {/* Semi-circular mechanical typebar basket well */}
             <path
               d="M -36 -20 L 36 -20 L 24 -6 L -24 -6 Z"
-              fill="#121217"
-              stroke={isUnitActive(2) ? accentAmber : "#7e7a70"}
+              fill="#0b0b0e"
+              stroke={isUnitActive(2) ? accentAmber : "#4a4842"}
               strokeWidth="1"
             />
-            <line x1="-22" y1="-15" x2="22" y2="-15" stroke="#e89b3c" strokeWidth="1.2" />
-            <line x1="-16" y1="-11" x2="16" y2="-11" stroke="#e89b3c" strokeWidth="1" />
+            <line x1="-22" y1="-15" x2="22" y2="-15" stroke="#c8c4bc" strokeOpacity="0.75" strokeWidth="1.1" />
+            <line x1="-14" y1="-10" x2="14" y2="-10" stroke="#e89b3c" strokeWidth="1.1" />
 
             {/* Riveted Brass Nameplate */}
             <rect
@@ -1247,7 +1275,7 @@ export default function ExplodedTypewriter3D({
               width="140"
               height="24"
               rx="3"
-              fill="#191610"
+              fill="#1e1a14"
               stroke="#e89b3c"
               strokeWidth={isUnitActive(2) ? "2" : "1.3"}
             />
@@ -1267,19 +1295,19 @@ export default function ExplodedTypewriter3D({
             </text>
           </g>
 
-          {/* Right Spoked Ribbon Spool (#03-B: Landing Page Copy) */}
+          {/* Right Spoked Ribbon Spool (#03-B: Landing Page Copy — Matches Section 1 & 2 Spool) */}
           <g transform="translate(580, 375) skewY(20)">
             <circle
               cx="0"
               cy="0"
               r="18"
-              fill="#0d0d11"
-              stroke={isUnitActive(2) ? accentAmber : "#c8c2b4"}
-              strokeWidth="1.6"
+              fill={isLight ? "#22211f" : "#0c0c10"}
+              stroke={isUnitActive(2) ? accentAmber : isLight ? "#8c867a" : "#5a5852"}
+              strokeWidth="1.8"
             />
-            <line x1="-13" y1="0" x2="13" y2="0" stroke="#c8c2b4" strokeWidth="1.5" />
-            <line x1="0" y1="-13" x2="0" y2="13" stroke="#c8c2b4" strokeWidth="1.5" />
-            <circle cx="0" cy="0" r="4.5" fill="#e89b3c" />
+            <line x1="-13" y1="0" x2="13" y2="0" stroke="#9e9a90" strokeOpacity="0.65" strokeWidth="1.4" />
+            <line x1="0" y1="-13" x2="0" y2="13" stroke="#9e9a90" strokeOpacity="0.65" strokeWidth="1.4" />
+            <circle cx="0" cy="0" r="6" fill="url(#iso-steel-grad)" stroke="#181715" strokeWidth="0.8" />
           </g>
 
           {/* Sub-part callout pills for Positioning (Value Prop & Landing Page Copy) */}
@@ -1353,16 +1381,16 @@ export default function ExplodedTypewriter3D({
             style={{ pointerEvents: "all", cursor: "pointer" }}
           />
 
-          {/* Machined Cast-Aluminium Inner Structural Sub-Frame */}
+          {/* Machined Inner Structural Sub-Frame (Matches Typewriter Housing Palette) */}
           <polygon
             points="286,320 594,432 638,402 330,290"
-            fill="url(#iso-steel-grad)"
+            fill="url(#iso-keybed-bezel-grad)"
             stroke={tier4Stroke}
             strokeWidth={isFixMode || isUnitActive(3) ? "2" : "1.2"}
           />
           <polygon
             points="286,320 594,432 594,454 286,342"
-            fill={isLight ? "#b4ac9c" : "#222229"}
+            fill={isLight ? "#c8bfa8" : "#15151b"}
             stroke={tier4Stroke}
             strokeWidth="1.2"
           />
@@ -1371,7 +1399,7 @@ export default function ExplodedTypewriter3D({
           <g>
             <polygon
               points="324,264 584,358 584,398 324,304"
-              fill="#141816"
+              fill={isLight ? "#e6dfd0" : "#111116"}
               stroke={tier4Stroke}
               strokeWidth={isFixMode || isUnitActive(3) ? "2.2" : "1.3"}
             />
@@ -1392,8 +1420,8 @@ export default function ExplodedTypewriter3D({
                   width="24"
                   height="20"
                   rx="2"
-                  fill="#0b0b0e"
-                  stroke={isFixMode ? accentGreen : (isUnitActive(3) ? accentRed : "#9e9a90")}
+                  fill={isLight ? "#262522" : "#0b0b0e"}
+                  stroke={isFixMode ? accentGreen : (isUnitActive(3) ? accentRed : isLight ? "#8c867a" : "#9e9a90")}
                   strokeWidth="1.1"
                 />
                 {/* IC pins */}
@@ -1634,47 +1662,58 @@ export default function ExplodedTypewriter3D({
             style={{ pointerEvents: "all", cursor: "pointer" }}
           />
 
-          {/* 3D Extruded Top Thickness of Front Bezel */}
+          {/* 3D Extruded Top Thickness of Front Bezel (Matches Section 1 & 2 Keybed Housing) */}
           <polygon
             points="232,295 562,415 574,406 244,286"
-            fill={isLight ? "#4a4842" : "#32323d"}
+            fill={isLight ? "#f5f0e4" : "#32323d"}
             stroke={isUnitActive(4) ? accentAmber : strokeBase}
             strokeWidth="1.2"
           />
           {/* 3D Right Depth Wall of Front Bezel */}
           <polygon
             points="562,415 574,406 566,508 554,518"
-            fill="#0d0d12"
+            fill={isLight ? "#bfb6a2" : "#0d0d12"}
             stroke={isUnitActive(4) ? accentAmber : strokeBase}
             strokeWidth="1.2"
           />
-          {/* Front Sloped Isometric Face of the Terminal Bezel */}
+          {/* Front Sloped Isometric Face of the Terminal Bezel (Warm Cream-Sand in Light Mode, Obsidian in Dark Mode) */}
           <polygon
             points="232,295 562,415 554,518 224,398"
             rx="12"
-            fill="url(#iso-chassis-grad)"
+            fill="url(#iso-keybed-bezel-grad)"
             stroke={isUnitActive(4) ? accentAmber : strokeBase}
             strokeWidth={isUnitActive(4) ? "2.4" : "1.5"}
           />
 
-          {/* Recessed Dark Terminal Screen ("TTY://SPEND.LOG") */}
+          {/* Recessed Terminal Screen ("TTY://SPEND.LOG" — Matches Section 1 & 2 Screen in Light & Dark Modes) */}
           <polygon
             points="248,314 542,421 536,482 242,375"
-            fill="#07070a"
-            stroke={isUnitActive(4) ? accentAmber : "rgba(244,240,234,0.18)"}
+            fill={isLight ? "#f7f3eb" : "#07070a"}
+            stroke={
+              isUnitActive(4)
+                ? accentAmber
+                : isLight
+                ? "rgba(20,20,19,0.15)"
+                : "rgba(244,240,234,0.14)"
+            }
             strokeWidth="1.2"
           />
 
           {/* Terminal Header Dots & Text inside Isometric Screen */}
           <g transform="translate(256, 326) skewY(20)">
-            <circle cx="4" cy="4" r="2.5" fill="#5c5954" />
-            <circle cx="12" cy="4" r="2.5" fill="#5c5954" />
-            <circle cx="20" cy="4" r="2.5" fill={isUnitActive(4) ? accentAmber : "#9e9a90"} />
+            <circle cx="4" cy="4" r="2.5" fill={isLight ? "#c8c2b4" : "#3a3a46"} />
+            <circle cx="12" cy="4" r="2.5" fill={isLight ? "#c8c2b4" : "#3a3a46"} />
+            <circle
+              cx="20"
+              cy="4"
+              r="2.5"
+              fill={isUnitActive(4) ? accentAmber : isLight ? "#b0aa9c" : "#5c5954"}
+            />
             <text
               x="138"
               y="7.5"
               textAnchor="middle"
-              fill={isLight ? "#a19d94" : "#8e8a80"}
+              fill={isLight ? "#6e6a62" : "#7a7770"}
               fontSize="9.5"
               fontFamily="monospace"
               letterSpacing="1.5"
@@ -1698,14 +1737,14 @@ export default function ExplodedTypewriter3D({
               y1="14"
               x2="274"
               y2="14"
-              stroke="rgba(244,240,234,0.14)"
+              stroke={isLight ? "rgba(20,20,19,0.10)" : "rgba(244,240,234,0.10)"}
               strokeWidth="0.8"
             />
 
             <text
               x="4"
               y="29"
-              fill={isLight ? "#b4b0a8" : "#a09c94"}
+              fill={isLight ? "#6e6a62" : "#8e8a80"}
               fontSize="10.5"
               fontFamily="monospace"
             >
@@ -1723,21 +1762,21 @@ export default function ExplodedTypewriter3D({
             </text>
           </g>
 
-          {/* Left Round Chrome-Ringed "SHIFT" Key (#05-A: First-Run UX) */}
+          {/* Left Round Chrome-Ringed "SHIFT" Key (#05-A: First-Run UX — Matches Section 1 & 2) */}
           <g transform="translate(248, 392) skewY(20)">
             <circle
               cx="0"
               cy="0"
               r="12"
-              fill="#141419"
-              stroke={isUnitActive(4) ? accentAmber : "#c8c2b4"}
+              fill={isLight ? "#262522" : "#18181d"}
+              stroke={isUnitActive(4) ? accentAmber : isLight ? "#9e988c" : "#b8b3a8"}
               strokeWidth="1.5"
             />
             <text
               x="0"
               y="3.5"
               textAnchor="middle"
-              fill="#f4f0ea"
+              fill={isLight ? "#f4f0ea" : "#dcd8ce"}
               fontSize="8"
               fontWeight="800"
               fontFamily="monospace"
@@ -1746,34 +1785,34 @@ export default function ExplodedTypewriter3D({
             </text>
           </g>
 
-          {/* Center Bakelite Spacebar (#05-B: User Activation) */}
+          {/* Center Spacebar (#05-B: User Activation — Matches Section 1 & 2) */}
           <polygon
             points="286,403 496,479 493,491 283,415"
-            fill="#141419"
-            stroke={isUnitActive(4) ? accentAmber : "#8e8a80"}
+            fill="url(#iso-spacebar-grad)"
+            stroke={isUnitActive(4) ? accentAmber : isLight ? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.18)"}
             strokeWidth="1.3"
           />
 
-          {/* Right Round Chrome-Ringed "ENTER" Key */}
+          {/* Right Round Chrome-Ringed "LOCK" Key (Matches Section 1 & 2) */}
           <g transform="translate(528, 494) skewY(20)">
             <circle
               cx="0"
               cy="0"
               r="12"
-              fill="#141419"
-              stroke={isUnitActive(4) ? accentAmber : "#c8c2b4"}
+              fill={isLight ? "#262522" : "#18181d"}
+              stroke={isUnitActive(4) ? accentAmber : isLight ? "#9e988c" : "#b8b3a8"}
               strokeWidth="1.5"
             />
             <text
               x="0"
               y="3.5"
               textAnchor="middle"
-              fill="#f4f0ea"
+              fill={isLight ? "#f4f0ea" : "#dcd8ce"}
               fontSize="8"
               fontWeight="800"
               fontFamily="monospace"
             >
-              ENTER
+              LOCK
             </text>
           </g>
 

@@ -747,6 +747,12 @@ export default function TypewriterStage({
   const [powerState, setPowerState] = useState<PowerState>("idle");
   const [hasCompletedPayoff, setHasCompletedPayoff] = useState<boolean>(false);
   const [isBegging, setIsBegging] = useState<boolean>(false);
+  const [hasClickedAnyOrb, setHasClickedAnyOrb] = useState<boolean>(
+    (externalSpent ?? 0) > 0
+  );
+  const [activeClickMeTier, setActiveClickMeTier] = useState<OrbTier | null>(
+    null
+  );
   const [terminalLogs, setTerminalLogs] = useState<TerminalLogEntry[]>([
     { id: 1, text: "business.sys ready" },
     { id: 2, text: "awaiting spend..." },
@@ -863,7 +869,58 @@ export default function TypewriterStage({
     if (typeof externalSpent === "number" && externalSpent !== spentTarget) {
       setSpentTarget(externalSpent);
     }
+    if ((externalSpent ?? 0) > 0) {
+      setHasClickedAnyOrb(true);
+      setActiveClickMeTier(null);
+    }
   }, [externalSpent, spentTarget]);
+
+  // Sequential "Click me" prompt + pulsating border animation that appears one by one
+  // ($20 -> $50 -> $100) and permanently disappears once the user clicks any button.
+  useEffect(() => {
+    if (hasClickedAnyOrb || inDashboardMode) {
+      setActiveClickMeTier(null);
+      return;
+    }
+
+    const tiers: OrbTier[] = [20, 50, 100];
+    let stepIdx = 0;
+    let cancelled = false;
+    let timerId: ReturnType<typeof setTimeout> | null = null;
+
+    const runStep = () => {
+      if (cancelled) return;
+
+      // Wait while the homepage loader is still covering Section 1
+      const loaderEl = document.querySelector(
+        '[aria-label="Welcome to Hello Steward"]'
+      );
+      if (loaderEl || masterUnitsRef.current > 0.15) {
+        setActiveClickMeTier(null);
+        timerId = setTimeout(runStep, 450);
+        return;
+      }
+
+      const currentTier = tiers[stepIdx % tiers.length];
+      setActiveClickMeTier(currentTier);
+
+      // Show on current button for 1.7s, then brief gap before advancing to the next button
+      timerId = setTimeout(() => {
+        if (cancelled) return;
+        setActiveClickMeTier(null);
+        stepIdx += 1;
+        const isEndOfCycle = stepIdx % tiers.length === 0;
+        timerId = setTimeout(runStep, isEndOfCycle ? 900 : 240);
+      }, 1700);
+    };
+
+    timerId = setTimeout(runStep, 800);
+
+    return () => {
+      cancelled = true;
+      if (timerId) clearTimeout(timerId);
+    };
+  }, [hasClickedAnyOrb, inDashboardMode]);
 
   useEffect(() => {
     if (typeof externalEarned === "number" && externalEarned !== earnedTarget) {
@@ -1574,6 +1631,8 @@ export default function TypewriterStage({
     btnRef: React.RefObject<HTMLButtonElement | null>
   ) => {
     if (isTransitionLocked) return;
+    setHasClickedAnyOrb(true);
+    setActiveClickMeTier(null);
     resetIdleBegTimer();
 
     // Generate random return: $20 -> $1–$5, $50 -> $5–$20, $100 -> $20–$40
@@ -2053,7 +2112,7 @@ export default function TypewriterStage({
                   : isLight
                   ? "bg-[#fbf9f5] text-[#141413] ring-1 ring-black/12 shadow-[0_12px_28px_rgba(20,20,19,0.08),0_2px_6px_rgba(20,20,19,0.04)] hover:bg-[#e89b3c] hover:text-[#08080a]"
                   : "bg-[#111116] text-[#f4f0ea] ring-1 ring-white/[0.09] shadow-[0_16px_36px_rgba(0,0,0,0.7)] hover:bg-[#f4f0ea] hover:text-[#08080a]"
-              } ${isBegging && powerState === "idle" ? "orb-begging" : ""}`}
+              }`}
             >
               <div className="pointer-events-none flex w-full items-center justify-between">
                 <span className="font-mono-label text-[8px] font-medium uppercase tracking-[0.16em] opacity-65 sm:text-[9px]">
@@ -2074,12 +2133,47 @@ export default function TypewriterStage({
 
               <div className="pointer-events-none flex w-full items-center justify-between border-t border-current/10 pt-1">
                 <span className="font-mono-label text-[8px] uppercase tracking-[0.16em] opacity-65">
-                  ⚡ Feed cash
+                  {activeClickMeTier === 20 &&
+                  !hasClickedAnyOrb &&
+                  !inDashboardMode
+                    ? "Click me"
+                    : "⚡ Feed cash"}
                 </span>
                 <span className="font-mono-label text-[9px] opacity-75 transition-transform group-hover:translate-x-0.5">
                   →
                 </span>
               </div>
+
+              {/* Single border glow when "Click me" is active on +$20 */}
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-0 rounded-xl shadow-[0_0_24px_rgba(232,155,60,0.6),inset_0_0_12px_rgba(232,155,60,0.22)] transition-opacity duration-500 ${
+                  activeClickMeTier === 20 &&
+                  !hasClickedAnyOrb &&
+                  !inDashboardMode
+                    ? "opacity-100"
+                    : "opacity-0"
+                }`}
+              />
+
+              {/* Subtle floating "Click me" badge that appears briefly and disappears */}
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute -top-2.5 right-2.5 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono-label text-[7.5px] font-medium uppercase tracking-[0.14em] transition-all duration-300 ${
+                  activeClickMeTier === 20 &&
+                  !hasClickedAnyOrb &&
+                  !inDashboardMode
+                    ? "translate-y-0 scale-100 opacity-100"
+                    : "translate-y-1 scale-95 opacity-0"
+                } ${
+                  isLight
+                    ? "border-[#e89b3c] bg-[#fbf9f5] text-[#b86409] shadow-sm"
+                    : "border-[#e89b3c]/80 bg-[#15151c] text-[#e89b3c] shadow-[0_4px_12px_rgba(0,0,0,0.45)]"
+                }`}
+              >
+                <span className="h-1 w-1 rounded-full bg-[#e89b3c]" />
+                Click me
+              </span>
 
               {/* Power-Plug Connector Collar where power conduit attaches */}
               <span
@@ -2122,8 +2216,7 @@ export default function TypewriterStage({
                   : isLight
                   ? "bg-[#fbf9f5] text-[#141413] ring-1 ring-black/12 shadow-[0_12px_28px_rgba(20,20,19,0.08),0_2px_6px_rgba(20,20,19,0.04)] hover:bg-[#e89b3c] hover:text-[#08080a]"
                   : "bg-[#111116] text-[#f4f0ea] ring-1 ring-white/[0.09] shadow-[0_16px_36px_rgba(0,0,0,0.7)] hover:bg-[#f4f0ea] hover:text-[#08080a]"
-              } ${isBegging && powerState === "idle" ? "orb-begging" : ""}`}
-              style={{ animationDelay: "0.35s" }}
+              }`}
             >
               <div className="pointer-events-none flex w-full items-center justify-between">
                 <span className="font-mono-label text-[8px] font-medium uppercase tracking-[0.16em] opacity-65 sm:text-[9px]">
@@ -2144,12 +2237,47 @@ export default function TypewriterStage({
 
               <div className="pointer-events-none flex w-full items-center justify-between border-t border-current/10 pt-1">
                 <span className="font-mono-label text-[8px] uppercase tracking-[0.16em] opacity-65">
-                  ⚡ Feed cash
+                  {activeClickMeTier === 50 &&
+                  !hasClickedAnyOrb &&
+                  !inDashboardMode
+                    ? "Click me"
+                    : "⚡ Feed cash"}
                 </span>
                 <span className="font-mono-label text-[9px] opacity-75 transition-transform group-hover:translate-x-0.5">
                   →
                 </span>
               </div>
+
+              {/* Single border glow when "Click me" is active on +$50 */}
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-0 rounded-xl shadow-[0_0_24px_rgba(232,155,60,0.6),inset_0_0_12px_rgba(232,155,60,0.22)] transition-opacity duration-500 ${
+                  activeClickMeTier === 50 &&
+                  !hasClickedAnyOrb &&
+                  !inDashboardMode
+                    ? "opacity-100"
+                    : "opacity-0"
+                }`}
+              />
+
+              {/* Subtle floating "Click me" badge that appears briefly and disappears */}
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute -top-2.5 right-2.5 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono-label text-[7.5px] font-medium uppercase tracking-[0.14em] transition-all duration-300 ${
+                  activeClickMeTier === 50 &&
+                  !hasClickedAnyOrb &&
+                  !inDashboardMode
+                    ? "translate-y-0 scale-100 opacity-100"
+                    : "translate-y-1 scale-95 opacity-0"
+                } ${
+                  isLight
+                    ? "border-[#e89b3c] bg-[#fbf9f5] text-[#b86409] shadow-sm"
+                    : "border-[#e89b3c]/80 bg-[#15151c] text-[#e89b3c] shadow-[0_4px_12px_rgba(0,0,0,0.45)]"
+                }`}
+              >
+                <span className="h-1 w-1 rounded-full bg-[#e89b3c]" />
+                Click me
+              </span>
 
               {/* Power-Plug Connector Collar where power conduit attaches */}
               <span
@@ -2190,8 +2318,7 @@ export default function TypewriterStage({
                   : isLight
                   ? "bg-[#fbf9f5] text-[#141413] ring-1 ring-[#e89b3c]/45 shadow-[0_14px_32px_rgba(20,20,19,0.10),0_2px_6px_rgba(20,20,19,0.05)] hover:bg-[#e89b3c] hover:text-[#08080a]"
                   : "bg-[#111116] text-[#f4f0ea] ring-1 ring-[#e89b3c]/30 shadow-[0_18px_42px_rgba(0,0,0,0.8)] hover:bg-[#e89b3c] hover:text-[#08080a]"
-              } ${isBegging && powerState === "idle" ? "orb-begging" : ""}`}
-              style={{ animationDelay: "0.7s" }}
+              }`}
             >
               <div className="pointer-events-none flex w-full items-center justify-between">
                 <span
@@ -2220,12 +2347,47 @@ export default function TypewriterStage({
 
               <div className="pointer-events-none flex w-full items-center justify-between border-t border-current/15 pt-1">
                 <span className="font-mono-label text-[8px] uppercase tracking-[0.16em] opacity-75">
-                  ⚡ Max inject
+                  {activeClickMeTier === 100 &&
+                  !hasClickedAnyOrb &&
+                  !inDashboardMode
+                    ? "Click me"
+                    : "⚡ Max inject"}
                 </span>
                 <span className="font-mono-label text-[9px] opacity-80 transition-transform group-hover:translate-x-0.5">
                   →
                 </span>
               </div>
+
+              {/* Single border glow when "Click me" is active on +$100 */}
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-0 rounded-xl shadow-[0_0_26px_rgba(232,155,60,0.65),inset_0_0_12px_rgba(232,155,60,0.24)] transition-opacity duration-500 ${
+                  activeClickMeTier === 100 &&
+                  !hasClickedAnyOrb &&
+                  !inDashboardMode
+                    ? "opacity-100"
+                    : "opacity-0"
+                }`}
+              />
+
+              {/* Subtle floating "Click me" badge that appears briefly and disappears */}
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute -top-2.5 right-2.5 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono-label text-[7.5px] font-medium uppercase tracking-[0.14em] transition-all duration-300 ${
+                  activeClickMeTier === 100 &&
+                  !hasClickedAnyOrb &&
+                  !inDashboardMode
+                    ? "translate-y-0 scale-100 opacity-100"
+                    : "translate-y-1 scale-95 opacity-0"
+                } ${
+                  isLight
+                    ? "border-[#e89b3c] bg-[#fbf9f5] text-[#b86409] shadow-sm"
+                    : "border-[#e89b3c]/80 bg-[#15151c] text-[#e89b3c] shadow-[0_4px_12px_rgba(0,0,0,0.45)]"
+                }`}
+              >
+                <span className="h-1 w-1 rounded-full bg-[#e89b3c]" />
+                Click me
+              </span>
 
               {/* Power-Plug Connector Collar where power conduit attaches */}
               <span
@@ -2246,10 +2408,12 @@ export default function TypewriterStage({
         {/* LAYER 4: AUTHENTIC VINTAGE MECHANICAL TYPEWRITER */}
         <div
           ref={typewriterGroupRef}
+          data-typewriter-hero="true"
           className="pointer-events-auto absolute bottom-1 left-1/2 z-20 flex w-[360px] -translate-x-1/2 flex-col items-center sm:w-[510px] lg:w-[590px] xl:w-[630px]"
         >
           <div
             ref={typewriterTiltRef}
+            data-typewriter-tilt="true"
             className="flex w-full flex-col items-center"
           >
             {/* PLATEN PAPER SLOT VIEWPORT (Backpanel removed so wires route cleanly behind the typewriter) */}

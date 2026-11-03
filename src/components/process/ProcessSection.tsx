@@ -39,7 +39,11 @@ const PROCESS_STEPS = [
   },
 ];
 
-export default function ProcessSection() {
+interface ProcessSectionProps {
+  onAuditClick?: (sourceButton?: string) => void;
+}
+
+export default function ProcessSection({ onAuditClick }: ProcessSectionProps) {
   const { theme } = useTheme();
   const isLight = theme === "light";
 
@@ -56,10 +60,30 @@ export default function ProcessSection() {
   const launchProgressFillRef = useRef<HTMLDivElement | null>(null);
   const iterateProgressFillRef = useRef<HTMLDivElement | null>(null);
 
+  // Refs for the Section 3 -> Section 4 ("04 / WHO WE WORK WITH") -> Section 5 ("05 / LET'S START") transition overlays
+  const processStageBlurRef = useRef<HTMLDivElement | null>(null);
+  const transitionVignetteRef = useRef<HTMLDivElement | null>(null);
+  const whoBlockRef = useRef<HTMLDivElement | null>(null);
+  const whoEyebrowRef = useRef<HTMLDivElement | null>(null);
+  const whoHeadlineRef = useRef<HTMLHeadingElement | null>(null);
+  const whoLineRef = useRef<HTMLParagraphElement | null>(null);
+  const whoBoundaryLineRef = useRef<HTMLParagraphElement | null>(null);
+
+  const startBlockRef = useRef<HTMLDivElement | null>(null);
+  const startEyebrowRef = useRef<HTMLDivElement | null>(null);
+  const startHeadlineRef = useRef<HTMLHeadingElement | null>(null);
+  const startSublineRef = useRef<HTMLParagraphElement | null>(null);
+  const startActionsRef = useRef<HTMLDivElement | null>(null);
+  const startFootnoteRef = useRef<HTMLParagraphElement | null>(null);
+
+  const [isStartSectionActive, setIsStartSectionActive] =
+    useState<boolean>(false);
+
   const [explosionProgress, setExplosionProgress] = useState<number>(0);
   const [fixProgress, setFixProgress] = useState<number>(0);
   const [testProgress, setTestProgress] = useState<number>(0);
   const [launchProgress, setLaunchProgress] = useState<number>(0);
+  const [iterateProgress, setIterateProgress] = useState<number>(0);
   const [activeStage, setActiveStage] = useState<0 | 1 | 2 | 3 | 4 | 5>(0);
   const activeStageRef = useRef<0 | 1 | 2 | 3 | 4 | 5>(0);
 
@@ -142,48 +166,56 @@ export default function ProcessSection() {
         );
       }
 
-      // 2) Pinned progression inside Section 3 across 4.6 viewports:
-      //    Stage 1 (0.04 -> 0.14, dwell -> 0.28): 1. Understand the problem
-      //    Stage 2 (0.28 -> 0.40, dwell -> 0.50): 2. Build a solution
-      //    Stage 3 (0.50 -> 0.62, dwell -> 0.70): 3. Test the solution
-      //    Stage 4 (0.70 -> 0.82, dwell -> 0.86): 4. Launch and measure
-      //    Stage 5 (0.86 -> 0.96, dwell -> 1.00): 5. Iterate and scale
+      // 2) Pinned progression across 6.6 viewports:
+      //    Stage 1 (0.02 -> 0.10, dwell -> 0.195): 1. Understand the problem
+      //    Stage 2 (0.195 -> 0.28, dwell -> 0.35): 2. Build a solution
+      //    Stage 3 (0.35 -> 0.435, dwell -> 0.49): 3. Test the solution
+      //    Stage 4 (0.49 -> 0.57, dwell -> 0.60): 4. Launch and measure
+      //    Stage 5 (0.60 -> 0.675, dwell -> 0.71): 5. Iterate and scale
+      //    Transition to 04 (0.71 -> 0.84): 04 / WHO WE WORK WITH — We own the outcome.
+      //    Transition 04 -> 05 (0.86 -> 0.99): 04 disappears, 05 / LET’S START appears in place.
       const stepTl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionEl,
           start: "top top",
-          end: () => `+=${window.innerHeight * 4.6}`,
+          end: () => `+=${window.innerHeight * 6.6}`,
           scrub: true,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
             const p = self.progress;
 
             // Explosion progress (0 -> 1 during Stage 1)
-            const exp = Math.max(0, Math.min(1, (p - 0.03) / 0.12));
+            const exp = Math.max(0, Math.min(1, (p - 0.02) / 0.085));
             setExplosionProgress(exp);
 
             // Stage 2 ("Build a solution") progress
-            const fixP = Math.max(0, Math.min(1, (p - 0.28) / 0.12));
+            const fixP = Math.max(0, Math.min(1, (p - 0.195) / 0.085));
             setFixProgress(fixP);
 
             // Stage 3 ("Test the solution") progress
-            const testP = Math.max(0, Math.min(1, (p - 0.50) / 0.12));
+            const testP = Math.max(0, Math.min(1, (p - 0.35) / 0.085));
             setTestProgress(testP);
 
             // Stage 4 ("Launch and measure") progress
-            const launchP = Math.max(0, Math.min(1, (p - 0.70) / 0.12));
+            const launchP = Math.max(0, Math.min(1, (p - 0.49) / 0.085));
             setLaunchProgress(launchP);
 
+            // Stage 5 ("Iterate and scale") progress
+            const iterateP = Math.max(0, Math.min(1, (p - 0.595) / 0.075));
+            setIterateProgress(iterateP);
+
+            setIsStartSectionActive(p >= 0.91);
+
             const nextStage: 0 | 1 | 2 | 3 | 4 | 5 =
-              p >= 0.88
+              p >= 0.615
                 ? 5
-                : p >= 0.72
+                : p >= 0.5
                 ? 4
-                : p >= 0.52
+                : p >= 0.36
                 ? 3
-                : p >= 0.30
+                : p >= 0.21
                 ? 2
-                : p >= 0.07
+                : p >= 0.045
                 ? 1
                 : 0;
 
@@ -202,11 +234,11 @@ export default function ProcessSection() {
           { x: 0 },
           {
             x: () => (window.innerWidth >= 1024 ? 90 : 0),
-            duration: 0.12,
+            duration: 0.085,
             ease: "power2.inOut",
             immediateRender: false,
           },
-          0.04
+          0.025
         );
       }
 
@@ -221,86 +253,279 @@ export default function ProcessSection() {
           {
             opacity: 1,
             x: 0,
-            duration: 0.11,
+            duration: 0.08,
             ease: "power2.out",
             immediateRender: false,
           },
-          0.05
+          0.035
         );
       }
 
-      // Step 1 progress bar fill: Understand the problem (#e89b3c)
+      // Continuous scroll-linked orange progress fill across all 5 bottom tab underlines
+      // Step 1 progress bar fill: Understand the problem (0.00 -> 0.195)
       if (understandProgressFillRef.current) {
         stepTl.fromTo(
           understandProgressFillRef.current,
           { scaleX: 0 },
           {
             scaleX: 1,
-            duration: 0.12,
-            ease: "power2.inOut",
+            duration: 0.195,
+            ease: "none",
             immediateRender: false,
           },
-          0.05
+          0.0
         );
       }
 
-      // Step 2 progress bar fill: Build a solution (#10b981)
+      // Step 2 progress bar fill: Build a solution (0.195 -> 0.35)
       if (fixProgressFillRef.current) {
         stepTl.fromTo(
           fixProgressFillRef.current,
           { scaleX: 0 },
           {
             scaleX: 1,
-            duration: 0.12,
-            ease: "power2.inOut",
+            duration: 0.155,
+            ease: "none",
             immediateRender: false,
           },
-          0.29
+          0.195
         );
       }
 
-      // Step 3 progress bar fill: Test the solution (#e89b3c)
+      // Step 3 progress bar fill: Test the solution (0.35 -> 0.49)
       if (testProgressFillRef.current) {
         stepTl.fromTo(
           testProgressFillRef.current,
           { scaleX: 0 },
           {
             scaleX: 1,
-            duration: 0.12,
-            ease: "power2.inOut",
+            duration: 0.14,
+            ease: "none",
             immediateRender: false,
           },
-          0.51
+          0.35
         );
       }
 
-      // Step 4 progress bar fill: Launch and measure (#10b981)
+      // Step 4 progress bar fill: Launch and measure (0.49 -> 0.60)
       if (launchProgressFillRef.current) {
         stepTl.fromTo(
           launchProgressFillRef.current,
           { scaleX: 0 },
           {
             scaleX: 1,
-            duration: 0.12,
-            ease: "power2.inOut",
+            duration: 0.11,
+            ease: "none",
             immediateRender: false,
           },
-          0.71
+          0.49
         );
       }
 
-      // Step 5 progress bar fill: Iterate and scale (#e89b3c)
+      // Step 5 progress bar fill: Iterate and scale (0.60 -> 0.70)
       if (iterateProgressFillRef.current) {
         stepTl.fromTo(
           iterateProgressFillRef.current,
           { scaleX: 0 },
           {
             scaleX: 1,
-            duration: 0.12,
+            duration: 0.1,
+            ease: "none",
+            immediateRender: false,
+          },
+          0.6
+        );
+      }
+
+      // -----------------------------------------------------------------
+      // TRANSITION BETWEEN SECTION 3 & SECTION 4 (0.71 -> 0.83):
+      // Background stage scales & dims, radial vignette veil fades in,
+      // and centered "04 / WHO WE WORK WITH — We own the outcome." locks in.
+      // -----------------------------------------------------------------
+      if (processStageBlurRef.current) {
+        stepTl.to(
+          processStageBlurRef.current,
+          {
+            opacity: 0.08,
+            scale: 0.96,
+            duration: 0.1,
+            ease: "power2.inOut",
+          },
+          0.71
+        );
+      }
+
+      if (transitionVignetteRef.current) {
+        stepTl.to(
+          transitionVignetteRef.current,
+          {
+            opacity: 1,
+            duration: 0.1,
+            ease: "power2.inOut",
+          },
+          0.71
+        );
+      }
+
+      if (whoEyebrowRef.current) {
+        stepTl.fromTo(
+          whoEyebrowRef.current,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.075,
+            ease: "power2.out",
+          },
+          0.735
+        );
+      }
+
+      if (whoHeadlineRef.current) {
+        stepTl.fromTo(
+          whoHeadlineRef.current,
+          { opacity: 0, y: 26, scale: 0.96 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.085,
+            ease: "power2.out",
+          },
+          0.745
+        );
+      }
+
+      if (whoLineRef.current) {
+        stepTl.fromTo(
+          whoLineRef.current,
+          { opacity: 0, y: 22 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.085,
+            ease: "power2.out",
+          },
+          0.76
+        );
+      }
+
+      if (whoBoundaryLineRef.current) {
+        stepTl.fromTo(
+          whoBoundaryLineRef.current,
+          { opacity: 0, y: 18 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.075,
+            ease: "power2.out",
+          },
+          0.775
+        );
+      }
+
+      // -----------------------------------------------------------------
+      // TRANSITION BETWEEN SECTION 4 ("04 / WHO WE WORK WITH") &
+      // SECTION 5 ("05 / LET’S START") (0.86 -> 0.99):
+      // 04 disappears in place and 05 appears in place!
+      // -----------------------------------------------------------------
+      if (whoBlockRef.current) {
+        stepTl.fromTo(
+          whoBlockRef.current,
+          { opacity: 1, y: 0, scale: 1 },
+          {
+            opacity: 0,
+            y: -24,
+            scale: 0.96,
+            duration: 0.065,
             ease: "power2.inOut",
             immediateRender: false,
           },
-          0.87
+          0.86
+        );
+      }
+
+      if (processStageBlurRef.current) {
+        stepTl.to(
+          processStageBlurRef.current,
+          {
+            opacity: 0.03,
+            scale: 0.94,
+            duration: 0.08,
+            ease: "power2.inOut",
+          },
+          0.86
+        );
+      }
+
+      if (startEyebrowRef.current) {
+        stepTl.fromTo(
+          startEyebrowRef.current,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.065,
+            ease: "power2.out",
+          },
+          0.91
+        );
+      }
+
+      if (startHeadlineRef.current) {
+        stepTl.fromTo(
+          startHeadlineRef.current,
+          { opacity: 0, y: 26, scale: 0.96 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.075,
+            ease: "power2.out",
+          },
+          0.92
+        );
+      }
+
+      if (startSublineRef.current) {
+        stepTl.fromTo(
+          startSublineRef.current,
+          { opacity: 0, y: 22 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.075,
+            ease: "power2.out",
+          },
+          0.935
+        );
+      }
+
+      if (startActionsRef.current) {
+        stepTl.fromTo(
+          startActionsRef.current,
+          { opacity: 0, y: 18 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.07,
+            ease: "power2.out",
+          },
+          0.948
+        );
+      }
+
+      if (startFootnoteRef.current) {
+        stepTl.fromTo(
+          startFootnoteRef.current,
+          { opacity: 0, y: 14 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.065,
+            ease: "power2.out",
+          },
+          0.96
         );
       }
     }, sectionEl);
@@ -315,10 +540,21 @@ export default function ProcessSection() {
       ref={sectionRef}
       id="process"
       aria-labelledby="process-heading"
-      className="relative z-40 h-[560vh] w-full"
+      className="relative z-40 h-[760vh] w-full"
     >
-      {/* Sticky Full-Screen Stage: Intro -> 1. Understand the problem -> 2. Build a solution -> 3. Test the solution -> 4. Launch and measure */}
+      {/* Anchor for #contact at the bottom of the pinned stage */}
+      <div
+        id="contact"
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-[100vh] left-0 h-px w-full"
+      />
+
+      {/* Sticky Full-Screen Stage: Intro -> 1..5 -> 04 / WHO WE WORK WITH -> 05 / LET’S START */}
       <div className="sticky top-0 flex h-screen w-full flex-col justify-between overflow-hidden pt-24 pb-10 sm:pt-28 sm:pb-12">
+        <div
+          ref={processStageBlurRef}
+          className="relative flex h-full w-full flex-col justify-between will-change-[opacity,transform]"
+        >
         {/* TOP ROW: Left Editorial Column + Right "03 How we work together" Header */}
         <div className="pointer-events-none relative z-10 mx-auto grid w-full max-w-[1560px] grid-cols-1 items-start gap-8 px-6 sm:px-10 lg:grid-cols-12 lg:px-16 xl:px-24">
           {/* LEFT COLUMN: 4 Stage Editorials */}
@@ -555,10 +791,14 @@ export default function ProcessSection() {
           </div>
         </div>
 
-        {/* CENTER STAGE: 3D ISOMETRIC EXPLODED TYPEWRITER (Stages 1 & 2) -> ASSEMBLED FRONT-VIEW TYPEWRITER & BILL COMPARISON (Stage 3) */}
+        {/* CENTER STAGE: 3D ISOMETRIC EXPLODED TYPEWRITER (Stages 1 & 2) */}
         <div
           ref={explodedStageWrapRef}
-          className="pointer-events-auto absolute inset-x-0 top-[53%] z-40 mx-auto flex h-[540px] w-full max-w-[1040px] -translate-y-1/2 items-center justify-center px-4 will-change-[opacity,transform]"
+          style={{
+            top: "52%",
+            transform: "translateY(-50%)",
+          }}
+          className="pointer-events-auto absolute inset-x-0 z-40 mx-auto flex h-[540px] w-full max-w-[1040px] items-center justify-center px-4 will-change-[opacity,transform]"
         >
           <div
             ref={explodedStageShiftRef}
@@ -582,17 +822,25 @@ export default function ProcessSection() {
                 isLight={isLight}
               />
             </div>
-
-            {/* Stage 3 ("Test the solution"): Front-View Assembled Typewriter + "Test" Button + Old Bill vs. New Bill Comparison */}
-            <div
-              style={{
-                pointerEvents: testProgress > 0.55 ? "auto" : "none",
-              }}
-              className="absolute inset-0 flex h-full w-full items-center justify-center"
-            >
-              <TestSolutionStage testProgress={testProgress} isLight={isLight} />
-            </div>
           </div>
+        </div>
+
+        {/* UNIFIED STAGES 3, 4 & 5 ("Test the solution" -> "Launch and measure" -> "Iterate and scale"):
+            Uses ONE single front-view typewriter across all three stages */}
+        <div
+          style={{
+            top: "235px",
+            bottom: "88px",
+            pointerEvents: testProgress > 0.55 ? "auto" : "none",
+          }}
+          className="pointer-events-none absolute inset-x-0 z-40 mx-auto flex w-full max-w-[1560px] items-center justify-center px-6 sm:px-10 lg:px-16 xl:px-24"
+        >
+          <TestSolutionStage
+            testProgress={testProgress}
+            launchProgress={launchProgress}
+            iterateProgress={iterateProgress}
+            isLight={isLight}
+          />
         </div>
 
         {/* BOTTOM 5-STAGE PROCESS BAR */}
@@ -620,45 +868,45 @@ export default function ProcessSection() {
                     {step.label}
                   </span>
 
-                  {/* Step Bottom Progress Track */}
+                  {/* Step Bottom Progress Track (thin underline that fills with orange on scroll) */}
                   <div
-                    className={`relative h-[3px] w-full overflow-hidden rounded-full ${
-                      isLight ? "bg-black/20" : "bg-white/70"
+                    className={`relative h-[1.5px] w-full overflow-hidden rounded-full ${
+                      isLight ? "bg-black/15" : "bg-white/20"
                     }`}
                   >
                     {idx === 0 && (
                       <div
                         ref={understandProgressFillRef}
                         style={{ transformOrigin: "left center" }}
-                        className="h-full w-full scale-x-0 bg-[#e89b3c] shadow-[0_0_14px_rgba(232,155,60,0.85)] will-change-transform"
+                        className="h-full w-full scale-x-0 bg-[#e89b3c] will-change-transform"
                       />
                     )}
                     {idx === 1 && (
                       <div
                         ref={fixProgressFillRef}
                         style={{ transformOrigin: "left center" }}
-                        className="h-full w-full scale-x-0 bg-[#10b981] shadow-[0_0_14px_rgba(16,185,129,0.85)] will-change-transform"
+                        className="h-full w-full scale-x-0 bg-[#e89b3c] will-change-transform"
                       />
                     )}
                     {idx === 2 && (
                       <div
                         ref={testProgressFillRef}
                         style={{ transformOrigin: "left center" }}
-                        className="h-full w-full scale-x-0 bg-[#e89b3c] shadow-[0_0_14px_rgba(232,155,60,0.85)] will-change-transform"
+                        className="h-full w-full scale-x-0 bg-[#e89b3c] will-change-transform"
                       />
                     )}
                     {idx === 3 && (
                       <div
                         ref={launchProgressFillRef}
                         style={{ transformOrigin: "left center" }}
-                        className="h-full w-full scale-x-0 bg-[#10b981] shadow-[0_0_14px_rgba(16,185,129,0.85)] will-change-transform"
+                        className="h-full w-full scale-x-0 bg-[#e89b3c] will-change-transform"
                       />
                     )}
                     {idx === 4 && (
                       <div
                         ref={iterateProgressFillRef}
                         style={{ transformOrigin: "left center" }}
-                        className="h-full w-full scale-x-0 bg-[#e89b3c] shadow-[0_0_14px_rgba(232,155,60,0.85)] will-change-transform"
+                        className="h-full w-full scale-x-0 bg-[#e89b3c] will-change-transform"
                       />
                     )}
                   </div>
@@ -666,6 +914,156 @@ export default function ProcessSection() {
               );
             })}
           </div>
+        </div>
+        </div>
+
+        {/* ===================================================================
+            TRANSITION OVERLAY: SECTION 3 -> SECTION 4 ("04 / WHO WE WORK WITH")
+            Mirrors the Section 2 -> Section 3 transition with radial vignette
+            veil and centered editorial lockup.
+        =================================================================== */}
+        <div
+          ref={transitionVignetteRef}
+          aria-hidden="true"
+          className={`pointer-events-none absolute inset-0 z-50 opacity-0 will-change-[opacity] ${
+            isLight
+              ? "bg-[radial-gradient(circle_at_center,rgba(245,242,235,0.88)_0%,rgba(245,242,235,0.98)_100%)]"
+              : "bg-[radial-gradient(circle_at_center,rgba(8,8,10,0.88)_0%,rgba(8,8,10,0.98)_100%)]"
+          }`}
+        />
+
+        {/* SECTION 04 OVERLAY: 04 / WHO WE WORK WITH */}
+        <div
+          ref={whoBlockRef}
+          className="pointer-events-none absolute inset-0 z-50 flex flex-col items-center justify-center px-6 text-center will-change-[opacity,transform] sm:px-10"
+        >
+          {/* Eyebrow: 04 / WHO WE WORK WITH */}
+          <div
+            ref={whoEyebrowRef}
+            className="mb-5 inline-flex items-center gap-2.5 opacity-0 will-change-[opacity,transform]"
+          >
+            <span className="font-mono-label text-[11px] font-semibold uppercase tracking-[0.22em] text-[#e89b3c] sm:text-xs">
+              04
+            </span>
+            <span className="font-mono-label text-[11px] uppercase tracking-[0.22em] text-[var(--text-muted)] sm:text-xs">
+              /
+            </span>
+            <span className="font-mono-label text-[11px] uppercase tracking-[0.22em] text-[var(--text-secondary)] sm:text-xs">
+              WHO WE WORK WITH
+            </span>
+          </div>
+
+          {/* Headline: We own the outcome. */}
+          <h2
+            ref={whoHeadlineRef}
+            className="text-4xl font-semibold leading-[1.06] tracking-[-0.035em] text-[var(--text-primary)] opacity-0 will-change-[opacity,transform] sm:text-5xl xl:text-[3.75rem]"
+          >
+            We own the{" "}
+            <span className="font-serif-editorial text-[1.05em] font-normal italic tracking-[-0.015em] text-[#e89b3c] drop-shadow-[0_0_24px_rgba(232,155,60,0.3)]">
+              outcome.
+            </span>
+          </h2>
+
+          {/* Line */}
+          <p
+            ref={whoLineRef}
+            className="mt-6 max-w-[680px] text-lg font-normal leading-[1.6] tracking-[-0.015em] text-[var(--text-primary)]/90 opacity-0 will-change-[opacity,transform] sm:text-xl lg:text-[1.35rem]"
+          >
+            For founders and product leaders who’ve built something with real
+            potential. You’re solving a real problem for real people. Now let’s
+            get you profitable.
+          </p>
+
+          {/* Boundary line (smaller) */}
+          <p
+            ref={whoBoundaryLineRef}
+            className="mt-5 max-w-[560px] text-sm font-normal leading-[1.65] text-[var(--text-secondary)] opacity-0 will-change-[opacity,transform] sm:text-base"
+          >
+            You keep the vision and the decisions. We own the work, and the
+            result we agree on up front.
+          </p>
+        </div>
+
+        {/* SECTION 05 OVERLAY: 05 / LET’S START (Appears in place as 04 disappears) */}
+        <div
+          ref={startBlockRef}
+          style={{ pointerEvents: isStartSectionActive ? "auto" : "none" }}
+          className="absolute inset-0 z-50 flex flex-col items-center justify-center px-6 text-center will-change-[opacity,transform] sm:px-10"
+        >
+          {/* Eyebrow: 05 / LET’S START */}
+          <div
+            ref={startEyebrowRef}
+            className="mb-5 inline-flex items-center gap-2.5 opacity-0 will-change-[opacity,transform]"
+          >
+            <span className="font-mono-label text-[11px] font-semibold uppercase tracking-[0.22em] text-[#e89b3c] sm:text-xs">
+              05
+            </span>
+            <span className="font-mono-label text-[11px] uppercase tracking-[0.22em] text-[var(--text-muted)] sm:text-xs">
+              /
+            </span>
+            <span className="font-mono-label text-[11px] uppercase tracking-[0.22em] text-[var(--text-secondary)] sm:text-xs">
+              LET’S START
+            </span>
+          </div>
+
+          {/* Headline: Revenue is the only metric we care about. */}
+          <h2
+            ref={startHeadlineRef}
+            style={{ textWrap: "balance" }}
+            className="max-w-[18ch] text-balance text-4xl font-semibold leading-[1.06] tracking-[-0.035em] text-[var(--text-primary)] opacity-0 will-change-[opacity,transform] sm:text-5xl xl:text-[3.75rem]"
+          >
+            Revenue is the only metric{" "}
+            <span className="font-serif-editorial text-[1.05em] font-normal italic tracking-[-0.015em] text-[#e89b3c] drop-shadow-[0_0_24px_rgba(232,155,60,0.3)]">
+              we care about.
+            </span>
+          </h2>
+
+          {/* Subline */}
+          <p
+            ref={startSublineRef}
+            className="mt-6 max-w-[600px] text-base font-normal leading-[1.68] text-[var(--text-secondary)] opacity-0 will-change-[opacity,transform] sm:text-lg"
+          >
+            Start with a free audit. Send us your product and your numbers, and
+            we’ll show you where the biggest leak is.
+          </p>
+
+          {/* Primary button & Secondary email link */}
+          <div
+            ref={startActionsRef}
+            className="mt-9 flex flex-col items-center justify-center gap-4 opacity-0 will-change-[opacity,transform] sm:flex-row sm:gap-6"
+          >
+            <button
+              type="button"
+              data-cta-source="close-section"
+              onClick={(e) =>
+                onAuditClick?.(
+                  e.currentTarget.getAttribute("data-cta-source") ??
+                    "close-section"
+                )
+              }
+              className="cursor-pointer rounded-full bg-[#e89b3c] px-8 py-3.5 font-mono-label text-xs font-medium uppercase tracking-[0.16em] text-[#08080a] transition-all duration-200 hover:bg-[var(--text-primary)] hover:text-[var(--bg-stage)] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
+            >
+              Get a free audit
+            </button>
+
+            <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+              <span>Or just say hello,</span>
+              <a
+                href="mailto:connect@hellosteward.agency"
+                className="font-mono-label text-xs font-medium tracking-[0.06em] text-[var(--text-primary)] underline decoration-[#e89b3c] decoration-1 underline-offset-4 transition-colors hover:text-[#e89b3c] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
+              >
+                connect@hellosteward.agency
+              </a>
+            </div>
+          </div>
+
+          {/* Small line under the buttons */}
+          <p
+            ref={startFootnoteRef}
+            className="mt-5 font-mono-label text-[11px] tracking-[0.06em] text-[var(--text-muted)] opacity-0 will-change-[opacity,transform] sm:text-xs"
+          >
+            No cost, no strings. You keep everything we find.
+          </p>
         </div>
       </div>
     </section>

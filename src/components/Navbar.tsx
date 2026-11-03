@@ -1,15 +1,51 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTheme } from "@/context/ThemeContext";
 
 interface NavbarProps {
-  onAuditClick?: () => void;
+  onAuditClick?: (sourceButton?: string) => void;
+  showInsights?: boolean;
 }
 
-export default function Navbar({ onAuditClick }: NavbarProps) {
+export default function Navbar({ onAuditClick, showInsights }: NavbarProps) {
   const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
   const isLight = theme === "light";
+
+  const [hasPublishedPosts, setHasPublishedPosts] = useState<boolean>(
+    showInsights ?? false
+  );
+
+  useEffect(() => {
+    if (typeof showInsights === "boolean") {
+      setHasPublishedPosts(showInsights);
+      return;
+    }
+    let cancelled = false;
+    fetch("/api/insights/status")
+      .then((r) => (r.ok ? r.json() : { hasPublished: false }))
+      .then((data: { hasPublished?: boolean }) => {
+        if (!cancelled) {
+          setHasPublishedPosts(Boolean(data?.hasPublished));
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [showInsights]);
+
+  const handleAuditButton = (source: string) => {
+    if (onAuditClick) {
+      onAuditClick(source);
+    } else {
+      router.push(`/contact?intent=audit&source=${encodeURIComponent(source)}`);
+    }
+  };
 
   return (
     <header
@@ -20,61 +56,54 @@ export default function Navbar({ onAuditClick }: NavbarProps) {
         aria-label="Primary Navigation"
         className="flex w-full items-center justify-between px-6 py-5 sm:px-10 lg:px-16 xl:px-24"
       >
-        {/* Minimalist Wordmark */}
-        <a
-          href="#top"
-          className="group flex items-center gap-2.5 text-sm font-semibold tracking-[0.26em] text-[var(--text-primary)] transition-opacity hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
+        {/* Minimalist Wordmark: small HELLO on top (left-aligned), big STEWARD below, no dot */}
+        <Link
+          href="/"
+          className="group flex items-center text-[var(--text-primary)] transition-opacity hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
         >
-          <span
-            aria-hidden="true"
-            className="inline-block h-1.5 w-1.5 rounded-full bg-[#e89b3c]"
-          />
-          <span>STEWARD</span>
-        </a>
+          <span className="flex flex-col items-start leading-none">
+            <span className="font-mono-label text-[8.5px] font-medium uppercase tracking-[0.32em] text-[#e89b3c]">
+              Hello
+            </span>
+            <span className="mt-0.5 text-sm font-semibold tracking-[0.26em] text-[var(--text-primary)]">
+              STEWARD
+            </span>
+          </span>
+        </Link>
 
         {/* Navigation Links */}
         <ul className="hidden items-center gap-10 md:flex">
+          {hasPublishedPosts && (
+            <li>
+              <Link
+                href="/insights"
+                className="font-mono-label text-[11px] uppercase tracking-[0.18em] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
+              >
+                Insights
+              </Link>
+            </li>
+          )}
           <li>
-            <a
-              href="#projects"
-              className="font-mono-label text-[11px] uppercase tracking-[0.18em] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
-            >
-              Projects
-            </a>
-          </li>
-          <li>
-            <a
-              href="#insights"
-              className="font-mono-label text-[11px] uppercase tracking-[0.18em] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
-            >
-              Insights
-            </a>
-          </li>
-          <li>
-            <a
-              href="#contact"
+            <Link
+              href="/#contact"
               className="font-mono-label text-[11px] uppercase tracking-[0.18em] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
             >
               Contact
-            </a>
+            </Link>
           </li>
         </ul>
 
         {/* Right Controls: Mobile Links + Minimal Sliding Theme Switch + Free Audit CTA */}
         <div className="flex items-center gap-4 sm:gap-5">
           <div className="flex items-center gap-3 md:hidden">
-            <a
-              href="#projects"
-              className="font-mono-label text-[10px] uppercase tracking-wider text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-            >
-              Projects
-            </a>
-            <a
-              href="#insights"
-              className="font-mono-label text-[10px] uppercase tracking-wider text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-            >
-              Insights
-            </a>
+            {hasPublishedPosts && (
+              <Link
+                href="/insights"
+                className="font-mono-label text-[10px] uppercase tracking-wider text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              >
+                Insights
+              </Link>
+            )}
           </div>
 
           {/* Minimalist Sliding Switch */}
@@ -162,7 +191,12 @@ export default function Navbar({ onAuditClick }: NavbarProps) {
 
           <button
             type="button"
-            onClick={onAuditClick}
+            data-cta-source="nav"
+            onClick={(e) =>
+              handleAuditButton(
+                e.currentTarget.getAttribute("data-cta-source") ?? "nav"
+              )
+            }
             className="cursor-pointer rounded-full bg-[var(--text-primary)] px-4.5 py-2 font-mono-label text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--bg-stage)] transition-all duration-200 hover:bg-[#e89b3c] hover:text-[#08080a] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e89b3c]"
           >
             Free Audit

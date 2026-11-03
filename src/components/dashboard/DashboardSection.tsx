@@ -1399,16 +1399,21 @@ export default function DashboardSection({
             <span className="absolute h-8 w-px bg-[var(--text-primary)]/85 sm:h-10 lg:h-11" />
           </div>
 
-          {/* Right-of-Center "Steward / Growth & Engineering Partner" Lockup (exact 64px lg / 74px xl gap from "+") */}
+          {/* Right-of-Center "Hello Steward / Product and Growth Partners" Lockup (exact 64px lg / 74px xl gap from "+") */}
           <div
             ref={stewardLockupRef}
-            className="pointer-events-none absolute left-1/2 top-[55%] ml-[40px] flex -translate-y-1/2 flex-col items-center text-center opacity-0 will-change-transform sm:ml-[56px] lg:ml-[64px] xl:ml-[74px]"
+            className="pointer-events-none absolute left-1/2 top-[55%] ml-[40px] flex -translate-y-1/2 flex-col items-start text-left opacity-0 will-change-transform sm:ml-[56px] lg:ml-[64px] xl:ml-[74px]"
           >
-            <span className="text-3xl font-medium tracking-[-0.025em] text-[var(--text-primary)] sm:text-4xl lg:text-[2.75rem]">
-              Steward
-            </span>
-            <span className="mt-1.5 whitespace-nowrap text-xs font-normal tracking-[-0.01em] text-[var(--text-secondary)] sm:text-sm lg:text-[15px]">
-              Growth &amp; Engineering Partner
+            <div className="inline-flex flex-col items-start leading-none">
+              <span className="font-mono-label text-[10px] font-medium uppercase tracking-[0.32em] text-[#e89b3c] sm:text-[11px]">
+                Hello
+              </span>
+              <span className="mt-0.5 text-3xl font-medium leading-none tracking-[-0.025em] text-[var(--text-primary)] sm:text-4xl lg:text-[2.75rem]">
+                Steward
+              </span>
+            </div>
+            <span className="mt-2 whitespace-nowrap text-xs font-normal tracking-[-0.01em] text-[var(--text-secondary)] sm:text-sm lg:text-[15px]">
+              Product and Growth Partners
             </span>
           </div>
         </div>
