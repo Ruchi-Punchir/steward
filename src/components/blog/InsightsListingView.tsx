@@ -36,7 +36,7 @@ export default function InsightsListingView({
   // Featured post at the top on /insights (or if a featured post is in the category)
   const featuredPost =
     !activeCategory && posts.length > 0
-      ? posts.find((p) => p.featured) ?? posts[0]
+      ? (posts.find((p) => p.featured) ?? posts[0])
       : null;
 
   const remainingPosts = featuredPost
@@ -87,8 +87,8 @@ export default function InsightsListingView({
           </h1>
 
           <p className="mt-3.5 max-w-xl text-sm leading-relaxed text-[var(--text-secondary)] sm:text-base">
-            Direct teardown notes from Ashish and Ruchi on pricing, product
-            onboarding, positioning, and fixing funnel leaks.
+            Perspectives on product, experience, technology and the forces that
+            determine whether a business actually grows.
           </p>
         </div>
 
@@ -167,9 +167,7 @@ export default function InsightsListingView({
                   <div className="relative h-[200px] overflow-hidden border-b border-[var(--border-hairline)] bg-[#0c0c10] sm:h-[230px] lg:col-span-6 lg:h-[290px] lg:border-r lg:border-b-0">
                     <Image
                       src={featuredPost.cover_image_url}
-                      alt={
-                        featuredPost.cover_image_alt || featuredPost.title
-                      }
+                      alt={featuredPost.cover_image_alt || featuredPost.title}
                       fill
                       priority
                       sizes="(max-width: 1024px) 100vw, 50vw"
@@ -199,7 +197,7 @@ export default function InsightsListingView({
                       <span className="text-[var(--text-muted)]">·</span>
                       <span className="text-[var(--text-secondary)]">
                         {calculateReadTimeMinutes(
-                          sanitizePostBodyJson(featuredPost.body)
+                          sanitizePostBodyJson(featuredPost.body),
                         )}{" "}
                         min read
                       </span>
@@ -229,7 +227,7 @@ export default function InsightsListingView({
                       }
                     >
                       {formatCardDate(
-                        featuredPost.publish_at ?? featuredPost.created_at
+                        featuredPost.publish_at ?? featuredPost.created_at,
                       )}
                     </time>
                   </div>
@@ -244,7 +242,7 @@ export default function InsightsListingView({
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
                 {visibleGridPosts.map((post) => {
                   const readTime = calculateReadTimeMinutes(
-                    sanitizePostBodyJson(post.body)
+                    sanitizePostBodyJson(post.body),
                   );
                   const dateIso = post.publish_at ?? post.created_at;
 

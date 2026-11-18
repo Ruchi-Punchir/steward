@@ -31,7 +31,7 @@ export const LEAD_COPY = {
     eyebrow: "Free Audit",
     headline: "Let’s see where the biggest leak is.",
     subline:
-      "Send us your product and where things feel stuck. Two founders will review your funnel, positioning, and onboarding and send back a clear breakdown. (Placeholder: typically within 48 hours.)",
+      "Send us your product and where things feel stuck. We will review your funnel, positioning, and onboarding and reach out to you if we need anything else.",
     fields: {
       nameLabel: "Your name",
       namePlaceholder: "Alex Rivera",
@@ -47,14 +47,14 @@ export const LEAD_COPY = {
     submitButton: "Request free audit",
     successHeadline: "We’ve got your audit request.",
     successMessage:
-      "Ashish and Ruchi have your details. We’ll look through your product and reply personally with what we find. No automated sequences, no strings.",
+      "We have your details and will look through your product. We will reach out to you if we need anything else.",
   },
 
   conversation: {
     eyebrow: "Direct Line",
     headline: "Start the conversation.",
     subline:
-      "No account managers and no handoffs. You talk directly to the two people who do the work.",
+      "No account managers and no handoffs. Tell us what you’re building and we’ll get back to you.",
     fields: {
       nameLabel: "Your name",
       namePlaceholder: "Alex Rivera",
@@ -67,7 +67,7 @@ export const LEAD_COPY = {
     submitButton: "Send message",
     successHeadline: "Message received.",
     successMessage:
-      "Thanks for reaching out. Ashish or Ruchi will reply directly to your email shortly.",
+      "Thanks for reaching out. We’ll review your note and get back to your email shortly.",
   },
 
   emails: {
@@ -82,12 +82,12 @@ export const LEAD_COPY = {
           ``,
           `Thanks for sending over your product for a free audit.`,
           ``,
-          `Ruchi and I have your details and will review your product, positioning, and funnel personally. We’ll reply directly to this email with our findings (placeholder: within 2 business days).`,
+          `We have your details and will review your product, positioning, and funnel. We will reach out to you if we need anything else.`,
           ``,
           `If there’s any extra context or numbers you want to share in the meantime, just hit reply.`,
           ``,
-          `— Ashish & Ruchi`,
-          `Steward (https://hellosteward.agency)`,
+          `— Steward`,
+          `https://hellosteward.agency`,
         ].join("\n"),
     },
 
@@ -99,10 +99,10 @@ export const LEAD_COPY = {
           ``,
           `We got your note — thank you for reaching out.`,
           ``,
-          `One of us will read it and reply personally from this address shortly.`,
+          `We will review it and reply from this address shortly.`,
           ``,
-          `— Ashish & Ruchi`,
-          `Steward (https://hellosteward.agency)`,
+          `— Steward`,
+          `https://hellosteward.agency`,
         ].join("\n"),
     },
   },

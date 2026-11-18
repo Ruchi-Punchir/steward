@@ -8,7 +8,7 @@ import { useTheme } from "@/context/ThemeContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
-type OrbTier = 20 | 50 | 100;
+type OrbTier = 20 | 5000 | 10000;
 type PowerState = "idle" | "surge20" | "surge50" | "surge100" | "silence100";
 
 interface OrbScorePopup {
@@ -36,114 +36,84 @@ interface TerminalLogEntry {
 
 const TERMINAL_SEQUENCES: Record<
   OrbTier,
-  { steps: string[]; summary: string }[]
+  { steps: string[]; summary: string; earned: number }[]
 > = {
   20: [
     {
       steps: [
-        "launching social ad campaign...",
-        "buying 420 clicks (0 conversions)...",
+        "Added 5 analytics tools...",
+        "Still don't know why users aren't buying",
       ],
-      summary: "20USD spent on ad campaign.",
+      summary: "Earned +$9",
+      earned: 9,
     },
     {
       steps: [
-        "briefing a freelance dev...",
-        "refactoring landing page hero...",
+        "Upgraded to pro plans...",
+        "Still paying for features nobody uses",
       ],
-      summary: "20USD spent on freelance dev.",
+      summary: "Earned +$7",
+      earned: 7,
     },
     {
       steps: [
-        "scraping 500 cold prospects...",
-        "blasting automated outreach...",
+        "$20 spent on session recording tools...",
+        "You see users drop off, but nobody fixes UX",
       ],
-      summary: "20USD spent on cold email tool.",
-    },
-    {
-      steps: [
-        "generating 12 new logo variants...",
-        "tweaking button border radius...",
-      ],
-      summary: "20USD spent on UI redesign.",
-    },
-    {
-      steps: [
-        "subscribing to a new tool...",
-        "annual plan, no refunds...",
-      ],
-      summary: "20USD spent on a tool nobody opened.",
+      summary: "Earned +$5",
+      earned: 5,
     },
   ],
-  50: [
+  5000: [
     {
       steps: [
-        "scaling search & display ads...",
-        "traffic bouncing in 1.8s...",
+        "Ran a new ad campaign...",
+        "Brought in free signups who never pay",
       ],
-      summary: "50USD spent on ad campaign.",
+      summary: "Earned +$2,100",
+      earned: 2100,
     },
     {
       steps: [
-        "shipping chatbot widget...",
-        "deploying dark mode v3...",
+        "Pushed more traffic to the site...",
+        "Confusing homepage scares buyers away",
       ],
-      summary: "50USD spent on dev features.",
+      summary: "Earned +$1,650",
+      earned: 1650,
     },
     {
       steps: [
-        "publishing 30 blog posts...",
-        "indexing zero-buyer keywords...",
+        "Increased ad budget 2x...",
+        "Cost per customer doubled, profit stayed flat",
       ],
-      summary: "50USD spent on SEO automation.",
-    },
-    {
-      steps: [
-        "installing 5 analytics trackers...",
-        "watching empty checkout funnel...",
-      ],
-      summary: "50USD spent on analytics stack.",
-    },
-    {
-      steps: [
-        "hiring agency, 3 months...",
-        "approving 40-page strategy deck...",
-      ],
-      summary: "50USD spent on agency retainer.",
+      summary: "Earned +$1,200",
+      earned: 1200,
     },
   ],
-  100: [
+  10000: [
     {
       steps: [
-        "hiring a dev team for a full rebuild...",
-        "shipping 10,000 lines of code...",
-        "yielding 1.00 USD return...",
+        "Shipped 3 new features users asked for...",
+        "Core onboarding is still broken, churn stayed high",
       ],
-      summary: "100USD spent on full rebuild.",
+      summary: "Earned +$4,200",
+      earned: 4200,
     },
     {
       steps: [
-        "maxing out paid ad budget...",
-        "burning impressions across 4 channels...",
-        "yielding 1.00 USD return...",
+        "Hired devs for a full UI redesign...",
+        "Looks cleaner, converts at the exact same rate",
       ],
-      summary: "100USD spent on ad campaign.",
+      summary: "Earned +$3,300",
+      earned: 3300,
     },
     {
       steps: [
-        "rebuilding entire MVP in 48h...",
-        "migrating auth & billing stack...",
-        "yielding 1.00 USD return...",
+        "$10,000 spent rebuilding the product...",
+        "2 months of code shipped, revenue barely moved",
       ],
-      summary: "100USD spent on weekend rebuild.",
-    },
-    {
-      steps: [
-        "relaunching, again...",
-        "new brand, new site, new logo...",
-        "yielding 1.00 USD return...",
-      ],
-      summary: "100USD spent on relaunch.",
+      summary: "Earned +$2,400",
+      earned: 2400,
     },
   ],
 };
@@ -177,12 +147,7 @@ export function DollarBillGraphic({ idPrefix }: { idPrefix: string }) {
         </linearGradient>
 
         {/* Deep vintage paper stain / age vignette */}
-        <radialGradient
-          id={`${idPrefix}-age`}
-          cx="50%"
-          cy="50%"
-          r="65%"
-        >
+        <radialGradient id={`${idPrefix}-age`} cx="50%" cy="50%" r="65%">
           <stop offset="0%" stopColor="#d4c598" stopOpacity="0.08" />
           <stop offset="70%" stopColor="#8c7d56" stopOpacity="0.22" />
           <stop offset="100%" stopColor="#3d3522" stopOpacity="0.42" />
@@ -296,10 +261,24 @@ export function DollarBillGraphic({ idPrefix }: { idPrefix: string }) {
         {/* Typewriter Platen Gear-Tooth Skid Marks along Left & Right Margins */}
         <g fill="#1c241e" opacity="0.42">
           {[22, 32, 42, 52, 62, 72, 114, 124, 134].map((yPos) => (
-            <rect key={`l-${yPos}`} x="3" y={yPos} width="5" height="2.2" rx="0.5" />
+            <rect
+              key={`l-${yPos}`}
+              x="3"
+              y={yPos}
+              width="5"
+              height="2.2"
+              rx="0.5"
+            />
           ))}
           {[26, 36, 46, 56, 96, 106, 116, 126].map((yPos) => (
-            <rect key={`r-${yPos}`} x="312" y={yPos} width="5" height="2.2" rx="0.5" />
+            <rect
+              key={`r-${yPos}`}
+              x="312"
+              y={yPos}
+              width="5"
+              height="2.2"
+              rx="0.5"
+            />
           ))}
         </g>
 
@@ -713,6 +692,7 @@ interface WireSpringNode {
 }
 
 export interface TypewriterStageProps {
+  instanceId?: string;
   externalSpent?: number;
   externalEarned?: number;
   onSpend?: (tier: OrbTier, earnedDelta?: number) => void;
@@ -722,6 +702,7 @@ export interface TypewriterStageProps {
 }
 
 export default function TypewriterStage({
+  instanceId = "desktop",
   externalSpent,
   externalEarned,
   onSpend,
@@ -737,7 +718,7 @@ export default function TypewriterStage({
   const [displaySpent, setDisplaySpent] = useState<number>(externalSpent ?? 0);
   const [earnedTarget, setEarnedTarget] = useState<number>(externalEarned ?? 0);
   const [displayEarned, setDisplayEarned] = useState<number>(
-    externalEarned ?? 0
+    externalEarned ?? 0,
   );
 
   // Bill printing progress: starts at 30% emerging from the typewriter
@@ -748,10 +729,10 @@ export default function TypewriterStage({
   const [hasCompletedPayoff, setHasCompletedPayoff] = useState<boolean>(false);
   const [isBegging, setIsBegging] = useState<boolean>(false);
   const [hasClickedAnyOrb, setHasClickedAnyOrb] = useState<boolean>(
-    (externalSpent ?? 0) > 0
+    (externalSpent ?? 0) > 0,
   );
   const [activeClickMeTier, setActiveClickMeTier] = useState<OrbTier | null>(
-    null
+    null,
   );
   const [terminalLogs, setTerminalLogs] = useState<TerminalLogEntry[]>([
     { id: 1, text: "business.sys ready" },
@@ -769,7 +750,11 @@ export default function TypewriterStage({
   const typewriterTiltRef = useRef<HTMLDivElement | null>(null);
   const carriageHandleRef = useRef<HTMLDivElement | null>(null);
   const terminalScrollRef = useRef<HTMLDivElement | null>(null);
-  const seqCursorRef = useRef<Record<OrbTier, number>>({ 20: 0, 50: 0, 100: 0 });
+  const seqCursorRef = useRef<Record<OrbTier, number>>({
+    20: 0,
+    5000: 0,
+    10000: 0,
+  });
   const spentValueRef = useRef<HTMLSpanElement | null>(null);
   const earnedValueRef = useRef<HTMLSpanElement | null>(null);
 
@@ -883,7 +868,7 @@ export default function TypewriterStage({
       return;
     }
 
-    const tiers: OrbTier[] = [20, 50, 100];
+    const tiers: OrbTier[] = [20, 5000, 10000];
     let stepIdx = 0;
     let cancelled = false;
     let timerId: ReturnType<typeof setTimeout> | null = null;
@@ -893,7 +878,7 @@ export default function TypewriterStage({
 
       // Wait while the homepage loader is still covering Section 1
       const loaderEl = document.querySelector(
-        '[aria-label="Welcome to Hello Steward"]'
+        '[aria-label="Welcome to Hello Steward"]',
       );
       if (loaderEl || masterUnitsRef.current > 0.15) {
         setActiveClickMeTier(null);
@@ -955,7 +940,7 @@ export default function TypewriterStage({
           y: 0,
           duration: 0.5,
           ease: "elastic.out(1.2, 0.4)",
-        }
+        },
       );
     }
   }, [spentTarget, reducedMotion]);
@@ -974,7 +959,7 @@ export default function TypewriterStage({
       duration: 0.55,
       ease: "power2.out",
       onUpdate: () => {
-        setDisplayEarned(+(earnedCounterObj.current.val).toFixed(2));
+        setDisplayEarned(+earnedCounterObj.current.val.toFixed(2));
       },
     });
 
@@ -987,7 +972,7 @@ export default function TypewriterStage({
           y: 0,
           duration: 0.6,
           ease: "elastic.out(1.25, 0.35)",
-        }
+        },
       );
     }
   }, [earnedTarget, reducedMotion]);
@@ -1005,9 +990,24 @@ export default function TypewriterStage({
         btn: HTMLButtonElement | null;
         maxPull: number;
       }[] = [
-        { tier: 20, wrap: orb20WrapRef.current, btn: orb20BtnRef.current, maxPull: 26 },
-        { tier: 50, wrap: orb50WrapRef.current, btn: orb50BtnRef.current, maxPull: 30 },
-        { tier: 100, wrap: orb100WrapRef.current, btn: orb100BtnRef.current, maxPull: 34 },
+        {
+          tier: 20,
+          wrap: orb20WrapRef.current,
+          btn: orb20BtnRef.current,
+          maxPull: 18,
+        },
+        {
+          tier: 5000,
+          wrap: orb50WrapRef.current,
+          btn: orb50BtnRef.current,
+          maxPull: 20,
+        },
+        {
+          tier: 10000,
+          wrap: orb100WrapRef.current,
+          btn: orb100BtnRef.current,
+          maxPull: 22,
+        },
       ];
 
       orbs.forEach(({ tier, wrap, btn, maxPull }) => {
@@ -1051,11 +1051,11 @@ export default function TypewriterStage({
 
         const normX = Math.max(
           -1,
-          Math.min(1, (e.clientX - twCenterX) / (window.innerWidth * 0.45))
+          Math.min(1, (e.clientX - twCenterX) / (window.innerWidth * 0.45)),
         );
         const normY = Math.max(
           -1,
-          Math.min(1, (e.clientY - twCenterY) / (window.innerHeight * 0.45))
+          Math.min(1, (e.clientY - twCenterY) / (window.innerHeight * 0.45)),
         );
 
         gsap.to(typewriterTiltRef.current, {
@@ -1094,14 +1094,15 @@ export default function TypewriterStage({
         const val = canClick ? "auto" : "none";
         if (orb20PosRef.current) orb20PosRef.current.style.pointerEvents = val;
         if (orb50PosRef.current) orb50PosRef.current.style.pointerEvents = val;
-        if (orb100PosRef.current) orb100PosRef.current.style.pointerEvents = val;
+        if (orb100PosRef.current)
+          orb100PosRef.current.style.pointerEvents = val;
         if (typewriterGroupRef.current) {
           typewriterGroupRef.current.style.pointerEvents = val;
         }
       };
 
       const tl = gsap.timeline({
-        defaults: { force3D: false },
+        defaults: { force3D: true },
         scrollTrigger: {
           trigger: triggerEl,
           start: "top top",
@@ -1154,56 +1155,46 @@ export default function TypewriterStage({
       // =====================================================================
       // SEGMENT 1 (0 -> 1.0): Section 1 (Hero) -> Section 2 (Dashboard)
       // =====================================================================
-      // 1. Move the 3 buttons from their arch above the typewriter into a vertical stack on the left of the typewriter
-      if (orb20PosRef.current) {
-        tl.to(
-          orb20PosRef.current,
-          {
-            left: "0%",
-            top: "46%",
-            scale: 0.86,
-            duration: 1,
-            ease: "power2.inOut",
-          },
-          0
-        );
-      }
-
-      if (orb50PosRef.current) {
-        tl.to(
-          orb50PosRef.current,
-          {
-            left: "0%",
-            top: "65%",
-            scale: 0.86,
-            duration: 1,
-            ease: "power2.inOut",
-          },
-          0
-        );
-      }
-
-      if (orb100PosRef.current) {
-        tl.to(
-          orb100PosRef.current,
-          {
-            left: "0%",
-            top: "84%",
-            right: "auto",
-            scale: 0.86,
-            duration: 1,
-            ease: "power2.inOut",
-          },
-          0
-        );
-      }
-
-      // 2. Scale down the SAME typewriter and align it to the Section 2 copy block above it:
-      //    - right edge flush with the right edge of the right-aligned headline/copy
-      //    - top sitting a consistent gap below the last paragraph
-      //    Cached on refresh to eliminate layout thrashing & jitter during scrolling.
+      // Cached alignments measured on refresh/resize to eliminate layout thrashing during scroll
+      let cachedHeroCards = {
+        top: 390,
+        left20: -680,
+        left50: -450,
+        left100: -220,
+      };
       let cachedDashboardOffset = { x: 0, y: 94 };
       let cachedPartnerOffset = { x: -320, y: 16 };
+
+      const measureHeroCardsAlignment = () => {
+        const stageEl = stageRef.current;
+        const slotEl = document.querySelector<HTMLElement>(
+          '[data-hero-cta-slot="true"]',
+        );
+        const heroEl = document.getElementById("top");
+        if (!stageEl || !slotEl || !heroEl) return cachedHeroCards;
+
+        const stageRect = stageEl.getBoundingClientRect();
+        const slotRect = slotEl.getBoundingClientRect();
+        const heroRect = heroEl.getBoundingClientRect();
+
+        // Independent of current scrollY because slotEl is inside heroEl (#top at offsetTop 0)
+        const slotTopAtHero = slotRect.top - heroRect.top;
+        const topInStage = Math.round(slotTopAtHero - stageRect.top);
+        const leftInStage = Math.round(slotRect.left - stageRect.left);
+
+        const cardW = orb20BtnRef.current?.offsetWidth ?? 190;
+        const gap = Math.max(
+          10,
+          Math.min(18, Math.round((slotRect.width - cardW * 3) / 2)),
+        );
+
+        return {
+          top: topInStage,
+          left20: leftInStage,
+          left50: Math.round(leftInStage + cardW + gap),
+          left100: Math.round(leftInStage + (cardW + gap) * 2),
+        };
+      };
 
       const measureDashboardAlignment = () => {
         const stageEl = stageRef.current;
@@ -1213,14 +1204,14 @@ export default function TypewriterStage({
             ((stageEl?.clientWidth ?? 680) -
               (twEl?.offsetWidth ?? 630) * targetScale) /
               2 -
-              6
+              6,
           ),
-          y: 94,
+          y: 150,
         };
         if (!stageEl || !twEl) return fallback;
 
         const anchor = document.querySelector<HTMLElement>(
-          '[data-typewriter-anchor="dashboard-copy"]'
+          '[data-typewriter-anchor="dashboard-copy"]',
         );
         const sticky = document.getElementById("dashboard")
           ?.firstElementChild as HTMLElement | null;
@@ -1240,12 +1231,11 @@ export default function TypewriterStage({
         const anchorBottom = ay + anchor.offsetHeight;
 
         const stageRect = stageEl.getBoundingClientRect();
-        const stageH = stageEl.clientHeight || 650;
         const twW = twEl.offsetWidth;
         const twH = twEl.offsetHeight;
         const untransformedCenterX = stageRect.left + stageRect.width / 2;
         const untransformedCenterY =
-          window.innerHeight * 0.5 + stageH * 0.5 - 4 - twH * 0.5;
+          stageRect.top + twEl.offsetTop + twH * 0.5;
         const scaledW = twW * targetScale;
         const scaledH = twH * targetScale;
 
@@ -1269,15 +1259,16 @@ export default function TypewriterStage({
         const stageRect = stageRef.current.getBoundingClientRect();
         const stageCenterX = stageRect.left + stageRect.width * 0.5;
         const viewportCenterX = window.innerWidth * 0.5;
-        const twW = typewriterGroupRef.current?.offsetWidth ?? 630;
-        const halfScaledTwW = (twW * partnerScale) * 0.5;
+        const twEl = typewriterGroupRef.current;
+        const twW = twEl?.offsetWidth ?? 630;
+        const halfScaledTwW = twW * partnerScale * 0.5;
         const gapFromPlus = window.innerWidth >= 1280 ? 74 : 64;
         const targetScreenX = viewportCenterX - gapFromPlus - halfScaledTwW;
 
-        const stageH = stageRef.current?.clientHeight ?? 650;
-        const twH = typewriterGroupRef.current?.offsetHeight ?? 430;
-        const untransformedCenterY =
-          window.innerHeight * 0.5 + stageH * 0.5 - 4 - twH * 0.5;
+        const twH = twEl?.offsetHeight ?? 430;
+        const untransformedCenterY = twEl
+          ? stageRect.top + twEl.offsetTop + twH * 0.5
+          : window.innerHeight * 0.5;
         const targetViewportY = window.innerHeight * 0.55;
 
         return {
@@ -1287,11 +1278,74 @@ export default function TypewriterStage({
       };
 
       const measureAllAlignments = () => {
+        cachedHeroCards = measureHeroCardsAlignment();
         cachedDashboardOffset = measureDashboardAlignment();
         cachedPartnerOffset = measurePartnerAlignment();
       };
 
       measureAllAlignments();
+
+      // 1. Move the 3 Bill Cards from the Hero CTA slot into a vertical stack on the left of the typewriter in Section 2
+      // Uses GPU-composited x/y/scale transforms (instead of left/top layout mutations) so Chrome never drops card tiles.
+      if (orb20PosRef.current) {
+        tl.fromTo(
+          orb20PosRef.current,
+          {
+            x: () => cachedHeroCards.left20,
+            y: () => cachedHeroCards.top,
+            scale: 1,
+          },
+          {
+            x: 0,
+            y: () =>
+              Math.round((stageRef.current?.clientHeight ?? 610) * 0.41),
+            scale: 0.84,
+            duration: 1,
+            ease: "power2.inOut",
+          },
+          0,
+        );
+      }
+
+      if (orb50PosRef.current) {
+        tl.fromTo(
+          orb50PosRef.current,
+          {
+            x: () => cachedHeroCards.left50,
+            y: () => cachedHeroCards.top,
+            scale: 1,
+          },
+          {
+            x: 0,
+            y: () =>
+              Math.round((stageRef.current?.clientHeight ?? 610) * 0.62),
+            scale: 0.84,
+            duration: 1,
+            ease: "power2.inOut",
+          },
+          0,
+        );
+      }
+
+      if (orb100PosRef.current) {
+        tl.fromTo(
+          orb100PosRef.current,
+          {
+            x: () => cachedHeroCards.left100,
+            y: () => cachedHeroCards.top,
+            scale: 1,
+          },
+          {
+            x: 0,
+            y: () =>
+              Math.round((stageRef.current?.clientHeight ?? 610) * 0.83),
+            scale: 0.84,
+            duration: 1,
+            ease: "power2.inOut",
+          },
+          0,
+        );
+      }
 
       if (typewriterGroupRef.current) {
         tl.fromTo(
@@ -1308,21 +1362,26 @@ export default function TypewriterStage({
             duration: 1,
             ease: "power2.inOut",
           },
-          0
+          0,
         );
       }
 
       // 3. Fade out the bottom Hero Spent/Earned row (since Spent/Earned are in the Dashboard top-right in Section 2)
       if (heroCountersRef.current) {
-        tl.to(
+        tl.fromTo(
           heroCountersRef.current,
+          {
+            opacity: 1,
+            y: 0,
+          },
           {
             opacity: 0,
             y: 18,
             duration: 0.45,
             ease: "power2.out",
+            immediateRender: false,
           },
-          0
+          0,
         );
       }
 
@@ -1344,7 +1403,7 @@ export default function TypewriterStage({
             ease: "power2.inOut",
             immediateRender: false,
           },
-          1.6
+          1.6,
         );
       }
 
@@ -1387,33 +1446,37 @@ export default function TypewriterStage({
       el: HTMLElement | null,
       stageRect: DOMRect,
       fallbackX: number,
-      fallbackY: number
+      fallbackY: number,
     ) => {
       if (!el || stageRect.width === 0 || stageRect.height === 0) {
         return { x: fallbackX, y: fallbackY };
       }
       const r = el.getBoundingClientRect();
-      const cx = ((r.left + r.width / 2 - stageRect.left) / stageRect.width) * 800;
-      const cy = ((r.top + r.height / 2 - stageRect.top) / stageRect.height) * 540;
+      const cx =
+        ((r.left + r.width / 2 - stageRect.left) / stageRect.width) * 800;
+      const cy =
+        ((r.top + r.height / 2 - stageRect.top) / stageRect.height) * 540;
       return { x: cx, y: cy };
     };
 
-    const stepWirePhysics = (
+    const stepWireCubicPhysics = (
       spring: WireSpringNode,
       startX: number,
       startY: number,
       endX: number,
       endY: number,
-      sagX: number,
-      sagY: number
+      c1TargetX: number,
+      c1TargetY: number,
+      c2TargetX: number,
+      c2TargetY: number,
     ) => {
       const orbVx = startX - spring.prevStartX;
       const orbVy = startY - spring.prevStartY;
       spring.prevStartX = startX;
       spring.prevStartY = startY;
 
-      const restCx = (startX + endX) * 0.5 + sagX;
-      const restCy = (startY + endY) * 0.5 + sagY;
+      const restCx = (c1TargetX + c2TargetX) * 0.5;
+      const restCy = (c1TargetY + c2TargetY) * 0.5;
 
       const stiffness = 0.085;
       const damping = 0.78;
@@ -1427,9 +1490,19 @@ export default function TypewriterStage({
       spring.cx += spring.vx;
       spring.cy += spring.vy;
 
-      return `M ${startX.toFixed(1)} ${startY.toFixed(1)} Q ${spring.cx.toFixed(
-        1
-      )} ${spring.cy.toFixed(1)} ${endX.toFixed(1)} ${endY.toFixed(1)}`;
+      const dx = spring.cx - restCx;
+      const dy = spring.cy - restCy;
+
+      const c1x = c1TargetX + dx * 0.85;
+      const c1y = c1TargetY + dy * 0.85;
+      const c2x = c2TargetX + dx * 0.65;
+      const c2y = c2TargetY + dy * 0.65;
+
+      return `M ${startX.toFixed(1)} ${startY.toFixed(1)} C ${c1x.toFixed(
+        1,
+      )} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(
+        1,
+      )}, ${endX.toFixed(1)} ${endY.toFixed(1)}`;
     };
 
     const updateWires = () => {
@@ -1445,26 +1518,26 @@ export default function TypewriterStage({
         socket20Ref.current || orb20BtnRef.current,
         stageRect,
         110,
-        190
+        190,
       );
       const p50 = getElementCenterInSvg(
         socket50Ref.current || orb50BtnRef.current,
         stageRect,
         365,
-        115
+        115,
       );
       const p100 = getElementCenterInSvg(
         socket100Ref.current || orb100BtnRef.current,
         stageRect,
         685,
-        195
+        195,
       );
 
       const twCenter = getElementCenterInSvg(
         typewriterGroupRef.current,
         stageRect,
         400,
-        380
+        300,
       );
 
       let twLeftX = twCenter.x - 190;
@@ -1473,55 +1546,122 @@ export default function TypewriterStage({
         twLeftX = ((twRect.left - stageRect.left) / stageRect.width) * 800;
       }
 
-      // Interpolate typewriter wire endpoints from Section 1 (back of typewriter) to Section 2 (left edge of typewriter)
-      const end20X = (twCenter.x - 105) * (1 - p) + (twLeftX + 38) * p;
-      const end20Y = (twCenter.y + 15) * (1 - p) + (twCenter.y - 8) * p;
+      const isDesktopHeroLayout = p20.x < 0;
 
-      const end50X = twCenter.x * (1 - p) + (twLeftX + 14) * p;
-      const end50Y = (twCenter.y - 40) * (1 - p) + (twCenter.y + 42) * p;
+      // Top-of-card sockets -> 3 left-side typewriter ports
+      const heroEnd20X = isDesktopHeroLayout ? twLeftX + 16 : twCenter.x - 105;
+      const heroEnd20Y = isDesktopHeroLayout ? twCenter.y + 8 : twCenter.y + 15;
 
-      const end100X = (twCenter.x + 105) * (1 - p) + (twLeftX + 14) * p;
-      const end100Y = (twCenter.y + 15) * (1 - p) + (twCenter.y + 98) * p;
+      const heroEnd50X = isDesktopHeroLayout ? twLeftX + 14 : twCenter.x;
+      const heroEnd50Y = isDesktopHeroLayout ? twCenter.y + 44 : twCenter.y - 40;
 
-      const path20 = stepWirePhysics(
+      const heroEnd100X = isDesktopHeroLayout ? twLeftX + 14 : twCenter.x + 105;
+      const heroEnd100Y = isDesktopHeroLayout ? twCenter.y + 80 : twCenter.y + 15;
+
+      const end20X = heroEnd20X * (1 - p) + (twLeftX + 38) * p;
+      const end20Y = heroEnd20Y * (1 - p) + (twCenter.y - 8) * p;
+
+      const end50X = heroEnd50X * (1 - p) + (twLeftX + 14) * p;
+      const end50Y = heroEnd50Y * (1 - p) + (twCenter.y + 42) * p;
+
+      const end100X = heroEnd100X * (1 - p) + (twLeftX + 14) * p;
+      const end100Y = heroEnd100Y * (1 - p) + (twCenter.y + 98) * p;
+
+      // Smooth S-curves that stay low in the open corridor just above the cards (completely below the paragraph text)
+      // until they clear the paragraph horizontally above Card 3, then curve up into the left of the typewriter:
+      const c1_20X = isDesktopHeroLayout
+        ? (p100.x - 10) * (1 - p) + (p20.x + (end20X - p20.x) * 0.35) * p
+        : (p20.x + end20X) * 0.5 - 45 * (1 - p) + 12 * p;
+      const c1_20Y = isDesktopHeroLayout
+        ? (p20.y - 28) * (1 - p) + (p20.y - 14) * p
+        : (p20.y + end20Y) * 0.5 + 82 * (1 - p) + 18 * p;
+      const c2_20X = isDesktopHeroLayout
+        ? (twLeftX - 70) * (1 - p) + (p20.x + (end20X - p20.x) * 0.68) * p
+        : c1_20X;
+      const c2_20Y = isDesktopHeroLayout
+        ? (p20.y - 34) * (1 - p) + (end20Y + 12) * p
+        : c1_20Y;
+
+      const c1_50X = isDesktopHeroLayout
+        ? (p100.x + 20) * (1 - p) + (p50.x + (end50X - p50.x) * 0.35) * p
+        : (p50.x + end50X) * 0.5 - 20 * (1 - p) + 8 * p;
+      const c1_50Y = isDesktopHeroLayout
+        ? (p50.y - 18) * (1 - p) + (p50.y - 10) * p
+        : (p50.y + end50Y) * 0.5 + 35 * (1 - p) + 6 * p;
+      const c2_50X = isDesktopHeroLayout
+        ? (twLeftX - 55) * (1 - p) + (p50.x + (end50X - p50.x) * 0.68) * p
+        : c1_50X;
+      const c2_50Y = isDesktopHeroLayout
+        ? (p50.y - 22) * (1 - p) + (end50Y + 10) * p
+        : c1_50Y;
+
+      const c1_100X = isDesktopHeroLayout
+        ? (p100.x + 65) * (1 - p) + (p100.x + (end100X - p100.x) * 0.35) * p
+        : (p100.x + end100X) * 0.5 + 48 * (1 - p) + 8 * p;
+      const c1_100Y = isDesktopHeroLayout
+        ? (p100.y - 10) * (1 - p) + (p100.y - 8) * p
+        : (p100.y + end100Y) * 0.5 + 88 * (1 - p) - 6 * p;
+      const c2_100X = isDesktopHeroLayout
+        ? (twLeftX - 40) * (1 - p) + (p100.x + (end100X - p100.x) * 0.68) * p
+        : c1_100X;
+      const c2_100Y = isDesktopHeroLayout
+        ? (p100.y - 12) * (1 - p) + (end100Y + 8) * p
+        : c1_100Y;
+
+      const path20 = stepWireCubicPhysics(
         wire20Spring,
         p20.x,
         p20.y,
         end20X,
         end20Y,
-        -45 * (1 - p) + 12 * p,
-        82 * (1 - p) + 18 * p
+        c1_20X,
+        c1_20Y,
+        c2_20X,
+        c2_20Y,
       );
-      const path50 = stepWirePhysics(
+      const path50 = stepWireCubicPhysics(
         wire50Spring,
         p50.x,
         p50.y,
         end50X,
         end50Y,
-        -20 * (1 - p) + 8 * p,
-        35 * (1 - p) + 6 * p
+        c1_50X,
+        c1_50Y,
+        c2_50X,
+        c2_50Y,
       );
-      const path100 = stepWirePhysics(
+      const path100 = stepWireCubicPhysics(
         wire100Spring,
         p100.x,
         p100.y,
         end100X,
         end100Y,
-        48 * (1 - p) + 8 * p,
-        88 * (1 - p) - 6 * p
+        c1_100X,
+        c1_100Y,
+        c2_100X,
+        c2_100Y,
       );
 
-      if (wire20BaseRef.current) wire20BaseRef.current.setAttribute("d", path20);
-      if (wire20FlowRef.current) wire20FlowRef.current.setAttribute("d", path20);
-      if (wire20GlowRef.current) wire20GlowRef.current.setAttribute("d", path20);
+      if (wire20BaseRef.current)
+        wire20BaseRef.current.setAttribute("d", path20);
+      if (wire20FlowRef.current)
+        wire20FlowRef.current.setAttribute("d", path20);
+      if (wire20GlowRef.current)
+        wire20GlowRef.current.setAttribute("d", path20);
 
-      if (wire50BaseRef.current) wire50BaseRef.current.setAttribute("d", path50);
-      if (wire50FlowRef.current) wire50FlowRef.current.setAttribute("d", path50);
-      if (wire50GlowRef.current) wire50GlowRef.current.setAttribute("d", path50);
+      if (wire50BaseRef.current)
+        wire50BaseRef.current.setAttribute("d", path50);
+      if (wire50FlowRef.current)
+        wire50FlowRef.current.setAttribute("d", path50);
+      if (wire50GlowRef.current)
+        wire50GlowRef.current.setAttribute("d", path50);
 
-      if (wire100BaseRef.current) wire100BaseRef.current.setAttribute("d", path100);
-      if (wire100FlowRef.current) wire100FlowRef.current.setAttribute("d", path100);
-      if (wire100GlowRef.current) wire100GlowRef.current.setAttribute("d", path100);
+      if (wire100BaseRef.current)
+        wire100BaseRef.current.setAttribute("d", path100);
+      if (wire100FlowRef.current)
+        wire100FlowRef.current.setAttribute("d", path100);
+      if (wire100GlowRef.current)
+        wire100GlowRef.current.setAttribute("d", path100);
 
       // Update traveling circle position along the active clicked wire path
       if (pulseStateRef.current.active && pulseDotGroupRef.current) {
@@ -1529,19 +1669,19 @@ export default function TypewriterStage({
         const activePathEl =
           activeTier === 20
             ? wire20GlowRef.current
-            : activeTier === 50
-            ? wire50GlowRef.current
-            : wire100GlowRef.current;
+            : activeTier === 5000
+              ? wire50GlowRef.current
+              : wire100GlowRef.current;
 
         if (activePathEl) {
           const totalLen = activePathEl.getTotalLength();
           if (totalLen > 0) {
             const pt = activePathEl.getPointAtLength(
-              pulseStateRef.current.progress * totalLen
+              pulseStateRef.current.progress * totalLen,
             );
             pulseDotGroupRef.current.setAttribute(
               "transform",
-              `translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`
+              `translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`,
             );
           }
         }
@@ -1556,7 +1696,7 @@ export default function TypewriterStage({
   const handleOrbMouseMove = (
     e: React.MouseEvent<HTMLButtonElement>,
     tier: OrbTier,
-    btnRef: React.RefObject<HTMLButtonElement | null>
+    btnRef: React.RefObject<HTMLButtonElement | null>,
   ) => {
     if (reducedMotion || !btnRef.current) return;
     hoveredOrbRef.current = tier;
@@ -1585,7 +1725,7 @@ export default function TypewriterStage({
   };
 
   const handleOrbMouseLeave = (
-    btnRef: React.RefObject<HTMLButtonElement | null>
+    btnRef: React.RefObject<HTMLButtonElement | null>,
   ) => {
     hoveredOrbRef.current = null;
     if (reducedMotion || !btnRef.current) return;
@@ -1604,7 +1744,8 @@ export default function TypewriterStage({
   // Auto-scroll typewriter terminal log to bottom
   useEffect(() => {
     if (!terminalScrollRef.current) return;
-    terminalScrollRef.current.scrollTop = terminalScrollRef.current.scrollHeight;
+    terminalScrollRef.current.scrollTop =
+      terminalScrollRef.current.scrollHeight;
   }, [terminalLogs]);
 
   // Launch a completed 100% bill that flies slowly down to the Earned counter
@@ -1625,23 +1766,28 @@ export default function TypewriterStage({
     sequenceTimeoutsRef.current.push(landTimer);
   }, [reducedMotion]);
 
-  // Handle clicking $20, $50, or $100 node
+  // Handle clicking $20, $5000, or $10,000 node
   const handleOrbClick = (
     tier: OrbTier,
-    btnRef: React.RefObject<HTMLButtonElement | null>
+    btnRef: React.RefObject<HTMLButtonElement | null>,
   ) => {
     if (isTransitionLocked) return;
     setHasClickedAnyOrb(true);
     setActiveClickMeTier(null);
     resetIdleBegTimer();
 
-    // Generate random return: $20 -> $1–$5, $50 -> $5–$20, $100 -> $20–$40
+    // Stream terminal log sequence and generate a 20–50% return of the button clicked
+    const pool = TERMINAL_SEQUENCES[tier];
+    const seqIndex = seqCursorRef.current[tier] % pool.length;
+    seqCursorRef.current[tier] += 1;
+    const chosenSeq = pool[seqIndex];
+    const minEarned = Math.round(tier * 0.2);
+    const maxEarned = Math.round(tier * 0.5);
+    const rawRandEarned =
+      Math.floor(Math.random() * (maxEarned - minEarned + 1)) + minEarned;
     const earnedDelta =
-      tier === 20
-        ? Math.floor(Math.random() * 5) + 1
-        : tier === 50
-        ? Math.floor(Math.random() * 16) + 5
-        : Math.floor(Math.random() * 21) + 20;
+      tier >= 5000 ? Math.round(rawRandEarned / 50) * 50 : rawRandEarned;
+    const summaryText = `Earned +$${earnedDelta.toLocaleString()}`;
 
     onSpend?.(tier, earnedDelta);
 
@@ -1677,16 +1823,7 @@ export default function TypewriterStage({
       });
     }
 
-    // Stream terminal log sequence for this click
-    const pool = TERMINAL_SEQUENCES[tier];
-    const seqIndex = seqCursorRef.current[tier] % pool.length;
-    seqCursorRef.current[tier] += 1;
-    const chosenSeq = pool[seqIndex];
-    const dynamicSteps = chosenSeq.steps.map((s) =>
-      s.includes("yielding 1.00 USD return")
-        ? `yielding ${earnedDelta}.00 USD return...`
-        : s
-    );
+    const dynamicSteps = chosenSeq.steps;
 
     if (reducedMotion) {
       setTerminalLogs((prev) => [
@@ -1698,7 +1835,7 @@ export default function TypewriterStage({
         })),
         {
           id: ++uniqueIdRef.current,
-          text: chosenSeq.summary,
+          text: summaryText,
           isSummary: true,
           tier,
         },
@@ -1718,19 +1855,25 @@ export default function TypewriterStage({
         sequenceTimeoutsRef.current.push(stepTimer);
       });
 
-      const summaryTimer = setTimeout(() => {
-        setTerminalLogs((prev) => [
-          ...prev.slice(-10),
-          {
-            id: ++uniqueIdRef.current,
-            text: chosenSeq.summary,
-            isSummary: true,
-            tier,
-          },
-        ]);
-      }, dynamicSteps.length * 170 + 110);
+      const summaryTimer = setTimeout(
+        () => {
+          setTerminalLogs((prev) => [
+            ...prev.slice(-10),
+            {
+              id: ++uniqueIdRef.current,
+              text: summaryText,
+              isSummary: true,
+              tier,
+            },
+          ]);
+        },
+        dynamicSteps.length * 170 + 110,
+      );
       sequenceTimeoutsRef.current.push(summaryTimer);
     }
+
+    const formattedTier =
+      tier === 10000 ? "10,000" : tier === 5000 ? "5000" : "20";
 
     // 1. Add to Spent & Earned with animated counter rollout + floating delta badges
     setSpentTarget((prev) => prev + tier);
@@ -1739,7 +1882,7 @@ export default function TypewriterStage({
     const earnedDeltaId = ++uniqueIdRef.current;
     setSpentDeltas((prev) => [
       ...prev,
-      { id: spentDeltaId, text: `+$${tier}` },
+      { id: spentDeltaId, text: `+$${formattedTier}` },
     ]);
     setEarnedDeltas((prev) => [
       ...prev,
@@ -1828,7 +1971,7 @@ export default function TypewriterStage({
       }
     };
 
-    if (tier === 20 || tier === 50) {
+    if (tier === 20 || tier === 5000) {
       const targetSurge: PowerState = tier === 20 ? "surge20" : "surge50";
       setPowerState(targetSurge);
 
@@ -1846,18 +1989,19 @@ export default function TypewriterStage({
             onComplete: () => {
               gsap.set(typewriterTiltRef.current, { x: 0, y: 0 });
             },
-          }
+          },
         );
       }
 
-      const rawTotal = currentP + tier;
+      const billStep = tier === 20 ? 20 : 50;
+      const rawTotal = currentP + billStep;
       animateCarriageHandle(rawTotal >= 100);
 
       if (rawTotal < 100) {
         billPercentRef.current = rawTotal;
         setBillPercent(rawTotal);
         setStatusAnnouncement(
-          `Spent $${tier}. Bill is now ${rawTotal}% printed.`
+          `Spent $${formattedTier}. Bill is now ${rawTotal}% printed.`,
         );
       } else {
         const remainder = rawTotal - 100;
@@ -1866,7 +2010,7 @@ export default function TypewriterStage({
         billPercentRef.current = 100;
         setBillPercent(100);
         setStatusAnnouncement(
-          `Spent $${tier}. Current 1 dollar bill finished printing and is flying to Earned. Next bill starts at ${nextBillPercent}%.`
+          `Spent $${formattedTier}. Current 1 dollar bill finished printing and is flying to Earned. Next bill starts at ${nextBillPercent}%.`,
         );
 
         const detachTimer = setTimeout(() => {
@@ -1882,7 +2026,7 @@ export default function TypewriterStage({
         resetIdleBegTimer();
       }, 950);
       sequenceTimeoutsRef.current.push(endSurgeTimer);
-    } else if (tier === 100) {
+    } else if (tier === 10000) {
       const nextBillPercent = currentP;
 
       setPowerState("surge100");
@@ -1890,7 +2034,7 @@ export default function TypewriterStage({
       billPercentRef.current = 100;
       setBillPercent(100);
       setStatusAnnouncement(
-        `Spent $100. Printed a whole 1 dollar bill which is flying to Earned.`
+        `Spent $10,000. Printed a whole 1 dollar bill which is flying to Earned.`,
       );
 
       if (!reducedMotion && typewriterTiltRef.current) {
@@ -1912,7 +2056,7 @@ export default function TypewriterStage({
                 rotation: 0,
               });
             },
-          }
+          },
         );
       }
 
@@ -1956,8 +2100,8 @@ export default function TypewriterStage({
             powerState === "surge100"
               ? "bg-[#e89b3c]/25 opacity-100"
               : powerState === "surge20" || powerState === "surge50"
-              ? "bg-[#f4f0ea]/12 opacity-100"
-              : "bg-[#e89b3c]/[0.05] opacity-60"
+                ? "bg-[#f4f0ea]/12 opacity-100"
+                : "bg-[#e89b3c]/[0.05] opacity-60"
           }`}
         />
 
@@ -1967,7 +2111,7 @@ export default function TypewriterStage({
           aria-hidden="true"
           viewBox="0 0 800 540"
           preserveAspectRatio="none"
-          className="pointer-events-none absolute inset-0 z-10 h-full w-full"
+          className="pointer-events-none absolute inset-0 z-10 h-full w-full overflow-visible"
         >
           {/* Base animated dotted lines flowing continuously into the typewriter (hidden while that wire turns solid on click) */}
           <path
@@ -2091,35 +2235,35 @@ export default function TypewriterStage({
         </div>
 
         {/* LAYER 3: THREE CAPITAL POWER INJECTOR NODES */}
-        {/* NODE 1: +$20 (TOOLS & SUBS) */}
+        {/* NODE 1: +$20/m (AI & TOOL SUBS) */}
         <div
           ref={orb20PosRef}
-          className="pointer-events-auto absolute left-[0%] top-[8%] z-30 sm:left-[1%] sm:top-[9%]"
+          className="pointer-events-auto absolute left-[0%] top-[2%] z-30 will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] sm:left-[1%] sm:top-[3%] lg:left-0 lg:top-0"
         >
-          <div ref={orb20WrapRef} className="pointer-events-auto">
+          <div ref={orb20WrapRef} className="pointer-events-auto will-change-transform">
             <button
               ref={orb20BtnRef}
               type="button"
               onClick={() => handleOrbClick(20, orb20BtnRef)}
               onMouseMove={(e) => handleOrbMouseMove(e, 20, orb20BtnRef)}
               onMouseLeave={() => handleOrbMouseLeave(orb20BtnRef)}
-              aria-label="Inject $20 into your business machine"
-              className={`pointer-events-auto group relative flex h-[80px] w-[112px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[88px] sm:w-[126px] sm:p-3 ${
+              aria-label="Inject $20/m into AI & Tool Subscriptions"
+              className={`pointer-events-auto group relative flex h-[108px] w-[108px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-colors duration-200 will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[114px] sm:w-[148px] sm:p-3 lg:h-[116px] lg:w-[144px] xl:w-[174px] 2xl:w-[204px] ${
                 powerState === "surge20"
                   ? isLight
                     ? "bg-[#e89b3c] text-[#08080a] shadow-[0_0_28px_rgba(232,155,60,0.5)]"
                     : "bg-[#f4f0ea] text-[#08080a] shadow-[0_0_30px_rgba(244,240,234,0.45)]"
                   : isLight
-                  ? "bg-[#fbf9f5] text-[#141413] ring-1 ring-black/12 shadow-[0_12px_28px_rgba(20,20,19,0.08),0_2px_6px_rgba(20,20,19,0.04)] hover:bg-[#e89b3c] hover:text-[#08080a]"
-                  : "bg-[#111116] text-[#f4f0ea] ring-1 ring-white/[0.09] shadow-[0_16px_36px_rgba(0,0,0,0.7)] hover:bg-[#f4f0ea] hover:text-[#08080a]"
+                    ? "bg-[#fbf9f5] text-[#141413] ring-1 ring-black/12 shadow-[0_12px_28px_rgba(20,20,19,0.08),0_2px_6px_rgba(20,20,19,0.04)] hover:bg-[#e89b3c] hover:text-[#08080a]"
+                    : "bg-[#111116] text-[#f4f0ea] ring-1 ring-white/[0.09] shadow-[0_16px_36px_rgba(0,0,0,0.7)] hover:bg-[#f4f0ea] hover:text-[#08080a]"
               }`}
             >
-              <div className="pointer-events-none flex w-full items-center justify-between">
-                <span className="font-mono-label text-[8px] font-medium uppercase tracking-[0.16em] opacity-65 sm:text-[9px]">
-                  TOOLS &amp; SUBS
+              <div className="pointer-events-none flex w-full items-center justify-between gap-1">
+                <span className="font-mono-label text-[8px] font-semibold uppercase tracking-[0.14em] opacity-75 sm:text-[9px]">
+                  AI &amp; TOOL SUBS
                 </span>
                 <span
-                  className={`h-1.5 w-1.5 rounded-full transition-colors ${
+                  className={`h-1.5 w-1.5 shrink-0 rounded-full transition-colors ${
                     powerState === "surge20"
                       ? "bg-[#08080a]"
                       : "bg-[#e89b3c] shadow-[0_0_6px_#e89b3c] group-hover:bg-[#08080a]"
@@ -2127,24 +2271,17 @@ export default function TypewriterStage({
                 />
               </div>
 
-              <span className="pointer-events-none font-mono-label text-xl font-semibold tracking-tight sm:text-2xl">
-                +$20
+              <span className="pointer-events-none font-mono-label text-base font-semibold tracking-tight sm:text-xl xl:text-[22px]">
+                +$20/m
               </span>
 
               <div className="pointer-events-none flex w-full items-center justify-between border-t border-current/10 pt-1">
-                <span className="font-mono-label text-[8px] uppercase tracking-[0.16em] opacity-65">
-                  {activeClickMeTier === 20 &&
-                  !hasClickedAnyOrb &&
-                  !inDashboardMode
-                    ? "Click me"
-                    : "⚡ Feed cash"}
-                </span>
-                <span className="font-mono-label text-[9px] opacity-75 transition-transform group-hover:translate-x-0.5">
-                  →
+                <span className="line-clamp-2 text-[9.5px] leading-[1.3] opacity-75 sm:text-[10.5px]">
+                  Monthly SaaS bloat we can automate
                 </span>
               </div>
 
-              {/* Single border glow when "Click me" is active on +$20 */}
+              {/* Single border glow when "Click me" is active on +$20/m */}
               <span
                 aria-hidden="true"
                 className={`pointer-events-none absolute inset-0 rounded-xl shadow-[0_0_24px_rgba(232,155,60,0.6),inset_0_0_12px_rgba(232,155,60,0.22)] transition-opacity duration-500 ${
@@ -2156,20 +2293,16 @@ export default function TypewriterStage({
                 }`}
               />
 
-              {/* Subtle floating "Click me" badge that appears briefly and disappears */}
+              {/* Subtle floating "Click me" badge centered at bottom of card */}
               <span
                 aria-hidden="true"
-                className={`pointer-events-none absolute -top-2.5 right-2.5 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono-label text-[7.5px] font-medium uppercase tracking-[0.14em] transition-all duration-300 ${
+                className={`pointer-events-none absolute -bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono-label text-[7.5px] font-medium uppercase tracking-[0.14em] transition-all duration-300 ${
                   activeClickMeTier === 20 &&
                   !hasClickedAnyOrb &&
                   !inDashboardMode
                     ? "translate-y-0 scale-100 opacity-100"
                     : "translate-y-1 scale-95 opacity-0"
-                } ${
-                  isLight
-                    ? "border-[#e89b3c] bg-[#fbf9f5] text-[#b86409] shadow-sm"
-                    : "border-[#e89b3c]/80 bg-[#15151c] text-[#e89b3c] shadow-[0_4px_12px_rgba(0,0,0,0.45)]"
-                }`}
+                } border-[#e89b3c]/80 bg-[#121216] text-[#f4f0ea] shadow-[0_4px_12px_rgba(0,0,0,0.38)]`}
               >
                 <span className="h-1 w-1 rounded-full bg-[#e89b3c]" />
                 Click me
@@ -2182,7 +2315,7 @@ export default function TypewriterStage({
                 className={`pointer-events-none absolute flex items-center justify-center rounded-xs border transition-all duration-300 ${
                   inDashboardMode
                     ? "-right-2 top-1/2 h-4 w-2 -translate-y-1/2"
-                    : "-bottom-2 left-1/2 h-2 w-4 -translate-x-1/2"
+                    : "-bottom-2 left-1/2 h-2 w-4 -translate-x-1/2 lg:-top-2 lg:bottom-auto"
                 } ${
                   isLight
                     ? "border-black/30 bg-[#262522]"
@@ -2195,35 +2328,35 @@ export default function TypewriterStage({
           </div>
         </div>
 
-        {/* NODE 2: +$50 (ADS & GROWTH) */}
+        {/* NODE 2: +$5000/m (GROWTH & ADS) */}
         <div
           ref={orb50PosRef}
-          className="pointer-events-auto absolute left-[36%] top-[3%] z-30 sm:left-[37%] sm:top-[4%]"
+          className="pointer-events-auto absolute left-[34%] top-[2%] z-30 will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] sm:left-[35%] sm:top-[3%] lg:left-0 lg:top-0"
         >
-          <div ref={orb50WrapRef} className="pointer-events-auto">
+          <div ref={orb50WrapRef} className="pointer-events-auto will-change-transform">
             <button
               ref={orb50BtnRef}
               type="button"
-              onClick={() => handleOrbClick(50, orb50BtnRef)}
-              onMouseMove={(e) => handleOrbMouseMove(e, 50, orb50BtnRef)}
+              onClick={() => handleOrbClick(5000, orb50BtnRef)}
+              onMouseMove={(e) => handleOrbMouseMove(e, 5000, orb50BtnRef)}
               onMouseLeave={() => handleOrbMouseLeave(orb50BtnRef)}
-              aria-label="Inject $50 into your business machine"
-              className={`pointer-events-auto group relative flex h-[84px] w-[120px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[92px] sm:w-[134px] sm:p-3 ${
+              aria-label="Inject $5000/m into Growth & Ads"
+              className={`pointer-events-auto group relative flex h-[108px] w-[108px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-colors duration-200 will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[114px] sm:w-[148px] sm:p-3 lg:h-[116px] lg:w-[144px] xl:w-[174px] 2xl:w-[204px] ${
                 powerState === "surge50"
                   ? isLight
                     ? "bg-[#e89b3c] text-[#08080a] shadow-[0_0_32px_rgba(232,155,60,0.5)]"
                     : "bg-[#f4f0ea] text-[#08080a] shadow-[0_0_34px_rgba(244,240,234,0.45)]"
                   : isLight
-                  ? "bg-[#fbf9f5] text-[#141413] ring-1 ring-black/12 shadow-[0_12px_28px_rgba(20,20,19,0.08),0_2px_6px_rgba(20,20,19,0.04)] hover:bg-[#e89b3c] hover:text-[#08080a]"
-                  : "bg-[#111116] text-[#f4f0ea] ring-1 ring-white/[0.09] shadow-[0_16px_36px_rgba(0,0,0,0.7)] hover:bg-[#f4f0ea] hover:text-[#08080a]"
+                    ? "bg-[#fbf9f5] text-[#141413] ring-1 ring-black/12 shadow-[0_12px_28px_rgba(20,20,19,0.08),0_2px_6px_rgba(20,20,19,0.04)] hover:bg-[#e89b3c] hover:text-[#08080a]"
+                    : "bg-[#111116] text-[#f4f0ea] ring-1 ring-white/[0.09] shadow-[0_16px_36px_rgba(0,0,0,0.7)] hover:bg-[#f4f0ea] hover:text-[#08080a]"
               }`}
             >
-              <div className="pointer-events-none flex w-full items-center justify-between">
-                <span className="font-mono-label text-[8px] font-medium uppercase tracking-[0.16em] opacity-65 sm:text-[9px]">
-                  ADS &amp; GROWTH
+              <div className="pointer-events-none flex w-full items-center justify-between gap-1">
+                <span className="font-mono-label text-[8px] font-semibold uppercase tracking-[0.14em] opacity-75 sm:text-[9px]">
+                  GROWTH &amp; ADS
                 </span>
                 <span
-                  className={`h-1.5 w-1.5 rounded-full transition-colors ${
+                  className={`h-1.5 w-1.5 shrink-0 rounded-full transition-colors ${
                     powerState === "surge50"
                       ? "bg-[#08080a]"
                       : "bg-[#e89b3c] shadow-[0_0_6px_#e89b3c] group-hover:bg-[#08080a]"
@@ -2231,28 +2364,21 @@ export default function TypewriterStage({
                 />
               </div>
 
-              <span className="pointer-events-none font-mono-label text-2xl font-semibold tracking-tight sm:text-[26px]">
-                +$50
+              <span className="pointer-events-none font-mono-label text-base font-semibold tracking-tight sm:text-xl xl:text-[22px]">
+                +$5000/m
               </span>
 
               <div className="pointer-events-none flex w-full items-center justify-between border-t border-current/10 pt-1">
-                <span className="font-mono-label text-[8px] uppercase tracking-[0.16em] opacity-65">
-                  {activeClickMeTier === 50 &&
-                  !hasClickedAnyOrb &&
-                  !inDashboardMode
-                    ? "Click me"
-                    : "⚡ Feed cash"}
-                </span>
-                <span className="font-mono-label text-[9px] opacity-75 transition-transform group-hover:translate-x-0.5">
-                  →
+                <span className="line-clamp-2 text-[9.5px] leading-[1.3] opacity-75 sm:text-[10.5px]">
+                  Traffic poured into a leaking funnel
                 </span>
               </div>
 
-              {/* Single border glow when "Click me" is active on +$50 */}
+              {/* Single border glow when "Click me" is active on +$5000/m */}
               <span
                 aria-hidden="true"
                 className={`pointer-events-none absolute inset-0 rounded-xl shadow-[0_0_24px_rgba(232,155,60,0.6),inset_0_0_12px_rgba(232,155,60,0.22)] transition-opacity duration-500 ${
-                  activeClickMeTier === 50 &&
+                  activeClickMeTier === 5000 &&
                   !hasClickedAnyOrb &&
                   !inDashboardMode
                     ? "opacity-100"
@@ -2260,20 +2386,16 @@ export default function TypewriterStage({
                 }`}
               />
 
-              {/* Subtle floating "Click me" badge that appears briefly and disappears */}
+              {/* Subtle floating "Click me" badge centered at bottom of card */}
               <span
                 aria-hidden="true"
-                className={`pointer-events-none absolute -top-2.5 right-2.5 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono-label text-[7.5px] font-medium uppercase tracking-[0.14em] transition-all duration-300 ${
-                  activeClickMeTier === 50 &&
+                className={`pointer-events-none absolute -bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono-label text-[7.5px] font-medium uppercase tracking-[0.14em] transition-all duration-300 ${
+                  activeClickMeTier === 5000 &&
                   !hasClickedAnyOrb &&
                   !inDashboardMode
                     ? "translate-y-0 scale-100 opacity-100"
                     : "translate-y-1 scale-95 opacity-0"
-                } ${
-                  isLight
-                    ? "border-[#e89b3c] bg-[#fbf9f5] text-[#b86409] shadow-sm"
-                    : "border-[#e89b3c]/80 bg-[#15151c] text-[#e89b3c] shadow-[0_4px_12px_rgba(0,0,0,0.45)]"
-                }`}
+                } border-[#e89b3c]/80 bg-[#121216] text-[#f4f0ea] shadow-[0_4px_12px_rgba(0,0,0,0.38)]`}
               >
                 <span className="h-1 w-1 rounded-full bg-[#e89b3c]" />
                 Click me
@@ -2286,7 +2408,7 @@ export default function TypewriterStage({
                 className={`pointer-events-none absolute flex items-center justify-center rounded-xs border transition-all duration-300 ${
                   inDashboardMode
                     ? "-right-2 top-1/2 h-4 w-2 -translate-y-1/2"
-                    : "-bottom-2 left-1/2 h-2 w-4 -translate-x-1/2"
+                    : "-bottom-2 left-1/2 h-2 w-4 -translate-x-1/2 lg:-top-2 lg:bottom-auto"
                 } ${
                   isLight
                     ? "border-black/30 bg-[#262522]"
@@ -2299,41 +2421,41 @@ export default function TypewriterStage({
           </div>
         </div>
 
-        {/* NODE 3: +$100 (DEVS & REBUILD) */}
+        {/* NODE 3: +$10,000/m (FEATURES & DEV) */}
         <div
           ref={orb100PosRef}
-          className="pointer-events-auto absolute left-[72%] top-[6%] z-30 sm:left-[73%] sm:top-[7%]"
+          className="pointer-events-auto absolute left-[68%] top-[2%] z-30 will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] sm:left-[69%] sm:top-[3%] lg:left-0 lg:top-0"
         >
-          <div ref={orb100WrapRef} className="pointer-events-auto">
+          <div ref={orb100WrapRef} className="pointer-events-auto will-change-transform">
             <button
               ref={orb100BtnRef}
               type="button"
-              onClick={() => handleOrbClick(100, orb100BtnRef)}
-              onMouseMove={(e) => handleOrbMouseMove(e, 100, orb100BtnRef)}
+              onClick={() => handleOrbClick(10000, orb100BtnRef)}
+              onMouseMove={(e) => handleOrbMouseMove(e, 10000, orb100BtnRef)}
               onMouseLeave={() => handleOrbMouseLeave(orb100BtnRef)}
-              aria-label="Inject $100 into your business machine"
-              className={`pointer-events-auto group relative flex h-[92px] w-[132px] cursor-pointer flex-col justify-between rounded-xl p-3 text-left transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[100px] sm:w-[148px] sm:p-3.5 ${
+              aria-label="Inject $10,000/m into Features & Dev"
+              className={`pointer-events-auto group relative flex h-[108px] w-[108px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-colors duration-200 will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[114px] sm:w-[148px] sm:p-3 lg:h-[116px] lg:w-[144px] xl:w-[174px] 2xl:w-[204px] ${
                 powerState === "surge100"
                   ? "bg-[#e89b3c] text-[#08080a] shadow-[0_0_45px_rgba(232,155,60,0.75)]"
                   : isLight
-                  ? "bg-[#fbf9f5] text-[#141413] ring-1 ring-[#e89b3c]/45 shadow-[0_14px_32px_rgba(20,20,19,0.10),0_2px_6px_rgba(20,20,19,0.05)] hover:bg-[#e89b3c] hover:text-[#08080a]"
-                  : "bg-[#111116] text-[#f4f0ea] ring-1 ring-[#e89b3c]/30 shadow-[0_18px_42px_rgba(0,0,0,0.8)] hover:bg-[#e89b3c] hover:text-[#08080a]"
+                    ? "bg-[#fbf9f5] text-[#141413] ring-1 ring-[#e89b3c]/45 shadow-[0_14px_32px_rgba(20,20,19,0.10),0_2px_6px_rgba(20,20,19,0.05)] hover:bg-[#e89b3c] hover:text-[#08080a]"
+                    : "bg-[#111116] text-[#f4f0ea] ring-1 ring-[#e89b3c]/30 shadow-[0_18px_42px_rgba(0,0,0,0.8)] hover:bg-[#e89b3c] hover:text-[#08080a]"
               }`}
             >
-              <div className="pointer-events-none flex w-full items-center justify-between">
+              <div className="pointer-events-none flex w-full items-center justify-between gap-1">
                 <span
-                  className={`font-mono-label text-[8px] font-semibold uppercase tracking-[0.15em] sm:text-[9px] ${
+                  className={`font-mono-label text-[8px] font-semibold uppercase tracking-[0.14em] sm:text-[9px] ${
                     powerState === "surge100"
                       ? "text-[#08080a]"
                       : isLight
-                      ? "text-[#b86409] group-hover:text-[#08080a]"
-                      : "text-[#e89b3c] group-hover:text-[#08080a]"
+                        ? "text-[#b86409] group-hover:text-[#08080a]"
+                        : "text-[#e89b3c] group-hover:text-[#08080a]"
                   }`}
                 >
-                  DEVS &amp; REBUILD
+                  FEATURES &amp; DEV
                 </span>
                 <span
-                  className={`h-1.5 w-1.5 rounded-full transition-colors ${
+                  className={`h-1.5 w-1.5 shrink-0 rounded-full transition-colors ${
                     powerState === "surge100"
                       ? "bg-[#08080a]"
                       : "bg-[#e89b3c] shadow-[0_0_8px_#e89b3c] group-hover:bg-[#08080a]"
@@ -2341,28 +2463,21 @@ export default function TypewriterStage({
                 />
               </div>
 
-              <span className="pointer-events-none font-mono-label text-2xl font-semibold tracking-tight sm:text-3xl">
-                +$100
+              <span className="pointer-events-none font-mono-label text-base font-semibold tracking-tight sm:text-xl xl:text-[22px]">
+                +$10,000/m
               </span>
 
               <div className="pointer-events-none flex w-full items-center justify-between border-t border-current/15 pt-1">
-                <span className="font-mono-label text-[8px] uppercase tracking-[0.16em] opacity-75">
-                  {activeClickMeTier === 100 &&
-                  !hasClickedAnyOrb &&
-                  !inDashboardMode
-                    ? "Click me"
-                    : "⚡ Max inject"}
-                </span>
-                <span className="font-mono-label text-[9px] opacity-80 transition-transform group-hover:translate-x-0.5">
-                  →
+                <span className="line-clamp-2 text-[9.5px] leading-[1.3] opacity-80 sm:text-[10.5px]">
+                  Shipping code that doesn&apos;t move revenue
                 </span>
               </div>
 
-              {/* Single border glow when "Click me" is active on +$100 */}
+              {/* Single border glow when "Click me" is active on +$10,000/m */}
               <span
                 aria-hidden="true"
                 className={`pointer-events-none absolute inset-0 rounded-xl shadow-[0_0_26px_rgba(232,155,60,0.65),inset_0_0_12px_rgba(232,155,60,0.24)] transition-opacity duration-500 ${
-                  activeClickMeTier === 100 &&
+                  activeClickMeTier === 10000 &&
                   !hasClickedAnyOrb &&
                   !inDashboardMode
                     ? "opacity-100"
@@ -2370,20 +2485,16 @@ export default function TypewriterStage({
                 }`}
               />
 
-              {/* Subtle floating "Click me" badge that appears briefly and disappears */}
+              {/* Subtle floating "Click me" badge centered at bottom of card */}
               <span
                 aria-hidden="true"
-                className={`pointer-events-none absolute -top-2.5 right-2.5 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono-label text-[7.5px] font-medium uppercase tracking-[0.14em] transition-all duration-300 ${
-                  activeClickMeTier === 100 &&
+                className={`pointer-events-none absolute -bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono-label text-[7.5px] font-medium uppercase tracking-[0.14em] transition-all duration-300 ${
+                  activeClickMeTier === 10000 &&
                   !hasClickedAnyOrb &&
                   !inDashboardMode
                     ? "translate-y-0 scale-100 opacity-100"
                     : "translate-y-1 scale-95 opacity-0"
-                } ${
-                  isLight
-                    ? "border-[#e89b3c] bg-[#fbf9f5] text-[#b86409] shadow-sm"
-                    : "border-[#e89b3c]/80 bg-[#15151c] text-[#e89b3c] shadow-[0_4px_12px_rgba(0,0,0,0.45)]"
-                }`}
+                } border-[#e89b3c]/80 bg-[#121216] text-[#f4f0ea] shadow-[0_4px_12px_rgba(0,0,0,0.38)]`}
               >
                 <span className="h-1 w-1 rounded-full bg-[#e89b3c]" />
                 Click me
@@ -2396,7 +2507,7 @@ export default function TypewriterStage({
                 className={`pointer-events-none absolute flex items-center justify-center rounded-xs border border-[#e89b3c]/70 transition-all duration-300 ${
                   inDashboardMode
                     ? "-right-2 top-1/2 h-4 w-2 -translate-y-1/2"
-                    : "-bottom-2 left-1/2 h-2 w-4 -translate-x-1/2"
+                    : "-bottom-2 left-1/2 h-2 w-4 -translate-x-1/2 lg:-top-2 lg:bottom-auto"
                 } ${isLight ? "bg-[#262522]" : "bg-[#1b1b22]"}`}
               >
                 <span className="h-1 w-1 rounded-full bg-[#e89b3c]" />
@@ -2409,15 +2520,15 @@ export default function TypewriterStage({
         <div
           ref={typewriterGroupRef}
           data-typewriter-hero="true"
-          className="pointer-events-auto absolute bottom-1 left-1/2 z-20 flex w-[340px] -translate-x-1/2 flex-col items-center sm:w-[460px] lg:w-[510px] xl:w-[550px] 2xl:w-[610px] [@media(max-height:820px)]:origin-bottom [@media(max-height:820px)]:scale-[0.88]"
+          className="pointer-events-auto absolute bottom-6 left-1/2 z-20 flex w-[340px] -translate-x-1/2 flex-col items-center will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] sm:bottom-8 sm:w-[460px] lg:bottom-[136px] lg:w-[510px] xl:bottom-[148px] xl:w-[550px] 2xl:bottom-[160px] 2xl:w-[610px] [@media(max-height:820px)]:origin-bottom [@media(max-height:820px)]:scale-[0.88]"
         >
           <div
             ref={typewriterTiltRef}
             data-typewriter-tilt="true"
-            className="flex w-full flex-col items-center"
+            className="flex w-full flex-col items-center will-change-transform [backface-visibility:hidden] [transform:translateZ(0)]"
           >
             {/* PLATEN PAPER SLOT VIEWPORT (Backpanel removed so wires route cleanly behind the typewriter) */}
-            <div className="relative z-20 -mb-3.5 flex w-full flex-col items-center">
+            <div className="relative z-20 -mb-3.5 flex w-full flex-col items-center [backface-visibility:hidden] [transform:translateZ(0)]">
               {/* Emerging $1 Bill */}
               <div className="relative z-10 flex h-[118px] w-[264px] items-end justify-center overflow-hidden sm:h-[144px] sm:w-[344px] lg:h-[156px] lg:w-[376px] xl:h-[166px] xl:w-[404px] 2xl:h-[178px] 2xl:w-[444px]">
                 <div
@@ -2427,13 +2538,13 @@ export default function TypewriterStage({
                   }}
                   className="relative h-[118px] w-[264px] transition-transform duration-500 ease-out sm:h-[144px] sm:w-[344px] lg:h-[156px] lg:w-[376px] xl:h-[166px] xl:w-[404px] 2xl:h-[178px] 2xl:w-[444px]"
                 >
-                  <DollarBillGraphic idPrefix="active-bill" />
+                  <DollarBillGraphic idPrefix={`${instanceId}-active-bill`} />
                 </div>
               </div>
             </div>
 
             {/* VINTAGE TYPEWRITER CARRIAGE & STEPPED CAST-IRON / ENAMEL CHASSIS */}
-            <div className="relative z-30 flex w-full flex-col items-center">
+            <div className="relative z-30 flex w-full flex-col items-center [backface-visibility:hidden] [transform:translateZ(0)]">
               {/* 1. VINTAGE CARRIAGE PLATEN ROLLER + KNURLED CHROME THUMB WHEELS */}
               <div className="mx-auto flex w-[96%] items-center justify-center">
                 {/* Left Knurled Chrome Platen Knob + Axle */}
@@ -2473,8 +2584,8 @@ export default function TypewriterStage({
                           i === 12
                             ? "h-2 bg-[#e89b3c]"
                             : i % 4 === 0
-                            ? "h-1.5 bg-[#d8d4cc]/70"
-                            : "h-1 bg-[#d8d4cc]/30"
+                              ? "h-1.5 bg-[#d8d4cc]/70"
+                              : "h-1 bg-[#d8d4cc]/30"
                         }`}
                       />
                     ))}
@@ -2624,17 +2735,17 @@ export default function TypewriterStage({
                             ? "font-semibold text-[#b86409]"
                             : "font-semibold text-[#e89b3c]"
                           : isLight
-                          ? "text-[#6e6a62]"
-                          : "text-[#8e8a80]"
+                            ? "text-[#6e6a62]"
+                            : "text-[#8e8a80]"
                       }`}
                     >
                       {powerState === "surge20"
                         ? "⚡ BURNING +$20 FUEL..."
                         : powerState === "surge50"
-                        ? "⚡ BURNING +$50 FUEL..."
-                        : powerState === "surge100"
-                        ? "⚡ BURNING +$100 FUEL..."
-                        : "⚡ FUEL: LOW — FEED $ TO RUN"}
+                          ? "⚡ BURNING +$5000 FUEL..."
+                          : powerState === "surge100"
+                            ? "⚡ BURNING +$10,000 FUEL..."
+                            : "⚡ FUEL: LOW — FEED $ TO RUN"}
                     </span>
                   </div>
 
@@ -2645,10 +2756,10 @@ export default function TypewriterStage({
                         powerState === "surge100"
                           ? 6
                           : powerState === "surge50"
-                          ? 4
-                          : powerState === "surge20"
-                          ? 3
-                          : 1;
+                            ? 4
+                            : powerState === "surge20"
+                              ? 3
+                              : 1;
                       const isLitSeg = segIdx < activeCount;
                       return (
                         <span
@@ -2659,8 +2770,8 @@ export default function TypewriterStage({
                                 ? "bg-[#e89b3c] shadow-[0_0_6px_rgba(232,155,60,0.85)]"
                                 : "animate-pulse bg-[#e89b3c]/75"
                               : isLight
-                              ? "bg-black/15"
-                              : "bg-white/10"
+                                ? "bg-black/15"
+                                : "bg-white/10"
                           }`}
                         />
                       );
@@ -2698,8 +2809,8 @@ export default function TypewriterStage({
                           powerState !== "idle" && powerState !== "silence100"
                             ? "bg-[#e89b3c] shadow-[0_0_8px_#e89b3c]"
                             : isLight
-                            ? "bg-[#b0aa9c]"
-                            : "bg-[#3a3a46]"
+                              ? "bg-[#b0aa9c]"
+                              : "bg-[#3a3a46]"
                         }`}
                       />
                     </div>
@@ -2715,8 +2826,8 @@ export default function TypewriterStage({
                         powerState !== "idle" && powerState !== "silence100"
                           ? "font-semibold text-[#e89b3c]"
                           : isLight
-                          ? "text-[#8a857c]"
-                          : "text-[#5c5954]"
+                            ? "text-[#8a857c]"
+                            : "text-[#5c5954]"
                       }`}
                     >
                       {powerState !== "idle" && powerState !== "silence100"
@@ -2744,12 +2855,12 @@ export default function TypewriterStage({
                                 ? "border-l-2 border-[#b86409] bg-[#e89b3c]/20 font-semibold text-[#8a4600]"
                                 : "border-l-2 border-[#e89b3c] bg-[#e89b3c]/20 font-semibold text-[#f4f0ea]"
                               : entry.isSummary
-                              ? isLight
-                                ? "text-[#3d3a35]"
-                                : "text-[#b8b4ac]"
-                              : isLight
-                              ? "text-[#78746c]"
-                              : "text-[#6e6b64]"
+                                ? isLight
+                                  ? "text-[#3d3a35]"
+                                  : "text-[#b8b4ac]"
+                                : isLight
+                                  ? "text-[#78746c]"
+                                  : "text-[#6e6b64]"
                           }`}
                         >
                           <span
@@ -2760,11 +2871,11 @@ export default function TypewriterStage({
                                   ? "text-[#b86409]"
                                   : "text-[#e89b3c]"
                                 : isLight
-                                ? "text-[#a09b90]"
-                                : "text-[#4e4c46]"
+                                  ? "text-[#a09b90]"
+                                  : "text-[#4e4c46]"
                             }
                           >
-                            {highlightLastSummary ? "▸" : ">"}
+                            {entry.isSummary ? "->" : ">"}
                           </span>
                           <span className="truncate">{entry.text}</span>
                         </div>
@@ -2847,26 +2958,26 @@ export default function TypewriterStage({
       {/* MINIMALIST EDITORIAL SPENT & EARNED COUNTER BELOW TYPEWRITER */}
       <div
         ref={heroCountersRef}
-        className={`relative z-50 mt-6 flex flex-col items-center justify-center ${
+        className={`relative z-50 mt-2 flex flex-col items-center justify-center lg:-mt-[96px] xl:-mt-[106px] 2xl:-mt-[116px] ${
           inDashboardMode ? "pointer-events-none" : ""
         }`}
       >
-        <div className="flex items-center gap-16 sm:gap-24">
+        <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-16 lg:gap-24">
           {/* SPENT */}
-          <div className="relative flex items-baseline gap-3">
-            <span className="font-mono-label text-[11px] uppercase tracking-[0.22em] text-[var(--text-muted)]">
+          <div className="relative flex items-baseline gap-2 sm:gap-3.5">
+            <span className="font-mono-label text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--text-muted)] sm:text-sm sm:tracking-[0.22em]">
               Spent
             </span>
             <span
               ref={spentValueRef}
               data-testid="spent-counter"
-              className={`inline-block font-mono-label text-2xl font-medium tabular-nums tracking-tight transition-colors sm:text-3xl ${
+              className={`inline-block font-mono-label text-xl font-semibold tabular-nums tracking-tight transition-colors sm:text-4xl lg:text-[2.6rem] ${
                 displaySpent > 0
                   ? "text-[#e89b3c]"
                   : "text-[var(--text-primary)]"
               }`}
             >
-              ${displaySpent}
+              ${displaySpent.toLocaleString()}
             </span>
 
             {spentDeltas.map((d) => (
@@ -2875,14 +2986,14 @@ export default function TypewriterStage({
           </div>
 
           {/* EARNED */}
-          <div className="relative flex items-baseline gap-3">
-            <span className="font-mono-label text-[11px] uppercase tracking-[0.22em] text-[var(--text-muted)]">
+          <div className="relative flex items-baseline gap-2 sm:gap-3.5">
+            <span className="font-mono-label text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--text-muted)] sm:text-sm sm:tracking-[0.22em]">
               Earned
             </span>
             <span
               ref={earnedValueRef}
               data-testid="earned-counter"
-              className={`inline-block font-mono-label text-2xl font-medium tabular-nums tracking-tight transition-colors sm:text-3xl ${
+              className={`inline-block font-mono-label text-xl font-semibold tabular-nums tracking-tight transition-colors sm:text-4xl lg:text-[2.6rem] ${
                 displayEarned > 0
                   ? "text-[var(--text-primary)]"
                   : "text-[var(--text-muted)]"
@@ -2892,8 +3003,11 @@ export default function TypewriterStage({
               {displayEarned === 0
                 ? "0"
                 : displayEarned % 1 === 0
-                ? displayEarned.toFixed(0)
-                : displayEarned.toFixed(2)}
+                  ? displayEarned.toLocaleString()
+                  : displayEarned.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
             </span>
 
             {earnedDeltas.map((d) => (
@@ -2920,9 +3034,16 @@ function OrbScoreBadge({ popup }: { popup: OrbScorePopup }) {
         opacity: 0,
         duration: 0.75,
         ease: "power2.out",
-      }
+      },
     );
   }, []);
+
+  const label =
+    popup.tier === 10000
+      ? "+$10,000"
+      : popup.tier === 5000
+        ? "+$5000"
+        : "+$20";
 
   return (
     <div
@@ -2932,7 +3053,7 @@ function OrbScoreBadge({ popup }: { popup: OrbScorePopup }) {
       className="pointer-events-none absolute z-50 -translate-x-1/2 -translate-y-1/2"
     >
       <span className="inline-block rounded-full bg-[#e89b3c] px-2.5 py-0.5 font-mono-label text-[11px] font-semibold text-[#08080a]">
-        +${popup.tier}
+        {label}
       </span>
     </div>
   );
@@ -2959,7 +3080,7 @@ function CounterScoreBadge({
         opacity: 0,
         duration: 0.85,
         ease: "power2.out",
-      }
+      },
     );
   }, []);
 
@@ -3001,7 +3122,7 @@ function FlyingBillItem({ id }: { id: number }) {
         rotation: -5,
         duration: 0.38,
         ease: "power2.out",
-      }
+      },
     ).to(flyRef.current, {
       x: 92,
       y: 250,
@@ -3021,7 +3142,7 @@ function FlyingBillItem({ id }: { id: number }) {
     <div
       ref={flyRef}
       aria-hidden="true"
-      className="pointer-events-none absolute bottom-[225px] left-1/2 z-50 h-[146px] w-[280px] -translate-x-1/2 shadow-[0_20px_50px_rgba(0,0,0,0.65)] sm:bottom-[265px] sm:h-[192px] sm:w-[376px] lg:h-[218px] lg:w-[428px] xl:h-[230px] xl:w-[454px]"
+      className="pointer-events-none absolute bottom-[245px] left-1/2 z-50 h-[146px] w-[280px] -translate-x-1/2 shadow-[0_20px_50px_rgba(0,0,0,0.65)] sm:bottom-[290px] sm:h-[192px] sm:w-[376px] lg:bottom-[355px] lg:h-[218px] lg:w-[428px] xl:bottom-[370px] xl:h-[230px] xl:w-[454px]"
     >
       <DollarBillGraphic idPrefix={`flying-bill-${id}`} />
     </div>

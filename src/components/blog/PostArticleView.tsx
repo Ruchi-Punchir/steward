@@ -132,8 +132,9 @@ export default function PostArticleView({
         </p>
         <div className="mt-5">
           <Link
-            href="/contact?intent=audit&source=insights-post"
-            data-open-audit-modal="true"
+            href="/audit?source=insights-post"
+            target="_blank"
+            rel="noopener noreferrer"
             data-cta-source="insights-post"
             className="inline-flex items-center justify-center rounded-full bg-[#e89b3c] px-6 py-3 font-mono-label text-xs font-semibold uppercase tracking-[0.16em] text-[#08080a] transition-colors hover:bg-[#f2aa4c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e89b3c]"
           >

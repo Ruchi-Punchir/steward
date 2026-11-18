@@ -31,9 +31,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Steward | Shipping is easy now. Selling isn't.",
+  title: "Steward | Product and Growth Partner for Founders.",
   description:
-    "Steward is a two-person digital partner for early-stage founders. We build product, design and growth under one roof, with no handoffs.",
+    "Steward helps founders find growth bottlenecks and revenue opportunities, then fix and scale them with product and engineering. Start with a free audit.",
 };
 
 export default function RootLayout({

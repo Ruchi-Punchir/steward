@@ -34,27 +34,33 @@ export const PRODUCT_UNITS: ProductUnitSpec[] = [
   {
     id: "marketing",
     code: "02",
-    name: "Marketing & Acquisition",
+    name: "Acquisition & Growth",
     partTitle: "Knurled Drive Roller & Gear Train",
-    finding: "Auditing ad spend efficiency, email sequences & channel intent.",
+    finding:
+      "Bringing in high-intent buyers through paid ads, content, and outbound; tracked directly to revenue.",
     isProblem: true,
     subParts: [
       { id: "ads", label: "Ad Campaigns", partNumber: "#02-A" },
       { id: "email", label: "Email Sequences", partNumber: "#02-B" },
       { id: "seo", label: "SEO & Content", partNumber: "#02-C" },
-      { id: "outbound", label: "Cold Outreach", partNumber: "#02-D" },
+      { id: "outbound", label: "Channel ROI", partNumber: "#02-D" },
     ],
   },
   {
     id: "positioning",
     code: "03",
-    name: "Positioning & Messaging",
+    name: "PMF & Positioning",
     partTitle: "Upper Ribbon Hood & Brand Plaque",
-    finding: "Testing value proposition clarity, hero hook & buyer trust.",
+    finding:
+      "Sharpening who your product is for and why it wins, so the right buyers recognize their fit in 5 seconds.",
     isProblem: false,
     subParts: [
-      { id: "value-prop", label: "Value Proposition", partNumber: "#03-A" },
-      { id: "copy", label: "Landing Page Copy", partNumber: "#03-B" },
+      {
+        id: "value-prop",
+        label: "Clear Value Proposition",
+        partNumber: "#03-A",
+      },
+      { id: "copy", label: "Ideal Buyer Fit", partNumber: "#03-B" },
       { id: "brand", label: "Brand Story", partNumber: "#03-C" },
     ],
   },
@@ -69,19 +75,20 @@ export const PRODUCT_UNITS: ProductUnitSpec[] = [
       { id: "arch", label: "Core Architecture", partNumber: "#04-A" },
       { id: "perf", label: "Speed & Latency", partNumber: "#04-B" },
       { id: "integrations", label: "Checkout & APIs", partNumber: "#04-C" },
-      { id: "debt", label: "Code & Tech Debt", partNumber: "#04-D" },
+      { id: "debt", label: "Product Strategy & Features", partNumber: "#04-D" },
     ],
   },
   {
     id: "onboarding",
     code: "05",
-    name: "Onboarding & Retention",
+    name: "Onboarding & Aha! Moment",
     partTitle: "Front Terminal Bezel & Keybed",
-    finding: "Tracing first-run UX, time-to-value & cohort retention leaks.",
+    finding:
+      "Getting new users to their first real win fast, so free signups actually activate, stick around, and pay.",
     isProblem: false,
     subParts: [
+      { id: "activation", label: "Time to Aha! Moment", partNumber: "#05-B" },
       { id: "first-run", label: "First-Run UX", partNumber: "#05-A" },
-      { id: "activation", label: "User Activation", partNumber: "#05-B" },
       { id: "retention", label: "Churn & Analytics", partNumber: "#05-C" },
     ],
   },
@@ -157,12 +164,31 @@ export default function ExplodedTypewriter3D({
   // In Fix mode, problem units 02 and 04 transition from diagnosis red to repair green
   const problemStroke = isFixMode ? accentGreen : accentRed;
   // Non-problem units (01, 03, 05) fade out to 0 opacity in Fix mode, then return immediately as Test mode assembles the machine
-  const nonProblemOpacity = Math.max(Math.max(0, 1 - fixP * 1.5), Math.min(1, testP * 3));
+  const nonProblemOpacity = Math.max(
+    Math.max(0, 1 - fixP * 1.5),
+    Math.min(1, testP * 3),
+  );
 
-  const tier2Stroke = isFixMode ? accentGreen : (isUnitActive(1) ? accentRed : strokeBase);
-  const tier2Accent = isFixMode ? accentGreen : (isUnitActive(1) ? accentRed : strokeFine);
-  const tier4Stroke = isFixMode ? accentGreen : (isUnitActive(3) ? accentRed : strokeBase);
-  const tier4Accent = isFixMode ? accentGreen : (isUnitActive(3) ? accentRed : strokeFine);
+  const tier2Stroke = isFixMode
+    ? accentGreen
+    : isUnitActive(1)
+      ? accentRed
+      : strokeBase;
+  const tier2Accent = isFixMode
+    ? accentGreen
+    : isUnitActive(1)
+      ? accentRed
+      : strokeFine;
+  const tier4Stroke = isFixMode
+    ? accentGreen
+    : isUnitActive(3)
+      ? accentRed
+      : strokeBase;
+  const tier4Accent = isFixMode
+    ? accentGreen
+    : isUnitActive(3)
+      ? accentRed
+      : strokeFine;
 
   const getUnitAccent = (idx: number) => {
     if (isFixMode && isProblemUnit(idx)) return accentGreen;
@@ -240,9 +266,23 @@ export default function ExplodedTypewriter3D({
           </filter>
 
           {/* Traveling Repair Laser Glow Filter (Intense Neon Beam) */}
-          <filter id="repair-laser-glow" x="-40%" y="-40%" width="180%" height="180%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur1" />
-            <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur2" />
+          <filter
+            id="repair-laser-glow"
+            x="-40%"
+            y="-40%"
+            width="180%"
+            height="180%"
+          >
+            <feGaussianBlur
+              in="SourceGraphic"
+              stdDeviation="3"
+              result="blur1"
+            />
+            <feGaussianBlur
+              in="SourceGraphic"
+              stdDeviation="6"
+              result="blur2"
+            />
             <feMerge>
               <feMergeNode in="blur2" />
               <feMergeNode in="blur1" />
@@ -355,14 +395,26 @@ export default function ExplodedTypewriter3D({
           </pattern>
 
           {/* Aged Green Dollar Bill Gradient (Matches DollarBillGraphic in TypewriterStage) */}
-          <linearGradient id="iso-bill-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient
+            id="iso-bill-grad"
+            x1="0%"
+            y1="0%"
+            x2="100%"
+            y2="100%"
+          >
             <stop offset="0%" stopColor="#d9e5cc" />
             <stop offset="50%" stopColor="#b9cca9" />
             <stop offset="100%" stopColor="#9ab089" />
           </linearGradient>
 
           {/* Ribbed Rubber Platen Roller Cylinder Gradient (Matches Section 1 & 2 Platen Roller) */}
-          <linearGradient id="iso-chassis-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <linearGradient
+            id="iso-chassis-grad"
+            x1="0%"
+            y1="0%"
+            x2="0%"
+            y2="100%"
+          >
             <stop offset="0%" stopColor="#34343c" />
             <stop offset="52%" stopColor="#1c1c22" />
             <stop offset="100%" stopColor="#0e0e12" />
@@ -376,20 +428,38 @@ export default function ExplodedTypewriter3D({
           </linearGradient>
 
           {/* Upper Ribbon Spool Hood Gradient (Matches Section 1 & 2 Upper Hood) */}
-          <linearGradient id="iso-upper-hood-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <linearGradient
+            id="iso-upper-hood-grad"
+            x1="0%"
+            y1="0%"
+            x2="0%"
+            y2="100%"
+          >
             <stop offset="0%" stopColor={isLight ? "#f5f0e4" : "#2a2a33"} />
             <stop offset="100%" stopColor={isLight ? "#e5decb" : "#1c1c23"} />
           </linearGradient>
 
           {/* Lower Sloped Keybed Housing & Bezel Gradient (Matches Section 1 & 2 Keybed Bezel) */}
-          <linearGradient id="iso-keybed-bezel-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <linearGradient
+            id="iso-keybed-bezel-grad"
+            x1="0%"
+            y1="0%"
+            x2="0%"
+            y2="100%"
+          >
             <stop offset="0%" stopColor={isLight ? "#ede6d6" : "#22222b"} />
             <stop offset="52%" stopColor={isLight ? "#e2dac8" : "#15151b"} />
             <stop offset="100%" stopColor={isLight ? "#d2c9b4" : "#0c0c10"} />
           </linearGradient>
 
           {/* Vintage Spacebar Gradient (Matches Section 1 & 2 Spacebar) */}
-          <linearGradient id="iso-spacebar-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <linearGradient
+            id="iso-spacebar-grad"
+            x1="0%"
+            y1="0%"
+            x2="0%"
+            y2="100%"
+          >
             <stop offset="0%" stopColor={isLight ? "#33312d" : "#32323d"} />
             <stop offset="100%" stopColor={isLight ? "#181715" : "#14141a"} />
           </linearGradient>
@@ -487,10 +557,7 @@ export default function ExplodedTypewriter3D({
           ))}
 
           {/* Exploded Bottom Screws (#05-C: Churn & Analytics) */}
-          <g
-            transform={`translate(0, ${(28 * p).toFixed(1)})`}
-            opacity={p}
-          >
+          <g transform={`translate(0, ${(28 * p).toFixed(1)})`} opacity={p}>
             {[
               [285, 395],
               [385, 432],
@@ -538,7 +605,10 @@ export default function ExplodedTypewriter3D({
           onClick={() => onSelectUnit?.(0)}
           onMouseEnter={() => onSelectUnit?.(0)}
           className="pointer-events-auto cursor-pointer"
-          style={{ cursor: "pointer", pointerEvents: nonProblemOpacity < 0.1 ? "none" : "auto" }}
+          style={{
+            cursor: "pointer",
+            pointerEvents: nonProblemOpacity < 0.1 ? "none" : "auto",
+          }}
           opacity={nonProblemOpacity}
           filter={getUnitFilter(0)}
         >
@@ -553,7 +623,9 @@ export default function ExplodedTypewriter3D({
           />
 
           {/* Smaller Part #01-A (Left Feed Pinch Roller: Pricing Model) */}
-          <g transform={`translate(${(-48 * p).toFixed(1)}, ${(-18 * p).toFixed(1)})`}>
+          <g
+            transform={`translate(${(-48 * p).toFixed(1)}, ${(-18 * p).toFixed(1)})`}
+          >
             <line
               x1="348"
               y1="176"
@@ -606,10 +678,16 @@ export default function ExplodedTypewriter3D({
                       ? "rgba(194,106,27,0.18)"
                       : "rgba(232,155,60,0.22)"
                     : isLight
-                    ? "#ffffff"
-                    : "rgba(16,16,21,0.85)"
+                      ? "#ffffff"
+                      : "rgba(16,16,21,0.85)"
                 }
-                stroke={isUnitActive(0) ? accentAmber : isLight ? "#c5bdb0" : strokeFine}
+                stroke={
+                  isUnitActive(0)
+                    ? accentAmber
+                    : isLight
+                      ? "#c5bdb0"
+                      : strokeFine
+                }
                 strokeWidth="1.2"
               />
               <text
@@ -622,8 +700,8 @@ export default function ExplodedTypewriter3D({
                       ? "#9a5214"
                       : "#f4f0ea"
                     : isLight
-                    ? "#1a1917"
-                    : "#9e9a90"
+                      ? "#1a1917"
+                      : "#9e9a90"
                 }
                 className="font-mono-label text-[11px] font-semibold uppercase tracking-[0.12em]"
               >
@@ -714,14 +792,7 @@ export default function ExplodedTypewriter3D({
             >
               THE UNITED STATES OF AMERICA
             </text>
-            <rect
-              x="82"
-              y="48"
-              width="100"
-              height="18"
-              rx="2"
-              fill="#163622"
-            />
+            <rect x="82" y="48" width="100" height="18" rx="2" fill="#163622" />
             <text
               x="132"
               y="60"
@@ -788,7 +859,9 @@ export default function ExplodedTypewriter3D({
           </g>
 
           {/* Smaller Part #01-B (Right Pressure Roller & Tension Screw: Checkout Flow) */}
-          <g transform={`translate(${(52 * p).toFixed(1)}, ${(18 * p).toFixed(1)})`}>
+          <g
+            transform={`translate(${(52 * p).toFixed(1)}, ${(18 * p).toFixed(1)})`}
+          >
             <line
               x1={642 - 52 * p}
               y1={280 - 18 * p}
@@ -838,10 +911,16 @@ export default function ExplodedTypewriter3D({
                       ? "rgba(194,106,27,0.18)"
                       : "rgba(232,155,60,0.22)"
                     : isLight
-                    ? "#ffffff"
-                    : "rgba(16,16,21,0.85)"
+                      ? "#ffffff"
+                      : "rgba(16,16,21,0.85)"
                 }
-                stroke={isUnitActive(0) ? accentAmber : isLight ? "#c5bdb0" : strokeFine}
+                stroke={
+                  isUnitActive(0)
+                    ? accentAmber
+                    : isLight
+                      ? "#c5bdb0"
+                      : strokeFine
+                }
                 strokeWidth="1.2"
               />
               <text
@@ -854,8 +933,8 @@ export default function ExplodedTypewriter3D({
                       ? "#9a5214"
                       : "#f4f0ea"
                     : isLight
-                    ? "#1a1917"
-                    : "#9e9a90"
+                      ? "#1a1917"
+                      : "#9e9a90"
                 }
                 className="font-mono-label text-[11px] font-semibold uppercase tracking-[0.12em]"
               >
@@ -888,13 +967,21 @@ export default function ExplodedTypewriter3D({
           />
 
           {/* Smaller Part #02-A (Left Drive Gear & Bolt: Ad Campaigns) */}
-          <g transform={`translate(${(-54 * p).toFixed(1)}, ${(-19 * p).toFixed(1)})`}>
+          <g
+            transform={`translate(${(-54 * p).toFixed(1)}, ${(-19 * p).toFixed(1)})`}
+          >
             <line
               x1="340"
               y1="222"
               x2={340 + 54 * p}
               y2={222 + 19 * p}
-              stroke={isFixMode ? accentGreen : (isUnitActive(1) ? accentRed : strokeFine)}
+              stroke={
+                isFixMode
+                  ? accentGreen
+                  : isUnitActive(1)
+                    ? accentRed
+                    : strokeFine
+              }
               strokeWidth="1.2"
               strokeDasharray="3 3"
               opacity={p}
@@ -940,10 +1027,10 @@ export default function ExplodedTypewriter3D({
                   isFixMode
                     ? accentGreen
                     : isUnitActive(1)
-                    ? accentRed
-                    : isLight
-                    ? "#1a1917"
-                    : "#9e9a90"
+                      ? accentRed
+                      : isLight
+                        ? "#1a1917"
+                        : "#9e9a90"
                 }
                 className="font-mono-label text-[11px] font-semibold uppercase tracking-[0.12em]"
               >
@@ -984,13 +1071,21 @@ export default function ExplodedTypewriter3D({
           </g>
 
           {/* Smaller Part #02-B & #02-C (Right Twin Spur Gears: Email Marketing & SEO/Content) */}
-          <g transform={`translate(${(64 * p).toFixed(1)}, ${(23 * p).toFixed(1)})`}>
+          <g
+            transform={`translate(${(64 * p).toFixed(1)}, ${(23 * p).toFixed(1)})`}
+          >
             <line
               x1={620 - 64 * p}
               y1={323 - 23 * p}
               x2="668"
               y2="340"
-              stroke={isFixMode ? accentGreen : (isUnitActive(1) ? accentRed : strokeFine)}
+              stroke={
+                isFixMode
+                  ? accentGreen
+                  : isUnitActive(1)
+                    ? accentRed
+                    : strokeFine
+              }
               strokeWidth="1.2"
               strokeDasharray="3 3"
               opacity={p}
@@ -1025,7 +1120,13 @@ export default function ExplodedTypewriter3D({
               cx="676"
               cy="343"
               r="4.5"
-              fill={isFixMode ? accentGreen : (isUnitActive(1) ? accentRed : "#9e9a90")}
+              fill={
+                isFixMode
+                  ? accentGreen
+                  : isUnitActive(1)
+                    ? accentRed
+                    : "#9e9a90"
+              }
             />
 
             {/* Sub-part floating labels: Email Marketing + SEO & Content */}
@@ -1056,10 +1157,10 @@ export default function ExplodedTypewriter3D({
                   isFixMode
                     ? accentGreen
                     : isUnitActive(1)
-                    ? accentRed
-                    : isLight
-                    ? "#1a1917"
-                    : "#9e9a90"
+                      ? accentRed
+                      : isLight
+                        ? "#1a1917"
+                        : "#9e9a90"
                 }
                 className={`font-mono-label font-semibold uppercase ${
                   isFixMode
@@ -1096,14 +1197,14 @@ export default function ExplodedTypewriter3D({
                   isFixMode
                     ? accentGreen
                     : isUnitActive(1)
-                    ? accentRed
-                    : isLight
-                    ? "#1a1917"
-                    : "#9e9a90"
+                      ? accentRed
+                      : isLight
+                        ? "#1a1917"
+                        : "#9e9a90"
                 }
                 className="font-mono-label text-[11px] font-semibold uppercase tracking-[0.12em]"
               >
-                SEO &amp; Content
+                CHANNEL ROI
               </text>
             </g>
           </g>
@@ -1168,8 +1269,20 @@ export default function ExplodedTypewriter3D({
                   strokeLinecap="round"
                 />
                 {/* Contact sparks */}
-                <circle cx="348" cy="205" r="3.2" fill="#ffffff" filter="url(#repair-laser-glow)" />
-                <circle cx="334" cy="243" r="3.2" fill="#ffffff" filter="url(#repair-laser-glow)" />
+                <circle
+                  cx="348"
+                  cy="205"
+                  r="3.2"
+                  fill="#ffffff"
+                  filter="url(#repair-laser-glow)"
+                />
+                <circle
+                  cx="334"
+                  cy="243"
+                  r="3.2"
+                  fill="#ffffff"
+                  filter="url(#repair-laser-glow)"
+                />
               </g>
             </g>
           )}
@@ -1185,7 +1298,10 @@ export default function ExplodedTypewriter3D({
           onClick={() => onSelectUnit?.(2)}
           onMouseEnter={() => onSelectUnit?.(2)}
           className="pointer-events-auto cursor-pointer"
-          style={{ cursor: "pointer", pointerEvents: nonProblemOpacity < 0.1 ? "none" : "auto" }}
+          style={{
+            cursor: "pointer",
+            pointerEvents: nonProblemOpacity < 0.1 ? "none" : "auto",
+          }}
           opacity={nonProblemOpacity}
           filter={getUnitFilter(2)}
         >
@@ -1248,12 +1364,37 @@ export default function ExplodedTypewriter3D({
               cy="0"
               r="18"
               fill={isLight ? "#22211f" : "#0c0c10"}
-              stroke={isUnitActive(2) ? accentAmber : isLight ? "#8c867a" : "#5a5852"}
+              stroke={
+                isUnitActive(2) ? accentAmber : isLight ? "#8c867a" : "#5a5852"
+              }
               strokeWidth="1.8"
             />
-            <line x1="-13" y1="0" x2="13" y2="0" stroke="#9e9a90" strokeOpacity="0.65" strokeWidth="1.4" />
-            <line x1="0" y1="-13" x2="0" y2="13" stroke="#9e9a90" strokeOpacity="0.65" strokeWidth="1.4" />
-            <circle cx="0" cy="0" r="6" fill="url(#iso-steel-grad)" stroke="#181715" strokeWidth="0.8" />
+            <line
+              x1="-13"
+              y1="0"
+              x2="13"
+              y2="0"
+              stroke="#9e9a90"
+              strokeOpacity="0.65"
+              strokeWidth="1.4"
+            />
+            <line
+              x1="0"
+              y1="-13"
+              x2="0"
+              y2="13"
+              stroke="#9e9a90"
+              strokeOpacity="0.65"
+              strokeWidth="1.4"
+            />
+            <circle
+              cx="0"
+              cy="0"
+              r="6"
+              fill="url(#iso-steel-grad)"
+              stroke="#181715"
+              strokeWidth="0.8"
+            />
           </g>
 
           {/* Center Open Typebar Basket & Riveted "YOUR BUSINESS" Brass Plaque (#03-C: Brand Story) */}
@@ -1265,8 +1406,23 @@ export default function ExplodedTypewriter3D({
               stroke={isUnitActive(2) ? accentAmber : "#4a4842"}
               strokeWidth="1"
             />
-            <line x1="-22" y1="-15" x2="22" y2="-15" stroke="#c8c4bc" strokeOpacity="0.75" strokeWidth="1.1" />
-            <line x1="-14" y1="-10" x2="14" y2="-10" stroke="#e89b3c" strokeWidth="1.1" />
+            <line
+              x1="-22"
+              y1="-15"
+              x2="22"
+              y2="-15"
+              stroke="#c8c4bc"
+              strokeOpacity="0.75"
+              strokeWidth="1.1"
+            />
+            <line
+              x1="-14"
+              y1="-10"
+              x2="14"
+              y2="-10"
+              stroke="#e89b3c"
+              strokeWidth="1.1"
+            />
 
             {/* Riveted Brass Nameplate */}
             <rect
@@ -1302,12 +1458,37 @@ export default function ExplodedTypewriter3D({
               cy="0"
               r="18"
               fill={isLight ? "#22211f" : "#0c0c10"}
-              stroke={isUnitActive(2) ? accentAmber : isLight ? "#8c867a" : "#5a5852"}
+              stroke={
+                isUnitActive(2) ? accentAmber : isLight ? "#8c867a" : "#5a5852"
+              }
               strokeWidth="1.8"
             />
-            <line x1="-13" y1="0" x2="13" y2="0" stroke="#9e9a90" strokeOpacity="0.65" strokeWidth="1.4" />
-            <line x1="0" y1="-13" x2="0" y2="13" stroke="#9e9a90" strokeOpacity="0.65" strokeWidth="1.4" />
-            <circle cx="0" cy="0" r="6" fill="url(#iso-steel-grad)" stroke="#181715" strokeWidth="0.8" />
+            <line
+              x1="-13"
+              y1="0"
+              x2="13"
+              y2="0"
+              stroke="#9e9a90"
+              strokeOpacity="0.65"
+              strokeWidth="1.4"
+            />
+            <line
+              x1="0"
+              y1="-13"
+              x2="0"
+              y2="13"
+              stroke="#9e9a90"
+              strokeOpacity="0.65"
+              strokeWidth="1.4"
+            />
+            <circle
+              cx="0"
+              cy="0"
+              r="6"
+              fill="url(#iso-steel-grad)"
+              stroke="#181715"
+              strokeWidth="0.8"
+            />
           </g>
 
           {/* Sub-part callout pills for Positioning (Value Prop & Landing Page Copy) */}
@@ -1332,10 +1513,12 @@ export default function ExplodedTypewriter3D({
                     ? "rgba(194,106,27,0.18)"
                     : "rgba(232,155,60,0.22)"
                   : isLight
-                  ? "#ffffff"
-                  : "rgba(16,16,21,0.85)"
+                    ? "#ffffff"
+                    : "rgba(16,16,21,0.85)"
               }
-              stroke={isUnitActive(2) ? accentAmber : isLight ? "#c5bdb0" : strokeFine}
+              stroke={
+                isUnitActive(2) ? accentAmber : isLight ? "#c5bdb0" : strokeFine
+              }
               strokeWidth="1.2"
             />
             <text
@@ -1348,12 +1531,12 @@ export default function ExplodedTypewriter3D({
                     ? "#9a5214"
                     : "#f4f0ea"
                   : isLight
-                  ? "#1a1917"
-                  : "#9e9a90"
+                    ? "#1a1917"
+                    : "#9e9a90"
               }
               className="font-mono-label text-[11px] font-semibold uppercase tracking-[0.12em]"
             >
-              Value Proposition
+              Ideal Buyer Fit
             </text>
           </g>
         </g>
@@ -1421,7 +1604,15 @@ export default function ExplodedTypewriter3D({
                   height="20"
                   rx="2"
                   fill={isLight ? "#262522" : "#0b0b0e"}
-                  stroke={isFixMode ? accentGreen : (isUnitActive(3) ? accentRed : isLight ? "#8c867a" : "#9e9a90")}
+                  stroke={
+                    isFixMode
+                      ? accentGreen
+                      : isUnitActive(3)
+                        ? accentRed
+                        : isLight
+                          ? "#8c867a"
+                          : "#9e9a90"
+                  }
                   strokeWidth="1.1"
                 />
                 {/* IC pins */}
@@ -1430,7 +1621,13 @@ export default function ExplodedTypewriter3D({
                   y1="-3"
                   x2="20"
                   y2="-3"
-                  stroke={isFixMode ? accentGreen : (isUnitActive(3) ? accentRed : "#e89b3c")}
+                  stroke={
+                    isFixMode
+                      ? accentGreen
+                      : isUnitActive(3)
+                        ? accentRed
+                        : "#e89b3c"
+                  }
                   strokeWidth="1.5"
                   strokeDasharray="2 2"
                 />
@@ -1439,7 +1636,13 @@ export default function ExplodedTypewriter3D({
                   y1="23"
                   x2="20"
                   y2="23"
-                  stroke={isFixMode ? accentGreen : (isUnitActive(3) ? accentRed : "#e89b3c")}
+                  stroke={
+                    isFixMode
+                      ? accentGreen
+                      : isUnitActive(3)
+                        ? accentRed
+                        : "#e89b3c"
+                  }
                   strokeWidth="1.5"
                   strokeDasharray="2 2"
                 />
@@ -1462,14 +1665,22 @@ export default function ExplodedTypewriter3D({
           </g>
 
           {/* Smaller Part #04-B (Exploded Right Cylindrical Stepper Drive Motor & Gearbox — #11 & #12 in 3rd image!) */}
-          <g transform={`translate(${(78 * p).toFixed(1)}, ${(28 * p).toFixed(1)})`}>
+          <g
+            transform={`translate(${(78 * p).toFixed(1)}, ${(28 * p).toFixed(1)})`}
+          >
             {/* Dashed explosion guide line from chassis to motor */}
             <line
               x1={610 - 78 * p}
               y1={405 - 28 * p}
               x2="635"
               y2="414"
-              stroke={isFixMode ? accentGreen : (isUnitActive(3) ? accentRed : strokeFine)}
+              stroke={
+                isFixMode
+                  ? accentGreen
+                  : isUnitActive(3)
+                    ? accentRed
+                    : strokeFine
+              }
               strokeWidth="1.3"
               strokeDasharray="3 3"
               opacity={p}
@@ -1507,7 +1718,13 @@ export default function ExplodedTypewriter3D({
               y1="435"
               x2="734"
               y2="447"
-              stroke={isFixMode ? accentGreen : (isUnitActive(3) ? accentRed : "#e89b3c")}
+              stroke={
+                isFixMode
+                  ? accentGreen
+                  : isUnitActive(3)
+                    ? accentRed
+                    : "#e89b3c"
+              }
               strokeWidth="3.5"
             />
             <polygon
@@ -1545,14 +1762,16 @@ export default function ExplodedTypewriter3D({
                   isFixMode
                     ? accentGreen
                     : isUnitActive(3)
-                    ? accentRed
-                    : isLight
-                    ? "#1a1917"
-                    : "#9e9a90"
+                      ? accentRed
+                      : isLight
+                        ? "#1a1917"
+                        : "#9e9a90"
                 }
                 className="font-mono-label text-[11px] font-semibold uppercase tracking-[0.12em]"
               >
-                {isFixMode ? "Speed & Latency (Optimizing)" : "Speed & Latency (Friction)"}
+                {isFixMode
+                  ? "Speed & Latency (Optimizing)"
+                  : "Speed & Latency (Friction)"}
               </text>
             </g>
           </g>
@@ -1627,8 +1846,20 @@ export default function ExplodedTypewriter3D({
                   strokeWidth="1.2"
                   strokeLinecap="round"
                 />
-                <circle cx="324" cy="264" r="3.2" fill="#ffffff" filter="url(#repair-laser-glow)" />
-                <circle cx="324" cy="304" r="3.2" fill="#ffffff" filter="url(#repair-laser-glow)" />
+                <circle
+                  cx="324"
+                  cy="264"
+                  r="3.2"
+                  fill="#ffffff"
+                  filter="url(#repair-laser-glow)"
+                />
+                <circle
+                  cx="324"
+                  cy="304"
+                  r="3.2"
+                  fill="#ffffff"
+                  filter="url(#repair-laser-glow)"
+                />
               </g>
             </g>
           )}
@@ -1644,7 +1875,10 @@ export default function ExplodedTypewriter3D({
           onClick={() => onSelectUnit?.(4)}
           onMouseEnter={() => onSelectUnit?.(4)}
           className="pointer-events-auto cursor-pointer"
-          style={{ cursor: "pointer", pointerEvents: nonProblemOpacity < 0.1 ? "none" : "auto" }}
+          style={{
+            cursor: "pointer",
+            pointerEvents: nonProblemOpacity < 0.1 ? "none" : "auto",
+          }}
           opacity={nonProblemOpacity}
           filter={
             isUnitActive(4)
@@ -1693,21 +1927,33 @@ export default function ExplodedTypewriter3D({
               isUnitActive(4)
                 ? accentAmber
                 : isLight
-                ? "rgba(20,20,19,0.15)"
-                : "rgba(244,240,234,0.14)"
+                  ? "rgba(20,20,19,0.15)"
+                  : "rgba(244,240,234,0.14)"
             }
             strokeWidth="1.2"
           />
 
           {/* Terminal Header Dots & Text inside Isometric Screen */}
           <g transform="translate(256, 326) skewY(20)">
-            <circle cx="4" cy="4" r="2.5" fill={isLight ? "#c8c2b4" : "#3a3a46"} />
-            <circle cx="12" cy="4" r="2.5" fill={isLight ? "#c8c2b4" : "#3a3a46"} />
+            <circle
+              cx="4"
+              cy="4"
+              r="2.5"
+              fill={isLight ? "#c8c2b4" : "#3a3a46"}
+            />
+            <circle
+              cx="12"
+              cy="4"
+              r="2.5"
+              fill={isLight ? "#c8c2b4" : "#3a3a46"}
+            />
             <circle
               cx="20"
               cy="4"
               r="2.5"
-              fill={isUnitActive(4) ? accentAmber : isLight ? "#b0aa9c" : "#5c5954"}
+              fill={
+                isUnitActive(4) ? accentAmber : isLight ? "#b0aa9c" : "#5c5954"
+              }
             />
             <text
               x="138"
@@ -1737,7 +1983,9 @@ export default function ExplodedTypewriter3D({
               y1="14"
               x2="274"
               y2="14"
-              stroke={isLight ? "rgba(20,20,19,0.10)" : "rgba(244,240,234,0.10)"}
+              stroke={
+                isLight ? "rgba(20,20,19,0.10)" : "rgba(244,240,234,0.10)"
+              }
               strokeWidth="0.8"
             />
 
@@ -1769,7 +2017,9 @@ export default function ExplodedTypewriter3D({
               cy="0"
               r="12"
               fill={isLight ? "#262522" : "#18181d"}
-              stroke={isUnitActive(4) ? accentAmber : isLight ? "#9e988c" : "#b8b3a8"}
+              stroke={
+                isUnitActive(4) ? accentAmber : isLight ? "#9e988c" : "#b8b3a8"
+              }
               strokeWidth="1.5"
             />
             <text
@@ -1789,7 +2039,13 @@ export default function ExplodedTypewriter3D({
           <polygon
             points="286,403 496,479 493,491 283,415"
             fill="url(#iso-spacebar-grad)"
-            stroke={isUnitActive(4) ? accentAmber : isLight ? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.18)"}
+            stroke={
+              isUnitActive(4)
+                ? accentAmber
+                : isLight
+                  ? "rgba(0,0,0,0.4)"
+                  : "rgba(255,255,255,0.18)"
+            }
             strokeWidth="1.3"
           />
 
@@ -1800,7 +2056,9 @@ export default function ExplodedTypewriter3D({
               cy="0"
               r="12"
               fill={isLight ? "#262522" : "#18181d"}
-              stroke={isUnitActive(4) ? accentAmber : isLight ? "#9e988c" : "#b8b3a8"}
+              stroke={
+                isUnitActive(4) ? accentAmber : isLight ? "#9e988c" : "#b8b3a8"
+              }
               strokeWidth="1.5"
             />
             <text
@@ -1838,10 +2096,12 @@ export default function ExplodedTypewriter3D({
                     ? "rgba(194,106,27,0.18)"
                     : "rgba(232,155,60,0.22)"
                   : isLight
-                  ? "#ffffff"
-                  : "rgba(16,16,21,0.85)"
+                    ? "#ffffff"
+                    : "rgba(16,16,21,0.85)"
               }
-              stroke={isUnitActive(4) ? accentAmber : isLight ? "#c5bdb0" : strokeFine}
+              stroke={
+                isUnitActive(4) ? accentAmber : isLight ? "#c5bdb0" : strokeFine
+              }
               strokeWidth="1.2"
             />
             <text
@@ -1854,8 +2114,8 @@ export default function ExplodedTypewriter3D({
                     ? "#9a5214"
                     : "#f4f0ea"
                   : isLight
-                  ? "#1a1917"
-                  : "#9e9a90"
+                    ? "#1a1917"
+                    : "#9e9a90"
               }
               className="font-mono-label text-[11px] font-semibold uppercase tracking-[0.12em]"
             >
@@ -1884,7 +2144,10 @@ export default function ExplodedTypewriter3D({
             onClick={() => onSelectUnit?.(0)}
             onMouseEnter={() => onSelectUnit?.(0)}
             className="cursor-pointer group"
-            style={{ cursor: "pointer", pointerEvents: nonProblemOpacity < 0.1 ? "none" : "auto" }}
+            style={{
+              cursor: "pointer",
+              pointerEvents: nonProblemOpacity < 0.1 ? "none" : "auto",
+            }}
             opacity={nonProblemOpacity}
             role="button"
             aria-label="Inspect 01 Monetization & Pricing"
@@ -1902,7 +2165,9 @@ export default function ExplodedTypewriter3D({
               x="546"
               y="146.5"
               textAnchor="middle"
-              fill={isUnitActive(0) ? accentAmber : (isLight ? "#181715" : "#f4f0ea")}
+              fill={
+                isUnitActive(0) ? accentAmber : isLight ? "#181715" : "#f4f0ea"
+              }
               className="font-mono-label text-[12px] font-black"
             >
               1
@@ -1922,7 +2187,13 @@ export default function ExplodedTypewriter3D({
               height="36"
               rx="8"
               fill={isLight ? "#ffffff" : "#121217"}
-              stroke={isUnitActive(0) ? accentAmber : (isLight ? "#c5bdb0" : "rgba(255,255,255,0.2)")}
+              stroke={
+                isUnitActive(0)
+                  ? accentAmber
+                  : isLight
+                    ? "#c5bdb0"
+                    : "rgba(255,255,255,0.2)"
+              }
               strokeWidth={isUnitActive(0) ? "2" : "1.4"}
               filter="url(#iso-part-shadow)"
             />
@@ -1930,7 +2201,9 @@ export default function ExplodedTypewriter3D({
               x="730"
               y="102.5"
               textAnchor="middle"
-              fill={isUnitActive(0) ? accentAmber : (isLight ? "#181715" : "#f4f0ea")}
+              fill={
+                isUnitActive(0) ? accentAmber : isLight ? "#181715" : "#f4f0ea"
+              }
               className="font-mono-label text-[12px] font-bold uppercase tracking-[0.11em]"
             >
               01 · MONETIZATION &amp; PRICING
@@ -1966,14 +2239,28 @@ export default function ExplodedTypewriter3D({
               cy="252"
               r="14"
               fill={isLight ? "#ffffff" : "#121217"}
-              stroke={isFixMode ? accentGreen : (isUnitActive(1) ? accentRed : strokeBase)}
+              stroke={
+                isFixMode
+                  ? accentGreen
+                  : isUnitActive(1)
+                    ? accentRed
+                    : strokeBase
+              }
               strokeWidth={isFixMode || isUnitActive(1) ? "2" : "1.5"}
             />
             <text
               x="480"
               y="256.5"
               textAnchor="middle"
-              fill={isFixMode ? accentGreen : (isUnitActive(1) ? accentRed : (isLight ? "#181715" : "#f4f0ea"))}
+              fill={
+                isFixMode
+                  ? accentGreen
+                  : isUnitActive(1)
+                    ? accentRed
+                    : isLight
+                      ? "#181715"
+                      : "#f4f0ea"
+              }
               className="font-mono-label text-[12px] font-black"
             >
               2
@@ -1983,7 +2270,13 @@ export default function ExplodedTypewriter3D({
               y1="245"
               x2={isFixMode ? 515 : 525}
               y2={198}
-              stroke={isFixMode ? accentGreen : (isUnitActive(1) ? accentRed : strokeBase)}
+              stroke={
+                isFixMode
+                  ? accentGreen
+                  : isUnitActive(1)
+                    ? accentRed
+                    : strokeBase
+              }
               strokeWidth={isFixMode || isUnitActive(1) ? "2" : "1.2"}
             />
             <rect
@@ -1993,7 +2286,15 @@ export default function ExplodedTypewriter3D({
               height="36"
               rx="8"
               fill={isLight ? "#ffffff" : "#121217"}
-              stroke={isFixMode ? accentGreen : (isUnitActive(1) ? accentRed : (isLight ? "#c5bdb0" : "rgba(255,255,255,0.2)"))}
+              stroke={
+                isFixMode
+                  ? accentGreen
+                  : isUnitActive(1)
+                    ? accentRed
+                    : isLight
+                      ? "#c5bdb0"
+                      : "rgba(255,255,255,0.2)"
+              }
               strokeWidth={isFixMode || isUnitActive(1) ? "2" : "1.4"}
               filter="url(#iso-part-shadow)"
             />
@@ -2001,7 +2302,15 @@ export default function ExplodedTypewriter3D({
               x={isFixMode ? 630 : 632}
               y="184.5"
               textAnchor="middle"
-              fill={isFixMode ? accentGreen : (isUnitActive(1) ? accentRed : (isLight ? "#181715" : "#f4f0ea"))}
+              fill={
+                isFixMode
+                  ? accentGreen
+                  : isUnitActive(1)
+                    ? accentRed
+                    : isLight
+                      ? "#181715"
+                      : "#f4f0ea"
+              }
               className={`font-mono-label font-bold uppercase ${
                 isFixMode
                   ? "text-[11px] tracking-[0.05em]"
@@ -2009,12 +2318,12 @@ export default function ExplodedTypewriter3D({
               }`}
             >
               {isLaunchMode
-                ? "02 · MARKETING & GROWTH (SCALING)"
+                ? "02 · ACQUISITION & GROWTH (SCALING)"
                 : isTestMode
-                ? "02 · MARKETING & GROWTH (TESTED)"
-                : isFixMode
-                ? "02 · MARKETING & GROWTH (OPTIMIZING)"
-                : "02 · MARKETING & GROWTH"}
+                  ? "02 · ACQUISITION & GROWTH (TESTED)"
+                  : isFixMode
+                    ? "02 · ACQUISITION & GROWTH (OPTIMIZING)"
+                    : "02 · ACQUISITION & GROWTH"}
             </text>
           </g>
 
@@ -2024,10 +2333,13 @@ export default function ExplodedTypewriter3D({
             onClick={() => onSelectUnit?.(2)}
             onMouseEnter={() => onSelectUnit?.(2)}
             className="cursor-pointer group"
-            style={{ cursor: "pointer", pointerEvents: nonProblemOpacity < 0.1 ? "none" : "auto" }}
+            style={{
+              cursor: "pointer",
+              pointerEvents: nonProblemOpacity < 0.1 ? "none" : "auto",
+            }}
             opacity={nonProblemOpacity}
             role="button"
-            aria-label="Inspect 03 Positioning & Messaging"
+            aria-label="Inspect 03 PMF & Positioning"
           >
             {/* Number Pin 3 (Patent style) */}
             <circle
@@ -2042,7 +2354,9 @@ export default function ExplodedTypewriter3D({
               x="312"
               y="306.5"
               textAnchor="middle"
-              fill={isUnitActive(2) ? accentAmber : (isLight ? "#181715" : "#f4f0ea")}
+              fill={
+                isUnitActive(2) ? accentAmber : isLight ? "#181715" : "#f4f0ea"
+              }
               className="font-mono-label text-[12px] font-black"
             >
               3
@@ -2062,7 +2376,13 @@ export default function ExplodedTypewriter3D({
               height="36"
               rx="8"
               fill={isLight ? "#ffffff" : "#121217"}
-              stroke={isUnitActive(2) ? accentAmber : (isLight ? "#c5bdb0" : "rgba(255,255,255,0.2)")}
+              stroke={
+                isUnitActive(2)
+                  ? accentAmber
+                  : isLight
+                    ? "#c5bdb0"
+                    : "rgba(255,255,255,0.2)"
+              }
               strokeWidth={isUnitActive(2) ? "2" : "1.4"}
               filter="url(#iso-part-shadow)"
             />
@@ -2070,10 +2390,12 @@ export default function ExplodedTypewriter3D({
               x="160"
               y="306.5"
               textAnchor="middle"
-              fill={isUnitActive(2) ? accentAmber : (isLight ? "#181715" : "#f4f0ea")}
+              fill={
+                isUnitActive(2) ? accentAmber : isLight ? "#181715" : "#f4f0ea"
+              }
               className="font-mono-label text-[12px] font-bold uppercase tracking-[0.11em]"
             >
-              03 · POSITIONING &amp; COPY
+              03 · PMF &amp; POSITIONING
             </text>
           </g>
 
@@ -2106,14 +2428,28 @@ export default function ExplodedTypewriter3D({
               cy="468"
               r="14"
               fill={isLight ? "#ffffff" : "#121217"}
-              stroke={isFixMode ? accentGreen : (isUnitActive(3) ? accentRed : strokeBase)}
+              stroke={
+                isFixMode
+                  ? accentGreen
+                  : isUnitActive(3)
+                    ? accentRed
+                    : strokeBase
+              }
               strokeWidth={isFixMode || isUnitActive(3) ? "2" : "1.5"}
             />
             <text
               x="740"
               y="472.5"
               textAnchor="middle"
-              fill={isFixMode ? accentGreen : (isUnitActive(3) ? accentRed : (isLight ? "#181715" : "#f4f0ea"))}
+              fill={
+                isFixMode
+                  ? accentGreen
+                  : isUnitActive(3)
+                    ? accentRed
+                    : isLight
+                      ? "#181715"
+                      : "#f4f0ea"
+              }
               className="font-mono-label text-[12px] font-black"
             >
               4
@@ -2123,7 +2459,13 @@ export default function ExplodedTypewriter3D({
               y1="474"
               x2={isFixMode ? 765 : 785}
               y2={490}
-              stroke={isFixMode ? accentGreen : (isUnitActive(3) ? accentRed : strokeBase)}
+              stroke={
+                isFixMode
+                  ? accentGreen
+                  : isUnitActive(3)
+                    ? accentRed
+                    : strokeBase
+              }
               strokeWidth={isFixMode || isUnitActive(3) ? "2" : "1.2"}
             />
             <rect
@@ -2133,7 +2475,15 @@ export default function ExplodedTypewriter3D({
               height="36"
               rx="8"
               fill={isLight ? "#ffffff" : "#121217"}
-              stroke={isFixMode ? accentGreen : (isUnitActive(3) ? accentRed : (isLight ? "#c5bdb0" : "rgba(255,255,255,0.2)"))}
+              stroke={
+                isFixMode
+                  ? accentGreen
+                  : isUnitActive(3)
+                    ? accentRed
+                    : isLight
+                      ? "#c5bdb0"
+                      : "rgba(255,255,255,0.2)"
+              }
               strokeWidth={isFixMode || isUnitActive(3) ? "2" : "1.4"}
               filter="url(#iso-part-shadow)"
             />
@@ -2141,7 +2491,15 @@ export default function ExplodedTypewriter3D({
               x={isFixMode ? 790 : 792}
               y="512.5"
               textAnchor="middle"
-              fill={isFixMode ? accentGreen : (isUnitActive(3) ? accentRed : (isLight ? "#181715" : "#f4f0ea"))}
+              fill={
+                isFixMode
+                  ? accentGreen
+                  : isUnitActive(3)
+                    ? accentRed
+                    : isLight
+                      ? "#181715"
+                      : "#f4f0ea"
+              }
               className={`font-mono-label font-bold uppercase ${
                 isFixMode
                   ? "text-[11px] tracking-[0.05em]"
@@ -2151,10 +2509,10 @@ export default function ExplodedTypewriter3D({
               {isLaunchMode
                 ? "04 · PRODUCT & DEV (SHIPPED)"
                 : isTestMode
-                ? "04 · PRODUCT & DEV (VERIFIED)"
-                : isFixMode
-                ? "04 · PRODUCT & DEV (ADDING FEATURES)"
-                : "04 · PRODUCT & DEV"}
+                  ? "04 · PRODUCT & DEV (VERIFIED)"
+                  : isFixMode
+                    ? "04 · PRODUCT & DEV (ADDING FEATURES)"
+                    : "04 · PRODUCT & DEV"}
             </text>
           </g>
 
@@ -2164,10 +2522,13 @@ export default function ExplodedTypewriter3D({
             onClick={() => onSelectUnit?.(4)}
             onMouseEnter={() => onSelectUnit?.(4)}
             className="cursor-pointer group"
-            style={{ cursor: "pointer", pointerEvents: nonProblemOpacity < 0.1 ? "none" : "auto" }}
+            style={{
+              cursor: "pointer",
+              pointerEvents: nonProblemOpacity < 0.1 ? "none" : "auto",
+            }}
             opacity={nonProblemOpacity}
             role="button"
-            aria-label="Inspect 05 Onboarding & Retention"
+            aria-label="Inspect 05 Onboarding & Aha! Moment"
           >
             {/* Number Pin 5 (Patent style) */}
             <circle
@@ -2182,7 +2543,9 @@ export default function ExplodedTypewriter3D({
               x="345"
               y="446.5"
               textAnchor="middle"
-              fill={isUnitActive(4) ? accentAmber : (isLight ? "#181715" : "#f4f0ea")}
+              fill={
+                isUnitActive(4) ? accentAmber : isLight ? "#181715" : "#f4f0ea"
+              }
               className="font-mono-label text-[12px] font-black"
             >
               5
@@ -2202,7 +2565,13 @@ export default function ExplodedTypewriter3D({
               height="36"
               rx="8"
               fill={isLight ? "#ffffff" : "#121217"}
-              stroke={isUnitActive(4) ? accentAmber : (isLight ? "#c5bdb0" : "rgba(255,255,255,0.2)")}
+              stroke={
+                isUnitActive(4)
+                  ? accentAmber
+                  : isLight
+                    ? "#c5bdb0"
+                    : "rgba(255,255,255,0.2)"
+              }
               strokeWidth={isUnitActive(4) ? "2" : "1.4"}
               filter="url(#iso-part-shadow)"
             />
@@ -2210,10 +2579,12 @@ export default function ExplodedTypewriter3D({
               x="217"
               y="490.5"
               textAnchor="middle"
-              fill={isUnitActive(4) ? accentAmber : (isLight ? "#181715" : "#f4f0ea")}
+              fill={
+                isUnitActive(4) ? accentAmber : isLight ? "#181715" : "#f4f0ea"
+              }
               className="font-mono-label text-[12px] font-bold uppercase tracking-[0.11em]"
             >
-              05 · ONBOARDING &amp; RETENTION
+              05 · ONBOARDING &amp; AHA! MOMENT
             </text>
           </g>
         </g>

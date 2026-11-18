@@ -11,9 +11,7 @@ import DashboardSection from "@/components/dashboard/DashboardSection";
 import ProcessSection from "@/components/process/ProcessSection";
 import Footer from "@/components/Footer";
 import HomeLoader from "@/components/HomeLoader";
-import LeadCaptureModal, {
-  captureFirstLandingAttribution,
-} from "@/components/leads/LeadCaptureModal";
+import { captureFirstLandingAttribution } from "@/components/leads/LeadCaptureModal";
 import type { LeadIntent } from "@/config/leadCopy";
 
 if (typeof window !== "undefined") {
@@ -21,12 +19,22 @@ if (typeof window !== "undefined") {
 }
 
 export default function HomePage() {
-  const [activeDialog, setActiveDialog] = useState<{
-    intent: LeadIntent;
-    sourceButton: string;
-  } | null>(null);
   const [isLoaderActive, setIsLoaderActive] = useState<boolean>(true);
   const snapToBeatRef = useRef<((beat: number) => void) | null>(null);
+
+  const openCtaPageInNewTab = useCallback(
+    (intent: LeadIntent, sourceButton: string) => {
+      if (typeof window !== "undefined") {
+        const path = intent === "conversation" ? "/talk" : "/audit";
+        window.open(
+          `${path}?source=${encodeURIComponent(sourceButton)}`,
+          "_blank",
+          "noopener,noreferrer"
+        );
+      }
+    },
+    []
+  );
 
   const handleLoaderComplete = useCallback(() => {
     window.scrollTo(0, 0);
@@ -54,8 +62,8 @@ export default function HomePage() {
     const fixedEl = desktopFixedStageRef.current;
     if (!fixedEl) return;
 
-    // Once Section 2 fades into "Let's fix it together" (> 2.15 * vh), hide the Section 1/2 fixed stage
-    if (window.scrollY > window.innerHeight * 2.15) {
+    // Once Section 2's typewriter stage has fully faded out into "Let's fix it together" (> 2.5 * vh), hide the Section 1/2 fixed stage
+    if (window.scrollY > window.innerHeight * 2.5) {
       if (fixedEl.style.visibility !== "hidden") {
         fixedEl.style.visibility = "hidden";
       }
@@ -78,24 +86,6 @@ export default function HomePage() {
   // Beat 8: "4. Launch and measure" active
   // Beat 9: "5. Iterate and scale" active
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (mq.matches) return;
-
-    type BeatIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
-    const MAX_BEAT: BeatIndex = 12;
-    let isAnimating = false;
-    let minDwellUntil = performance.now() + 450;
-    let programmaticScrollGuardUntil = 0;
-    let gestureLocked = false;
-    let lockedDirection = 0;
-    let lastWheelEventTime = 0;
-    let prevAbsDelta = 0;
-    let minAbsDeltaDuringLock = Infinity;
-    let touchStartY = 0;
-    let touchGestureConsumed = false;
-    let scrollbarSnapTimer: ReturnType<typeof setTimeout> | null = null;
-    const scrollTweenObj = { y: window.scrollY };
-
     const getSection2Top = () => {
       const el = document.getElementById("dashboard");
       return el ? el.offsetTop : window.innerHeight;
@@ -112,21 +102,7 @@ export default function HomePage() {
       return Math.max(fallbackMin + 100, maxScroll);
     };
 
-    const getBeatStops = (): [
-      number,
-      number,
-      number,
-      number,
-      number,
-      number,
-      number,
-      number,
-      number,
-      number,
-      number,
-      number,
-      number
-    ] => {
+    const getBeatStops = () => {
       const s2Top = getSection2Top();
       const s3Top = getSection3Top();
       const vh = window.innerHeight;
@@ -148,281 +124,42 @@ export default function HomePage() {
       ];
     };
 
-    const getNearestBeat = (y: number): BeatIndex => {
+    snapToBeatRef.current = (beat: number) => {
       const stops = getBeatStops();
-      let bestIdx: BeatIndex = 0;
-      let bestDist = Math.abs(y - stops[0]);
-      for (let i = 1; i < stops.length; i++) {
-        const d = Math.abs(y - stops[i]);
-        if (d < bestDist) {
-          bestDist = d;
-          bestIdx = i as BeatIndex;
-        }
-      }
-      return bestIdx;
-    };
-
-    let currentBeat: BeatIndex = getNearestBeat(window.scrollY);
-
-    const snapToBeat = (targetBeat: BeatIndex) => {
-      const stops = getBeatStops();
-      const targetY = stops[targetBeat];
-
-      if (Math.abs(window.scrollY - targetY) < 2 && currentBeat === targetBeat) {
-        return;
-      }
-
-      const prevBeat = currentBeat;
-      isAnimating = true;
-      currentBeat = targetBeat;
-
-      gsap.killTweensOf(scrollTweenObj);
-      scrollTweenObj.y = window.scrollY;
-
-      // Custom pacing per story beat
-      const duration =
-        Math.abs(targetBeat - prevBeat) > 1
-          ? 1.05
-          : prevBeat >= 5 && targetBeat >= 5
-          ? 0.92
-          : (prevBeat === 4 && targetBeat === 5) ||
-            (prevBeat === 5 && targetBeat === 4)
-          ? 0.9
-          : (prevBeat === 3 && targetBeat === 4) ||
-            (prevBeat === 4 && targetBeat === 3)
-          ? 0.88
-          : (prevBeat === 2 && targetBeat === 3) ||
-            (prevBeat === 3 && targetBeat === 2)
-          ? 0.92
-          : (prevBeat === 1 && targetBeat === 2) ||
-            (prevBeat === 2 && targetBeat === 1)
-          ? 0.62
-          : 0.78;
-
-      const now = performance.now();
-      // Mandatory post-arrival dwell (520ms) so the user always sees each story beat before advancing
-      minDwellUntil = now + duration * 1000 + 520;
-      programmaticScrollGuardUntil = now + duration * 1000 + 400;
-
-      gsap.to(scrollTweenObj, {
-        y: targetY,
-        duration,
-        ease: "power2.inOut",
-        onUpdate: () => {
-          programmaticScrollGuardUntil = performance.now() + 350;
-          window.scrollTo(0, Math.round(scrollTweenObj.y));
-          ScrollTrigger.update();
-          syncFixedStage();
-        },
-        onComplete: () => {
-          programmaticScrollGuardUntil = performance.now() + 400;
-          window.scrollTo(0, targetY);
-          ScrollTrigger.update();
-          syncFixedStage();
-          isAnimating = false;
-        },
+      const clamped = Math.max(0, Math.min(stops.length - 1, Math.round(beat)));
+      window.scrollTo({
+        top: stops[clamped],
+        behavior: "smooth",
       });
     };
 
-    snapToBeatRef.current = (beat: number) => {
-      const clamped = Math.max(0, Math.min(MAX_BEAT, Math.round(beat))) as BeatIndex;
-      gestureLocked = true;
-      minAbsDeltaDuringLock = Infinity;
-      snapToBeat(clamped);
-    };
-
-    const handleWheel = (e: WheelEvent) => {
-      if (activeDialog || isLoaderActive) return;
-
-      const stops = getBeatStops();
-      const maxBeatY = stops[MAX_BEAT];
-      if (window.scrollY <= maxBeatY + 10) {
-        e.preventDefault();
-      }
-
-      const now = performance.now();
-      const absDelta = Math.abs(e.deltaY);
-      const dir = Math.sign(e.deltaY);
-      const timeSinceLastWheel = now - lastWheelEventTime;
-      lastWheelEventTime = now;
-
-      // Ignore tiny trackpad micro-jitter
-      if (absDelta < 7) {
-        prevAbsDelta = absDelta;
-        return;
-      }
-
-      // If currently animating or inside the mandatory story-beat dwell window:
-      // keep gestureLocked = true so any swipe made mid-transition (and its inertia tail)
-      // cannot auto-fire when the dwell window finishes.
-      if (isAnimating || now < minDwellUntil) {
-        gestureLocked = true;
-        lockedDirection = dir;
-        prevAbsDelta = absDelta;
-        minAbsDeltaDuringLock = Math.min(minAbsDeltaDuringLock, absDelta);
-        return;
-      }
-
-      // Check if an existing trackpad inertia lock can be released:
-      if (gestureLocked) {
-        minAbsDeltaDuringLock = Math.min(minAbsDeltaDuringLock, absDelta);
-
-        const isNewGestureAfterSilence = timeSinceLastWheel >= 135;
-        const isDirectionReversal = dir !== 0 && dir !== lockedDirection && absDelta >= 15;
-        // A deliberate fresh finger flick after inertia had already decayed
-        const isFreshAccelerationSpike =
-          minAbsDeltaDuringLock <= 20 &&
-          absDelta >= 26 &&
-          absDelta > prevAbsDelta * 1.55;
-
-        if (
-          isNewGestureAfterSilence ||
-          isDirectionReversal ||
-          isFreshAccelerationSpike
-        ) {
-          gestureLocked = false;
-        } else {
-          prevAbsDelta = absDelta;
-          return;
-        }
-      }
-
-      prevAbsDelta = absDelta;
-
-      if (e.deltaY > 0 && currentBeat < MAX_BEAT) {
-        gestureLocked = true;
-        lockedDirection = 1;
-        minAbsDeltaDuringLock = absDelta;
-        snapToBeat((currentBeat + 1) as BeatIndex);
-      } else if (e.deltaY < 0 && currentBeat > 0) {
-        gestureLocked = true;
-        lockedDirection = -1;
-        minAbsDeltaDuringLock = absDelta;
-        snapToBeat((currentBeat - 1) as BeatIndex);
-      }
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (activeDialog || isLoaderActive) return;
-      const tag = (e.target as HTMLElement | null)?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-
-      const now = performance.now();
-      if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") {
-        if (currentBeat < MAX_BEAT) {
-          e.preventDefault();
-          if (!isAnimating && now >= minDwellUntil) {
-            snapToBeat((currentBeat + 1) as BeatIndex);
-          }
-        }
-      } else if (e.key === "ArrowUp" || e.key === "PageUp") {
-        if (currentBeat > 0) {
-          e.preventDefault();
-          if (!isAnimating && now >= minDwellUntil) {
-            snapToBeat((currentBeat - 1) as BeatIndex);
-          }
-        }
-      }
-    };
-
-    const handleTouchStart = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        touchStartY = e.touches[0].clientY;
-        touchGestureConsumed = false;
-      }
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (activeDialog || isLoaderActive || e.touches.length === 0) return;
-      const deltaY = touchStartY - e.touches[0].clientY;
-      if (Math.abs(deltaY) < 28) return;
-
-      e.preventDefault();
-      const now = performance.now();
-      if (isAnimating || now < minDwellUntil || touchGestureConsumed) return;
-
-      if (deltaY > 0 && currentBeat < MAX_BEAT) {
-        touchGestureConsumed = true;
-        touchStartY = e.touches[0].clientY;
-        snapToBeat((currentBeat + 1) as BeatIndex);
-      } else if (deltaY < 0 && currentBeat > 0) {
-        touchGestureConsumed = true;
-        touchStartY = e.touches[0].clientY;
-        snapToBeat((currentBeat - 1) as BeatIndex);
-      }
-    };
-
-    // Fallback ONLY if user manually drags the browser scrollbar thumb and releases between beats
-    const handleNativeScroll = () => {
-      syncFixedStage();
-      const now = performance.now();
-      if (
-        isAnimating ||
-        isLoaderActive ||
-        now < programmaticScrollGuardUntil
-      ) {
-        return;
-      }
-      if (scrollbarSnapTimer) clearTimeout(scrollbarSnapTimer);
-      scrollbarSnapTimer = setTimeout(() => {
-        if (
-          isAnimating ||
-          isLoaderActive ||
-          performance.now() < programmaticScrollGuardUntil
-        ) {
-          return;
-        }
-        const stops = getBeatStops();
-        const y = window.scrollY;
-        const nearest = getNearestBeat(y);
-        // Only snap if the user manually dragged the scrollbar significantly off the current beat stop
-        if (
-          Math.abs(y - stops[currentBeat]) > 45 &&
-          Math.abs(y - stops[nearest]) > 8 &&
-          y <= stops[MAX_BEAT] + 20
-        ) {
-          snapToBeat(nearest);
-        } else {
-          currentBeat = nearest;
-        }
-      }, 180);
-    };
-
     syncFixedStage();
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchmove", handleTouchMove, { passive: false });
-    window.addEventListener("scroll", handleNativeScroll, { passive: true });
+    window.addEventListener("scroll", syncFixedStage, { passive: true });
     window.addEventListener("resize", syncFixedStage);
 
     return () => {
-      if (scrollbarSnapTimer) clearTimeout(scrollbarSnapTimer);
-      gsap.killTweensOf(scrollTweenObj);
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("scroll", handleNativeScroll);
+      window.removeEventListener("scroll", syncFixedStage);
       window.removeEventListener("resize", syncFixedStage);
     };
-  }, [activeDialog, isLoaderActive, syncFixedStage]);
+  }, [syncFixedStage]);
 
   const handleSpend = useCallback(
-    (tier: 20 | 50 | 100, customEarnedDelta?: number) => {
+    (tier: 20 | 5000 | 10000, customEarnedDelta?: number) => {
+      const minEarned = Math.round(tier * 0.2);
+      const maxEarned = Math.round(tier * 0.5);
+      const rawRand =
+        Math.floor(Math.random() * (maxEarned - minEarned + 1)) + minEarned;
+      const fallbackEarned =
+        tier >= 5000 ? Math.round(rawRand / 50) * 50 : rawRand;
       const earnedDelta =
         typeof customEarnedDelta === "number"
           ? customEarnedDelta
-          : tier === 20
-          ? Math.floor(Math.random() * 5) + 1 // 1 - 5 USD
-          : tier === 50
-          ? Math.floor(Math.random() * 16) + 5 // 5 - 20 USD
-          : Math.floor(Math.random() * 21) + 20; // 20 - 40 USD
+          : fallbackEarned;
 
       setSpent((prevSpent) => prevSpent + tier);
       setEarned((prevEarned) => +(prevEarned + earnedDelta).toFixed(2));
 
-      if (tier === 100) {
+      if (tier === 10000) {
         setHundredClickCount((prev) => prev + 1);
       }
     },
@@ -435,7 +172,7 @@ export default function HomePage() {
 
       <Navbar
         onAuditClick={(sourceButton = "nav") =>
-          setActiveDialog({ intent: "audit", sourceButton })
+          openCtaPageInNewTab("audit", sourceButton)
         }
       />
 
@@ -468,10 +205,10 @@ export default function HomePage() {
 
           <HeroSection
             onAuditClick={(sourceButton = "hero") =>
-              setActiveDialog({ intent: "audit", sourceButton })
+              openCtaPageInNewTab("audit", sourceButton)
             }
             onConversationClick={(sourceButton = "hero") =>
-              setActiveDialog({ intent: "conversation", sourceButton })
+              openCtaPageInNewTab("conversation", sourceButton)
             }
             externalSpent={spent}
             externalEarned={earned}
@@ -490,7 +227,7 @@ export default function HomePage() {
 
         <ProcessSection
           onAuditClick={(sourceButton = "close-section") =>
-            setActiveDialog({ intent: "audit", sourceButton })
+            openCtaPageInNewTab("audit", sourceButton)
           }
           onStepSelect={(stepIndex) => {
             snapToBeatRef.current?.(5 + stepIndex);
@@ -500,14 +237,8 @@ export default function HomePage() {
 
       <Footer
         onAuditClick={(sourceButton = "footer") =>
-          setActiveDialog({ intent: "audit", sourceButton })
+          openCtaPageInNewTab("audit", sourceButton)
         }
-      />
-
-      <LeadCaptureModal
-        intent={activeDialog?.intent ?? null}
-        sourceButton={activeDialog?.sourceButton ?? "modal"}
-        onClose={() => setActiveDialog(null)}
       />
     </div>
   );

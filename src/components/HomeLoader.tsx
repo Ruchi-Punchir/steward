@@ -45,7 +45,7 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
 
     const setHeroTypewritersOpacity = (val: string) => {
       const nodes = document.querySelectorAll<HTMLElement>(
-        '[data-typewriter-hero="true"]'
+        '[data-typewriter-hero="true"]',
       );
       nodes.forEach((node) => {
         node.style.opacity = val;
@@ -118,7 +118,7 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
 
     const loaderTw = loaderTypewriterRef.current;
     const heroNodes = Array.from(
-      document.querySelectorAll<HTMLElement>('[data-typewriter-hero="true"]')
+      document.querySelectorAll<HTMLElement>('[data-typewriter-hero="true"]'),
     );
     const activeHeroTw =
       heroNodes.find((el) => {
@@ -129,7 +129,7 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
     // Reset any mouse-parallax tilt on Section 1's typewriter so coordinates match 1:1
     if (activeHeroTw) {
       const tiltEl = activeHeroTw.querySelector<HTMLElement>(
-        '[data-typewriter-tilt="true"]'
+        '[data-typewriter-tilt="true"]',
       );
       if (tiltEl) {
         gsap.set(tiltEl, { x: 0, y: 0 });
@@ -170,7 +170,7 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
           ease: "power2.inOut",
           stagger: 0.04,
         },
-        0
+        0,
       );
 
       // Dissolve loader backdrop so Section 1 reveals around the moving typewriter
@@ -181,7 +181,7 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
           duration: 0.72,
           ease: "power2.inOut",
         },
-        0.14
+        0.14,
       );
 
       // Glide and scale the typewriter directly into its Section 1 home
@@ -194,7 +194,7 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
           duration: 1.05,
           ease: "expo.inOut",
         },
-        0
+        0,
       );
     } else {
       // Fallback if target is not found
@@ -390,8 +390,8 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
                           i === 12
                             ? "h-2 bg-[#e89b3c]"
                             : i % 4 === 0
-                            ? "h-1.5 bg-[#d8d4cc]/70"
-                            : "h-1 bg-[#d8d4cc]/30"
+                              ? "h-1.5 bg-[#d8d4cc]/70"
+                              : "h-1 bg-[#d8d4cc]/30"
                         }`}
                       />
                     ))}
@@ -528,8 +528,8 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
                           segIdx === 0
                             ? "animate-pulse bg-[#e89b3c]/75"
                             : isLight
-                            ? "bg-black/15"
-                            : "bg-white/10"
+                              ? "bg-black/15"
+                              : "bg-white/10"
                         }`}
                       />
                     ))}
@@ -669,7 +669,7 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
           style={{ textWrap: "balance" }}
           className="mt-2 max-w-[20ch] text-balance text-3xl font-semibold leading-[1.08] tracking-[-0.035em] text-[var(--text-primary)] sm:text-4xl lg:text-5xl xl:text-[3.35rem]"
         >
-          Imagine this represent{" "}
+          Imagine this represents{" "}
           <span className="font-serif-editorial text-[1.08em] font-normal italic tracking-[-0.01em] text-[#e89b3c]">
             your business
           </span>

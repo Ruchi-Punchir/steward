@@ -4,7 +4,7 @@ import React, { useRef, useState } from "react";
 import gsap from "gsap";
 import { CrispDollarBillGraphic } from "./TestSolutionStage";
 
-type SpendTier = 20 | 50 | 100;
+type SpendTier = 20 | 5000 | 10000;
 
 interface LaunchMeasureStageProps {
   /** 0..1 progress of Stage 4 ("Launch and measure") */
@@ -16,16 +16,16 @@ const PROFIT_MULTIPLIER = 4.2; // Every $1 spent now yields $4.20 in revenue
 
 const LAUNCH_TERMINAL_LOGS: Record<SpendTier, [string, string]> = {
   20: [
-    "scaling high-converting acquisition...",
-    "+$20.00 spent → +$84.00 revenue!",
+    "Automated repetitive SaaS workflows...",
+    "Earned +$84 (+4.2x net revenue)",
   ],
-  50: [
-    "compounding verified funnel...",
-    "+$50.00 spent → +$210.00 revenue!",
+  5000: [
+    "Scaled ads into high-converting funnel...",
+    "Earned +$21,000 (+4.2x net revenue)",
   ],
-  100: [
-    "shipping high-ROI feature release...",
-    "+$100.00 spent → +$420.00 revenue!",
+  10000: [
+    "Shipped revenue-critical onboarding & checkout...",
+    "Earned +$42,000 (+4.2x net revenue)",
   ],
 };
 
@@ -33,8 +33,8 @@ export default function LaunchMeasureStage({
   launchProgress,
   isLight,
 }: LaunchMeasureStageProps) {
-  const [spent, setSpent] = useState<number>(280);
-  const [earned, setEarned] = useState<number>(1180);
+  const [spent, setSpent] = useState<number>(15000);
+  const [earned, setEarned] = useState<number>(63150);
   const [activeTier, setActiveTier] = useState<SpendTier | null>(null);
   const [billPercent, setBillPercent] = useState<number>(62);
   const [terminalLines, setTerminalLines] = useState<[string, string]>([
@@ -85,7 +85,7 @@ export default function LaunchMeasureStage({
     const pathEl =
       tier === 20
         ? wire20PathRef.current
-        : tier === 50
+        : tier === 5000
         ? wire50PathRef.current
         : wire100PathRef.current;
     const dotGroup = pulseDotGroupRef.current;
@@ -597,20 +597,20 @@ export default function LaunchMeasureStage({
             <path
               d="M 250 74 Q 250 175 250 245"
               fill="none"
-              stroke={activeTier === 50 ? "#10b981" : "#e89b3c"}
-              strokeWidth={activeTier === 50 ? "3.2" : "2.2"}
+              stroke={activeTier === 5000 ? "#10b981" : "#e89b3c"}
+              strokeWidth={activeTier === 5000 ? "3.2" : "2.2"}
               strokeLinecap="round"
-              strokeDasharray={activeTier === 50 ? undefined : "3 10"}
-              className={activeTier === 50 ? "" : "wire-energy-flow"}
+              strokeDasharray={activeTier === 5000 ? undefined : "3 10"}
+              className={activeTier === 5000 ? "" : "wire-energy-flow"}
             />
             <path
               d="M 438 96 Q 385 215 315 255"
               fill="none"
-              stroke={activeTier === 100 ? "#10b981" : "#e89b3c"}
-              strokeWidth={activeTier === 100 ? "3.4" : "2.4"}
+              stroke={activeTier === 10000 ? "#10b981" : "#e89b3c"}
+              strokeWidth={activeTier === 10000 ? "3.4" : "2.4"}
               strokeLinecap="round"
-              strokeDasharray={activeTier === 100 ? undefined : "3 10"}
-              className={activeTier === 100 ? "" : "wire-energy-flow"}
+              strokeDasharray={activeTier === 10000 ? undefined : "3 10"}
+              className={activeTier === 10000 ? "" : "wire-energy-flow"}
             />
 
             {/* Traveling energy pulse dot */}
@@ -632,12 +632,12 @@ export default function LaunchMeasureStage({
           </svg>
 
           {/* LAYER 2: THREE ARCHED SPEND BUTTONS ABOVE TYPEWRITER (EXACT SECTION 1 LAYOUT) */}
-          {/* NODE 1: +$20 (TOOLS & SUBS) */}
+          {/* NODE 1: +$20/m (AI & TOOL SUBS) */}
           <div className="pointer-events-auto absolute left-[0%] top-[4%] z-30">
             <button
               type="button"
               onClick={() => handleInjectSpend(20)}
-              className={`group relative flex h-[72px] w-[104px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-all duration-200 active:scale-[0.97] sm:h-[78px] sm:w-[116px] ${
+              className={`group relative flex h-[78px] w-[112px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-all duration-200 active:scale-[0.97] sm:h-[84px] sm:w-[132px] ${
                 activeTier === 20
                   ? "bg-[#10b981] text-[#08080a] shadow-[0_0_28px_rgba(16,185,129,0.55)]"
                   : isLight
@@ -646,13 +646,13 @@ export default function LaunchMeasureStage({
               }`}
             >
               <div className="flex w-full items-center justify-between">
-                <span className="font-mono-label text-[7.5px] font-medium uppercase tracking-[0.14em] opacity-65 sm:text-[8px]">
-                  TOOLS &amp; SUBS
+                <span className="font-mono-label text-[7.5px] font-semibold uppercase tracking-[0.14em] opacity-75 sm:text-[8px]">
+                  AI &amp; TOOL SUBS
                 </span>
                 <span className="h-1.5 w-1.5 rounded-full bg-[#10b981] shadow-[0_0_6px_#10b981]" />
               </div>
-              <span className="font-mono-label text-lg font-semibold tracking-tight sm:text-xl">
-                +$20
+              <span className="font-mono-label text-base font-semibold tracking-tight sm:text-lg">
+                +$20/m
               </span>
               <div className="flex w-full items-center justify-between border-t border-current/10 pt-0.5">
                 <span className="font-mono-label text-[7.5px] uppercase tracking-[0.14em] opacity-70">
@@ -671,13 +671,13 @@ export default function LaunchMeasureStage({
             </button>
           </div>
 
-          {/* NODE 2: +$50 (ADS & GROWTH) */}
+          {/* NODE 2: +$5000/m (GROWTH & ADS) */}
           <div className="pointer-events-auto absolute left-1/2 -top-[2%] z-30 -translate-x-1/2">
             <button
               type="button"
-              onClick={() => handleInjectSpend(50)}
-              className={`group relative flex h-[76px] w-[110px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-all duration-200 active:scale-[0.97] sm:h-[82px] sm:w-[122px] ${
-                activeTier === 50
+              onClick={() => handleInjectSpend(5000)}
+              className={`group relative flex h-[80px] w-[116px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-all duration-200 active:scale-[0.97] sm:h-[86px] sm:w-[136px] ${
+                activeTier === 5000
                   ? "bg-[#10b981] text-[#08080a] shadow-[0_0_32px_rgba(16,185,129,0.55)]"
                   : isLight
                   ? "bg-[#fbf9f5] text-[#141413] ring-1 ring-black/12 shadow-[0_12px_28px_rgba(20,20,19,0.08)] hover:bg-[#e89b3c] hover:text-[#08080a]"
@@ -685,17 +685,17 @@ export default function LaunchMeasureStage({
               }`}
             >
               <div className="flex w-full items-center justify-between">
-                <span className="font-mono-label text-[7.5px] font-medium uppercase tracking-[0.14em] opacity-65 sm:text-[8px]">
-                  ADS &amp; GROWTH
+                <span className="font-mono-label text-[7.5px] font-semibold uppercase tracking-[0.14em] opacity-75 sm:text-[8px]">
+                  GROWTH &amp; ADS
                 </span>
                 <span className="h-1.5 w-1.5 rounded-full bg-[#10b981] shadow-[0_0_6px_#10b981]" />
               </div>
-              <span className="font-mono-label text-xl font-semibold tracking-tight sm:text-2xl">
-                +$50
+              <span className="font-mono-label text-base font-semibold tracking-tight sm:text-lg">
+                +$5000/m
               </span>
               <div className="flex w-full items-center justify-between border-t border-current/10 pt-0.5">
                 <span className="font-mono-label text-[7.5px] uppercase tracking-[0.14em] opacity-70">
-                  ⚡ +$210 rev
+                  ⚡ +$21,000 rev
                 </span>
                 <span className="font-mono-label text-[8.5px] opacity-75">
                   →
@@ -710,13 +710,13 @@ export default function LaunchMeasureStage({
             </button>
           </div>
 
-          {/* NODE 3: +$100 (DEVS & REBUILD) */}
+          {/* NODE 3: +$10,000/m (FEATURES & DEV) */}
           <div className="pointer-events-auto absolute right-[0%] top-[3%] z-30">
             <button
               type="button"
-              onClick={() => handleInjectSpend(100)}
-              className={`group relative flex h-[80px] w-[118px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-all duration-200 active:scale-[0.97] sm:h-[86px] sm:w-[130px] ${
-                activeTier === 100
+              onClick={() => handleInjectSpend(10000)}
+              className={`group relative flex h-[82px] w-[124px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-all duration-200 active:scale-[0.97] sm:h-[88px] sm:w-[144px] ${
+                activeTier === 10000
                   ? "bg-[#10b981] text-[#08080a] shadow-[0_0_38px_rgba(16,185,129,0.65)]"
                   : isLight
                   ? "bg-[#fbf9f5] text-[#141413] ring-1 ring-[#10b981]/45 shadow-[0_14px_32px_rgba(20,20,19,0.10)] hover:bg-[#10b981] hover:text-[#08080a]"
@@ -725,16 +725,16 @@ export default function LaunchMeasureStage({
             >
               <div className="flex w-full items-center justify-between">
                 <span className="font-mono-label text-[7.5px] font-semibold uppercase tracking-[0.13em] text-[#10b981] group-hover:text-[#08080a] sm:text-[8px]">
-                  SCALE &amp; SHIP
+                  FEATURES &amp; DEV
                 </span>
                 <span className="h-1.5 w-1.5 rounded-full bg-[#10b981] shadow-[0_0_8px_#10b981]" />
               </div>
-              <span className="font-mono-label text-xl font-semibold tracking-tight sm:text-2xl">
-                +$100
+              <span className="font-mono-label text-base font-semibold tracking-tight sm:text-lg">
+                +$10,000/m
               </span>
               <div className="flex w-full items-center justify-between border-t border-current/15 pt-0.5">
                 <span className="font-mono-label text-[7.5px] uppercase tracking-[0.14em] opacity-80">
-                  ⚡ +$420 rev
+                  ⚡ +$42,000 rev
                 </span>
                 <span className="font-mono-label text-[8.5px] opacity-80">
                   →

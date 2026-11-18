@@ -8,7 +8,7 @@ interface HeroSectionProps {
   onConversationClick?: (sourceButton?: string) => void;
   externalSpent?: number;
   externalEarned?: number;
-  onSpend?: (tier: 20 | 50 | 100, earnedDelta?: number) => void;
+  onSpend?: (tier: 20 | 5000 | 10000, earnedDelta?: number) => void;
   isTransitionLocked?: boolean;
 }
 
@@ -34,9 +34,9 @@ export default function HeroSection({
 
       {/* Full-width editorial layout */}
       <div className="relative z-10 mx-auto grid w-full max-w-[1560px] grid-cols-1 items-center gap-10 px-6 sm:px-10 lg:grid-cols-12 lg:gap-10 lg:px-16 xl:px-24">
-        {/* LEFT COLUMN: Editorial Headline, Subline, and Two CTAs */}
+        {/* LEFT COLUMN: Editorial Headline, Subline, and Spend Cards Slot */}
         <div className="flex flex-col items-start text-left lg:col-span-6 xl:col-span-6">
-          <div className="mb-6 inline-flex items-center gap-3">
+          <div className="mb-4 inline-flex items-center gap-3">
             <span className="font-mono-label text-[11px] uppercase tracking-[0.24em] text-[#e89b3c]">
               01
             </span>
@@ -45,7 +45,7 @@ export default function HeroSection({
               className="h-px w-6 bg-[var(--text-muted)] opacity-40"
             />
             <span className="font-mono-label text-[11px] uppercase tracking-[0.2em] text-[var(--text-secondary)]">
-              Product, design &amp; growth
+              Product, strategy, design &amp; growth
             </span>
           </div>
 
@@ -54,48 +54,25 @@ export default function HeroSection({
             style={{ textWrap: "balance" }}
             className="max-w-[18ch] text-balance text-[2.45rem] font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text-primary)] sm:text-5xl lg:text-[3.35rem] xl:text-[3.9rem] 2xl:text-[4.35rem]"
           >
-            Your revenue is the{" "}
+            Increasing your revenue is the{" "}
             <span className="font-serif-editorial mt-1 block text-[1.06em] font-normal italic tracking-[-0.01em] text-[#e89b3c]">
               only metric we care about.
             </span>
           </h1>
 
-          <p className="mt-6 max-w-lg text-base font-normal leading-[1.68] text-[var(--text-secondary)] sm:text-[17px]">
-            We help you understand why your product isn&apos;t growing to its
-            potential, find the gaps holding it back and turn them into{" "}
-            <span className="inline-block rounded bg-[#e89b3c]/15 px-1.5 py-0.5 font-mono-label text-[0.88em] font-semibold tracking-[0.08em] text-[#e89b3c]">
-              REAL REVENUE
-            </span>
-            .
+          <p className="mt-5 max-w-lg text-base font-normal leading-[1.65] text-[var(--text-secondary)] sm:text-[17px]">
+            We help startups uncover growth bottlenecks, identify untapped
+            opportunities and build practical soutions to improve acquisition,
+            conversion and retention through research, marketing expertise,
+            product thinking and engineering.
           </p>
 
-          <div className="mt-9 flex flex-wrap items-center gap-3.5">
-            <button
-              type="button"
-              data-cta-source="hero"
-              onClick={(e) =>
-                onAuditClick?.(
-                  e.currentTarget.getAttribute("data-cta-source") ?? "hero"
-                )
-              }
-              className="cursor-pointer rounded-full bg-[#e89b3c] px-7 py-3.5 font-mono-label text-xs font-medium uppercase tracking-[0.16em] text-[#08080a] transition-all duration-200 hover:bg-[var(--text-primary)] hover:text-[var(--bg-stage)] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
-            >
-              Get a free audit
-            </button>
-
-            <button
-              type="button"
-              data-cta-source="hero"
-              onClick={(e) =>
-                onConversationClick?.(
-                  e.currentTarget.getAttribute("data-cta-source") ?? "hero"
-                )
-              }
-              className="cursor-pointer rounded-full border border-[var(--btn-secondary-border)] bg-[var(--btn-secondary-bg)] px-7 py-3.5 font-mono-label text-xs font-medium uppercase tracking-[0.16em] text-[var(--text-primary)] transition-all duration-200 hover:border-[#e89b3c] hover:bg-[#e89b3c] hover:text-[#08080a] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
-            >
-              Start the conversation
-            </button>
-          </div>
+          {/* Anchor slot where the 3 Bill Cards sit in Section 1 (replaces CTAs) */}
+          <div
+            data-hero-cta-slot="true"
+            aria-hidden="true"
+            className="mt-14 hidden h-[118px] w-full lg:block"
+          />
         </div>
 
         {/* RIGHT COLUMN: Minimalist Award-Winning Typewriter Stage
@@ -104,6 +81,7 @@ export default function HeroSection({
         <div className="w-full lg:col-span-6 xl:col-span-6">
           <div className="lg:hidden">
             <TypewriterStage
+              instanceId="mobile"
               externalSpent={externalSpent}
               externalEarned={externalEarned}
               onSpend={onSpend}

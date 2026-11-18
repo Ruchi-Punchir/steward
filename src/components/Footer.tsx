@@ -59,10 +59,10 @@ export default function Footer({ onAuditClick }: FooterProps) {
               </p>
 
               <p className="mt-3 max-w-md text-sm leading-relaxed text-[var(--text-secondary)]">
-                Steward is a founder-led product and growth partner. No account
-                managers, just the people accountable for your result, finding
-                the leaks and scaling what sells. Revenue is the only metric we
-                care about.
+                We help startups uncover growth bottlenecks, identify untapped
+                opportunities and build practical soutions to improve
+                acquisition, conversion and retention through research,
+                marketing expertise, product thinking and engineering.
               </p>
             </div>
           </div>
@@ -72,13 +72,17 @@ export default function Footer({ onAuditClick }: FooterProps) {
             {/* Services */}
             <div className="flex flex-col space-y-3">
               <span className="font-mono-label text-[10px] font-semibold uppercase tracking-[0.22em] text-[#e89b3c]">
-                Services
+                How we Engineer Growth
+              </span>
+              <span className="font-mono-label text-[10px] font-semibold uppercase tracking-[0.22em] text-[#e89b3c] h-0 opacity-0 m-0">
+                Our Services
               </span>
               <ul className="space-y-2.5 text-sm text-[var(--text-secondary)]">
-                <li>Product and engineering</li>
-                <li>Design</li>
-                <li>Growth marketing</li>
-                <li>Pricing and conversion</li>
+                <li>Monetization & Pricing</li>
+                <li>Acquisition & Growth</li>
+                <li>Product-Market Fit & Positioning</li>
+                <li>Product & Development</li>
+                <li>Onboarding & Retention</li>
               </ul>
             </div>
 
@@ -125,19 +129,15 @@ export default function Footer({ onAuditClick }: FooterProps) {
               </div>
 
               <div className="mt-5 flex flex-col gap-2.5">
-                <button
-                  type="button"
+                <Link
+                  href="/audit?source=footer"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   data-cta-source="footer"
-                  onClick={(e) =>
-                    onAuditClick?.(
-                      e.currentTarget.getAttribute("data-cta-source") ??
-                        "footer"
-                    )
-                  }
-                  className="w-full cursor-pointer rounded-full bg-[#e89b3c] px-5 py-2.5 font-mono-label text-[11px] font-semibold uppercase tracking-[0.16em] text-[#08080a] transition-all duration-200 hover:bg-[var(--text-primary)] hover:text-[var(--bg-stage)] active:scale-[0.98]"
+                  className="inline-flex w-full cursor-pointer items-center justify-center rounded-full bg-[#e89b3c] px-5 py-2.5 font-mono-label text-[11px] font-semibold uppercase tracking-[0.16em] text-[#08080a] transition-all duration-200 hover:bg-[var(--text-primary)] hover:text-[var(--bg-stage)] active:scale-[0.98]"
                 >
                   Get a free audit →
-                </button>
+                </Link>
                 <a
                   href="mailto:connect@hellosteward.agency"
                   className="text-center font-mono-label text-[11px] tracking-[0.06em] text-[var(--text-secondary)] transition-colors hover:text-[#e89b3c]"

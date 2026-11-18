@@ -401,7 +401,7 @@ export function CrispDollarBillGraphic({ idPrefix }: { idPrefix: string }) {
   );
 }
 
-type SpendTier = 20 | 50 | 100;
+type SpendTier = 20 | 5000 | 10000;
 
 interface HistoryPoint {
   spent: number;
@@ -410,25 +410,58 @@ interface HistoryPoint {
 
 const INITIAL_HISTORY: HistoryPoint[] = [
   { spent: 0, revenue: 0 },
-  { spent: 80, revenue: 180 },
-  { spent: 160, revenue: 440 },
-  { spent: 240, revenue: 790 },
-  { spent: 320, revenue: 1210 },
-  { spent: 400, revenue: 1684 },
+  { spent: 3000, revenue: 10500 },
+  { spent: 6000, revenue: 23400 },
+  { spent: 9000, revenue: 37200 },
+  { spent: 12000, revenue: 50100 },
+  { spent: 15000, revenue: 63150 },
+];
+
+const TEST_SCENARIOS: { running: [string, string]; passed: [string, string] }[] = [
+  {
+    running: [
+      "Testing new flow with real buyers...",
+      "Watching what they actually do...",
+    ],
+    passed: [
+      "Buyers got the offer in 5 seconds",
+      "Proven: 3.4x more signups convert",
+    ],
+  },
+  {
+    running: [
+      "Watching real users try onboarding...",
+      "Checking for friction & drop-offs...",
+    ],
+    passed: [
+      "Users reached value in under 2 mins",
+      "Proven: 0 drop-off at signup step",
+    ],
+  },
+  {
+    running: [
+      "Testing pricing & checkout live...",
+      "Tracking real purchase decisions...",
+    ],
+    passed: [
+      "Buyers upgraded without hesitation",
+      "Proven: ready to scale, $0 wasted",
+    ],
+  },
 ];
 
 const PROFITABLE_SNIPPETS: Record<SpendTier, string[]> = {
   20: [
-    "allocated +$20.00 -> automated email flow...",
-    "conversion lift: +$84.00 net revenue (+4.2x)",
+    "Automated repetitive SaaS workflows...",
+    "Earned +$84 (+4.2x net revenue)",
   ],
-  50: [
-    "allocated +$50.00 -> high-intent acquisition...",
-    "attributable sales: +$210.00 revenue (+4.2x)",
+  5000: [
+    "Scaled ads into high-converting funnel...",
+    "Earned +$21,000 (+4.2x net revenue)",
   ],
-  100: [
-    "allocated +$100.00 -> checkout & offer scale...",
-    "verified revenue: +$420.00 collected (+4.2x)",
+  10000: [
+    "Shipped revenue-critical onboarding & checkout...",
+    "Earned +$42,000 (+4.2x net revenue)",
   ],
 };
 
@@ -448,6 +481,8 @@ interface TestSolutionStageProps {
   /** 0..1 progress of Stage 5 ("Iterate and scale") */
   iterateProgress?: number;
   isLight: boolean;
+  externalTestTrigger?: number;
+  onTestStateChange?: (isTesting: boolean, hasTested: boolean) => void;
 }
 
 export default function TestSolutionStage({
@@ -455,6 +490,8 @@ export default function TestSolutionStage({
   launchProgress,
   iterateProgress = 0,
   isLight,
+  externalTestTrigger = 0,
+  onTestStateChange,
 }: TestSolutionStageProps) {
   // Stage 3 ("Test the solution") state
   const [isTesting, setIsTesting] = useState(false);
@@ -462,15 +499,18 @@ export default function TestSolutionStage({
   const [testCount, setTestCount] = useState(0);
   const [platenUsesNewBill, setPlatenUsesNewBill] = useState(false);
   const [testTerminalLines, setTestTerminalLines] = useState<string[]>([
-    "all 5 units assembled & aligned",
-    "ready for live user test...",
+    "Fix ready to test with real users",
+    "Prove it works before spending a dime",
   ]);
 
   // Stage 4 ("Launch and measure") state
-  const [spent, setSpent] = useState(400);
-  const [earned, setEarned] = useState(1684);
+  const [spent, setSpent] = useState(15000);
+  const [earned, setEarned] = useState(63150);
   const [history, setHistory] = useState<HistoryPoint[]>(INITIAL_HISTORY);
   const [activeTier, setActiveTier] = useState<SpendTier | null>(null);
+  const [hasClickedAnyLaunchOrb, setHasClickedAnyLaunchOrb] = useState(false);
+  const [activeClickMeTier, setActiveClickMeTier] =
+    useState<SpendTier | null>(null);
   const [billPercent, setBillPercent] = useState(76);
   const [launchTerminalLines, setLaunchTerminalLines] = useState<string[]>([
     "leaks sealed — unit economics positive",
@@ -481,6 +521,16 @@ export default function TestSolutionStage({
   const [isUpgrading, setIsUpgrading] = useState(false);
   const [isContinuousPrinting, setIsContinuousPrinting] = useState(false);
   const [litModuleCount, setLitModuleCount] = useState(0);
+  const [isMobileStage, setIsMobileStage] = useState(false);
+
+  useEffect(() => {
+    const checkViewport = () => {
+      setIsMobileStage(window.innerWidth < 1024);
+    };
+    checkViewport();
+    window.addEventListener("resize", checkViewport, { passive: true });
+    return () => window.removeEventListener("resize", checkViewport);
+  }, []);
 
   const stageContainerRef = useRef<HTMLDivElement | null>(null);
   const typewriterChassisRef = useRef<HTMLDivElement | null>(null);
@@ -537,11 +587,21 @@ export default function TestSolutionStage({
   const isLaunchModeActive = launchProgress >= 0.45 && !isIterateModeActive;
 
   // Shared typewriter horizontal & vertical translation:
-  // - Stage 3 (moveT = 0, iterateMoveT = 0): x = -115px (left of bills), y = -42px (raised to reduce top gap)
-  // - Stage 4 (moveT = 1, iterateMoveT = 0): x = +245px (right of graph), y = +22px
-  // - Stage 5 (moveT = 1, iterateMoveT = 1): x = +15px (centered alone on stage), y = +14px (room above for continuous money stream)
-  const typewriterX = -115 + 360 * moveT - 230 * iterateMoveT;
-  const typewriterY = -42 + 64 * moveT - 8 * iterateMoveT;
+  // - Desktop (>= 1024px):
+  //   - Stage 3 (moveT = 0, iterateMoveT = 0): x = -115px (left of bills), y = -42px
+  //   - Stage 4 (moveT = 1, iterateMoveT = 0): x = +245px (right of graph), y = +22px
+  //   - Stage 5 (moveT = 1, iterateMoveT = 1): x = +15px (centered alone on stage), y = +14px
+  // - Mobile/Tablet (< 1024px):
+  //   - Horizontally centered (x = 0) with vertical offsets & scaling so nothing goes off-screen
+  const typewriterX = isMobileStage
+    ? 0
+    : -115 + 360 * moveT - 230 * iterateMoveT;
+  const typewriterY = isMobileStage
+    ? -38 + 36 * moveT + 20 * iterateMoveT
+    : -42 + 64 * moveT - 8 * iterateMoveT;
+  const typewriterMobileScale = isMobileStage
+    ? 0.66 + 0.04 * iterateMoveT
+    : 1;
 
   // Stage 5 ("Iterate and scale"): 5-Part "Jetpower Optimus Prime" Mech-Armor Assembly -> Continuous Money Printing loop
   useEffect(() => {
@@ -869,17 +929,17 @@ export default function TestSolutionStage({
   // STAGE 3 HANDLER: Click "Test" button
   // =========================================================================
   const handleRunTest = () => {
-    if (isTesting || !isTestModeInteractive) return;
+    if (isTesting) return;
 
     setIsTesting(true);
     setPlatenUsesNewBill(true);
     const nextRun = testCount + 1;
     setTestCount(nextRun);
 
-    setTestTerminalLines([
-      `running user test #0${nextRun}...`,
-      "printing crisp $1.00 revenue bill...",
-    ]);
+    const scenario =
+      TEST_SCENARIOS[(nextRun - 1) % TEST_SCENARIOS.length];
+
+    setTestTerminalLines(scenario.running);
 
     // 1. Flick the vintage carriage return lever
     if (carriageHandleRef.current) {
@@ -947,10 +1007,7 @@ export default function TestSolutionStage({
       onComplete: () => {
         setHasTested(true);
         setIsTesting(false);
-        setTestTerminalLines([
-          "real buyer flow verified (0 leaks)",
-          "new crisp $1.00 bill compared →",
-        ]);
+        setTestTerminalLines(scenario.passed);
         if (newBillCardContentRef.current) {
           gsap.fromTo(
             newBillCardContentRef.current,
@@ -1046,11 +1103,69 @@ export default function TestSolutionStage({
     masterTl.to({}, { duration: 0.74 });
   };
 
+  const handleRunTestRef = useRef(handleRunTest);
+  handleRunTestRef.current = handleRunTest;
+
+  const prevExternalTestTriggerRef = useRef<number>(externalTestTrigger);
+  useEffect(() => {
+    if (
+      externalTestTrigger > 0 &&
+      externalTestTrigger !== prevExternalTestTriggerRef.current
+    ) {
+      prevExternalTestTriggerRef.current = externalTestTrigger;
+      handleRunTestRef.current();
+    }
+  }, [externalTestTrigger]);
+
+  const onTestStateChangeRef = useRef(onTestStateChange);
+  onTestStateChangeRef.current = onTestStateChange;
+
+  useEffect(() => {
+    onTestStateChangeRef.current?.(isTesting, hasTested);
+  }, [isTesting, hasTested]);
+
+  // Sequential "Click me" prompt + pulsating border animation on Stage 4 buttons
+  // (+$20/m -> +$5000/m -> +$10,000/m) that disappears once the user clicks any button.
+  useEffect(() => {
+    if (hasClickedAnyLaunchOrb || !isLaunchModeInteractive) {
+      setActiveClickMeTier(null);
+      return;
+    }
+
+    const tiers: SpendTier[] = [20, 5000, 10000];
+    let stepIdx = 0;
+    let cancelled = false;
+    let timerId: ReturnType<typeof setTimeout> | null = null;
+
+    const runStep = () => {
+      if (cancelled) return;
+      const currentTier = tiers[stepIdx % tiers.length];
+      setActiveClickMeTier(currentTier);
+
+      timerId = setTimeout(() => {
+        if (cancelled) return;
+        setActiveClickMeTier(null);
+        stepIdx += 1;
+        const isEndOfCycle = stepIdx % tiers.length === 0;
+        timerId = setTimeout(runStep, isEndOfCycle ? 900 : 240);
+      }, 1700);
+    };
+
+    timerId = setTimeout(runStep, 600);
+
+    return () => {
+      cancelled = true;
+      if (timerId) clearTimeout(timerId);
+    };
+  }, [hasClickedAnyLaunchOrb, isLaunchModeInteractive]);
+
   // =========================================================================
-  // STAGE 4 HANDLER: Click +$20 / +$50 / +$100 Arched Buttons
+  // STAGE 4 HANDLER: Click +$20/m / +$5000/m / +$10,000/m Arched Buttons
   // =========================================================================
   const handleInjectSpend = (amount: SpendTier) => {
     if (!isLaunchModeInteractive) return;
+    setHasClickedAnyLaunchOrb(true);
+    setActiveClickMeTier(null);
     setActiveTier(amount);
 
     const revenueGain = Math.round(amount * 4.2);
@@ -1099,7 +1214,7 @@ export default function TestSolutionStage({
     const pathEl =
       amount === 20
         ? wire20PathRef.current
-        : amount === 50
+        : amount === 5000
         ? wire50PathRef.current
         : wire100PathRef.current;
 
@@ -1235,45 +1350,47 @@ export default function TestSolutionStage({
       }}
       className="relative flex h-full w-full items-center justify-center select-none"
     >
-      {/* Flying Crisp New $1 Bill (animates from Typewriter Platen -> Right "New bill" Comparison Slot in Stage 3) */}
+      {/* Flying Crisp New $1 Bill (animates from Typewriter Platen -> "New bill" Comparison Slot in Stage 3) */}
       <div
         ref={flyingBillRef}
         aria-hidden="true"
         style={{ opacity: 0 }}
-        className="pointer-events-none absolute z-50 h-[132px] w-[256px] sm:h-[148px] sm:w-[288px]"
+        className="pointer-events-none absolute z-50 h-[74px] w-[144px] sm:h-[110px] sm:w-[214px] lg:h-[148px] lg:w-[288px]"
       >
         <CrispDollarBillGraphic idPrefix="flying-test-new-bill" />
       </div>
 
       {/* =====================================================================
           STAGE 4 LEFT PANEL: SPEND VS. REVENUE PROFITABILITY GRAPH
-          (Appears to the left of the moving typewriter with a tight 36px gap)
+          (Appears to the left of the moving typewriter on Desktop, or centered below on Mobile)
       ===================================================================== */}
       <div
         style={{
           opacity: launchAccessoriesOpacity,
-          transform: `translate(-226px, ${(-8 + (1 - launchAccessoriesOpacity) * 18).toFixed(1)}px)`,
+          transform: isMobileStage
+            ? `translate(0px, ${(152 + (1 - launchAccessoriesOpacity) * 14).toFixed(1)}px)`
+            : `translate(-226px, ${(-8 + (1 - launchAccessoriesOpacity) * 18).toFixed(1)}px)`,
           pointerEvents: isLaunchModeInteractive ? "auto" : "none",
         }}
-        className=" absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2"
+        className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2"
       >
         <div
-          className={`w-[340px] rounded-2xl border p-4 transition-colors duration-300 sm:w-[440px] sm:p-5 lg:w-[465px] xl:w-[485px] ${
+          className={`w-[320px] rounded-2xl border p-3 transition-colors duration-300 sm:w-[440px] sm:p-5 lg:w-[465px] xl:w-[485px] ${
             isLight
               ? "border-black/10 bg-[#eae5dc]/95 shadow-[0_20px_50px_rgba(20,20,19,0.08)]"
               : "border-white/[0.08] bg-[#101015]/95 shadow-[0_24px_60px_rgba(0,0,0,0.78)]"
           }`}
         >
           {/* Top Bar: Spent, Earned & Net Profit */}
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center justify-between gap-2 sm:gap-3">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 <span className="h-2 w-2 rounded-full bg-[#10b981] shadow-[0_0_8px_#10b981]" />
-                <span className="font-mono-label text-[10px] font-semibold uppercase tracking-[0.18em] text-[#10b981]">
+                <span className="font-mono-label text-[9px] font-semibold uppercase tracking-[0.16em] text-[#10b981] sm:text-[10px] sm:tracking-[0.18em]">
                   Profitable Growth
                 </span>
               </div>
-              <p className="mt-0.5 font-mono-label text-xs text-[var(--text-secondary)]">
+              <p className="mt-0.5 font-mono-label text-[11px] text-[var(--text-secondary)] sm:text-xs">
                 Net Profit:{" "}
                 <strong className="font-semibold text-[#10b981]">
                   +${netProfit.toLocaleString()}
@@ -1281,44 +1398,44 @@ export default function TestSolutionStage({
               </p>
             </div>
 
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2 sm:gap-2.5">
               {/* Spent Pill */}
               <div
-                className={`rounded-lg border px-3 py-1.5 ${
+                className={`rounded-lg border px-2.5 py-1 sm:px-3 sm:py-1.5 ${
                   isLight
                     ? "border-black/10 bg-[#fbf9f5]"
                     : "border-white/[0.08] bg-[#17171f]"
                 }`}
               >
-                <span className="block font-mono-label text-[8.5px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                <span className="block font-mono-label text-[8px] uppercase tracking-[0.16em] text-[var(--text-muted)] sm:text-[8.5px] sm:tracking-[0.18em]">
                   Spent
                 </span>
-                <span className="font-mono-label text-base font-semibold tabular-nums text-[#e89b3c] sm:text-lg">
+                <span className="font-mono-label text-sm font-semibold tabular-nums text-[#e89b3c] sm:text-lg">
                   ${spent.toLocaleString()}
                 </span>
               </div>
 
               {/* Earned Pill */}
               <div
-                className={`rounded-lg border px-3 py-1.5 ${
+                className={`rounded-lg border px-2.5 py-1 sm:px-3 sm:py-1.5 ${
                   isLight
                     ? "border-[#059669]/35 bg-[#e6f4ec]"
                     : "border-[#10b981]/35 bg-[#11221c]"
                 }`}
               >
-                <span className="block font-mono-label text-[8.5px] uppercase tracking-[0.18em] text-[#10b981]">
+                <span className="block font-mono-label text-[8px] uppercase tracking-[0.16em] text-[#10b981] sm:text-[8.5px] sm:tracking-[0.18em]">
                   Revenue
                 </span>
-                <span className="font-mono-label text-base font-semibold tabular-nums text-[#10b981] sm:text-lg">
+                <span className="font-mono-label text-sm font-semibold tabular-nums text-[#10b981] sm:text-lg">
                   ${earned.toLocaleString()}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Chart Box */}
+          {/* Chart Box (Hidden on compact mobile so typewriter + 3 spend buttons + scoreboard fit cleanly; shown on sm+) */}
           <div
-            className={`relative mt-3.5 rounded-xl border p-3.5 ${
+            className={`relative mt-3.5 hidden rounded-xl border p-3.5 sm:block ${
               isLight
                 ? "border-black/10 bg-[#f6f3ec]"
                 : "border-white/[0.07] bg-[#0b0b0f]"
@@ -1541,12 +1658,12 @@ export default function TestSolutionStage({
       {/* =====================================================================
           THE SINGLE SHARED FRONT-VIEW VINTAGE TYPEWRITER
           - Used in BOTH "3. Test the solution" AND "4. Launch and measure"!
-          - Smoothly slides from x = -115px (Stage 3) to x = +245px (Stage 4)
-          - Never fades out between Stage 3 and Stage 4!
+          - Smoothly slides from x = -115px (Stage 3) to x = +245px (Stage 4) on Desktop
+          - Centered and scaled on Mobile so it never overflows the screen!
       ===================================================================== */}
       <div
         style={{
-          transform: `translate(${typewriterX.toFixed(1)}px, ${typewriterY.toFixed(1)}px)`,
+          transform: `translate(${typewriterX.toFixed(1)}px, ${typewriterY.toFixed(1)}px) scale(${typewriterMobileScale.toFixed(3)})`,
         }}
         className="relative z-30 flex flex-col items-center will-change-transform"
       >
@@ -1606,20 +1723,20 @@ export default function TestSolutionStage({
             <path
               d="M 230 68 Q 230 140 230 192"
               fill="none"
-              stroke={activeTier === 50 ? "#10b981" : "#e89b3c"}
-              strokeWidth={activeTier === 50 ? "3.2" : "2.2"}
+              stroke={activeTier === 5000 ? "#10b981" : "#e89b3c"}
+              strokeWidth={activeTier === 5000 ? "3.2" : "2.2"}
               strokeLinecap="round"
-              strokeDasharray={activeTier === 50 ? undefined : "3 10"}
-              className={activeTier === 50 ? "" : "wire-energy-flow"}
+              strokeDasharray={activeTier === 5000 ? undefined : "3 10"}
+              className={activeTier === 5000 ? "" : "wire-energy-flow"}
             />
             <path
               d="M 402 84 Q 352 165 288 198"
               fill="none"
-              stroke={activeTier === 100 ? "#10b981" : "#e89b3c"}
-              strokeWidth={activeTier === 100 ? "3.4" : "2.4"}
+              stroke={activeTier === 10000 ? "#10b981" : "#e89b3c"}
+              strokeWidth={activeTier === 10000 ? "3.4" : "2.4"}
               strokeLinecap="round"
-              strokeDasharray={activeTier === 100 ? undefined : "3 10"}
-              className={activeTier === 100 ? "" : "wire-energy-flow"}
+              strokeDasharray={activeTier === 10000 ? undefined : "3 10"}
+              className={activeTier === 10000 ? "" : "wire-energy-flow"}
             />
 
             {/* Traveling energy pulse dot */}
@@ -1640,12 +1757,13 @@ export default function TestSolutionStage({
             </g>
           </svg>
 
-          {/* NODE 1: +$20 (TOOLS & SUBS) */}
+          {/* NODE 1: +$20/m (AI & TOOL SUBS) */}
           <div className=" absolute left-[0%] top-[10px] z-30">
             <button
               type="button"
               onClick={() => handleInjectSpend(20)}
-              className={`group relative flex h-[70px] w-[104px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-all duration-200 active:scale-[0.97] sm:h-[74px] sm:w-[114px] ${
+              aria-label="Inject $20/m into AI & Tool Subscriptions"
+              className={`group relative flex h-[78px] w-[112px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-all duration-200 active:scale-[0.97] sm:h-[84px] sm:w-[132px] ${
                 activeTier === 20
                   ? "bg-[#10b981] text-[#08080a] shadow-[0_0_28px_rgba(16,185,129,0.55)]"
                   : isLight
@@ -1653,23 +1771,47 @@ export default function TestSolutionStage({
                   : "bg-[#111116] text-[#f4f0ea] ring-1 ring-white/[0.09] shadow-[0_16px_36px_rgba(0,0,0,0.7)] hover:bg-[#f4f0ea] hover:text-[#08080a]"
               }`}
             >
-              <div className="flex w-full items-center justify-between">
-                <span className="font-mono-label text-[7.5px] font-medium uppercase tracking-[0.14em] opacity-65 sm:text-[8px]">
-                  TOOLS &amp; SUBS
+              <div className="flex w-full items-center justify-between gap-1">
+                <span className="font-mono-label text-[7.5px] font-semibold uppercase tracking-[0.14em] opacity-75 sm:text-[8px]">
+                  AI &amp; TOOL SUBS
                 </span>
-                <span className="h-1.5 w-1.5 rounded-full bg-[#10b981] shadow-[0_0_6px_#10b981]" />
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#10b981] shadow-[0_0_6px_#10b981]" />
               </div>
-              <span className="font-mono-label text-lg font-semibold tracking-tight sm:text-xl">
-                +$20
+              <span className="font-mono-label text-base font-semibold tracking-tight sm:text-lg">
+                +$20/m
               </span>
               <div className="flex w-full items-center justify-between border-t border-current/10 pt-0.5">
-                <span className="font-mono-label text-[7.5px] uppercase tracking-[0.14em] opacity-70">
+                <span className="font-mono-label text-[7.5px] uppercase tracking-[0.12em] opacity-75">
                   ⚡ +$84 rev
                 </span>
                 <span className="font-mono-label text-[8.5px] opacity-75">
                   →
                 </span>
               </div>
+
+              {/* Single border glow when "Click me" is active */}
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-0 rounded-xl shadow-[0_0_24px_rgba(16,185,129,0.55),inset_0_0_12px_rgba(16,185,129,0.22)] transition-opacity duration-500 ${
+                  activeClickMeTier === 20 && !hasClickedAnyLaunchOrb
+                    ? "opacity-100"
+                    : "opacity-0"
+                }`}
+              />
+
+              {/* Subtle floating "Click me" badge centered at bottom of card */}
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute -bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono-label text-[7.5px] font-medium uppercase tracking-[0.14em] transition-all duration-300 ${
+                  activeClickMeTier === 20 && !hasClickedAnyLaunchOrb
+                    ? "translate-y-0 scale-100 opacity-100"
+                    : "translate-y-1 scale-95 opacity-0"
+                } border-[#10b981]/80 bg-[#121216] text-[#f4f0ea] shadow-[0_4px_12px_rgba(0,0,0,0.38)]`}
+              >
+                <span className="h-1 w-1 rounded-full bg-[#10b981]" />
+                Click me
+              </span>
+
               <span
                 aria-hidden="true"
                 className="pointer-events-none absolute -bottom-2 left-1/2 flex h-2 w-4 -translate-x-1/2 items-center justify-center rounded-xs border border-white/25 bg-[#1b1b22]"
@@ -1679,36 +1821,61 @@ export default function TestSolutionStage({
             </button>
           </div>
 
-          {/* NODE 2: +$50 (ADS & GROWTH) */}
+          {/* NODE 2: +$5000/m (GROWTH & ADS) */}
           <div className=" absolute left-1/2 -top-[8px] z-30 -translate-x-1/2">
             <button
               type="button"
-              onClick={() => handleInjectSpend(50)}
-              className={`group relative flex h-[74px] w-[110px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-all duration-200 active:scale-[0.97] sm:h-[78px] sm:w-[120px] ${
-                activeTier === 50
+              onClick={() => handleInjectSpend(5000)}
+              aria-label="Inject $5000/m into Growth & Ads"
+              className={`group relative flex h-[80px] w-[116px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-all duration-200 active:scale-[0.97] sm:h-[86px] sm:w-[136px] ${
+                activeTier === 5000
                   ? "bg-[#10b981] text-[#08080a] shadow-[0_0_32px_rgba(16,185,129,0.55)]"
                   : isLight
                   ? "bg-[#fbf9f5] text-[#141413] ring-1 ring-black/12 shadow-[0_12px_28px_rgba(20,20,19,0.08)] hover:bg-[#e89b3c] hover:text-[#08080a]"
                   : "bg-[#111116] text-[#f4f0ea] ring-1 ring-white/[0.09] shadow-[0_16px_36px_rgba(0,0,0,0.7)] hover:bg-[#f4f0ea] hover:text-[#08080a]"
               }`}
             >
-              <div className="flex w-full items-center justify-between">
-                <span className="font-mono-label text-[7.5px] font-medium uppercase tracking-[0.14em] opacity-65 sm:text-[8px]">
-                  ADS &amp; GROWTH
+              <div className="flex w-full items-center justify-between gap-1">
+                <span className="font-mono-label text-[7.5px] font-semibold uppercase tracking-[0.14em] opacity-75 sm:text-[8px]">
+                  GROWTH &amp; ADS
                 </span>
-                <span className="h-1.5 w-1.5 rounded-full bg-[#10b981] shadow-[0_0_6px_#10b981]" />
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#10b981] shadow-[0_0_6px_#10b981]" />
               </div>
-              <span className="font-mono-label text-xl font-semibold tracking-tight sm:text-2xl">
-                +$50
+              <span className="font-mono-label text-base font-semibold tracking-tight sm:text-lg">
+                +$5000/m
               </span>
               <div className="flex w-full items-center justify-between border-t border-current/10 pt-0.5">
-                <span className="font-mono-label text-[7.5px] uppercase tracking-[0.14em] opacity-70">
-                  ⚡ +$210 rev
+                <span className="font-mono-label text-[7.5px] uppercase tracking-[0.12em] opacity-75">
+                  ⚡ +$21,000 rev
                 </span>
                 <span className="font-mono-label text-[8.5px] opacity-75">
                   →
                 </span>
               </div>
+
+              {/* Single border glow when "Click me" is active */}
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-0 rounded-xl shadow-[0_0_24px_rgba(16,185,129,0.55),inset_0_0_12px_rgba(16,185,129,0.22)] transition-opacity duration-500 ${
+                  activeClickMeTier === 5000 && !hasClickedAnyLaunchOrb
+                    ? "opacity-100"
+                    : "opacity-0"
+                }`}
+              />
+
+              {/* Subtle floating "Click me" badge centered at bottom of card */}
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute -bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono-label text-[7.5px] font-medium uppercase tracking-[0.14em] transition-all duration-300 ${
+                  activeClickMeTier === 5000 && !hasClickedAnyLaunchOrb
+                    ? "translate-y-0 scale-100 opacity-100"
+                    : "translate-y-1 scale-95 opacity-0"
+                } border-[#10b981]/80 bg-[#121216] text-[#f4f0ea] shadow-[0_4px_12px_rgba(0,0,0,0.38)]`}
+              >
+                <span className="h-1 w-1 rounded-full bg-[#10b981]" />
+                Click me
+              </span>
+
               <span
                 aria-hidden="true"
                 className="pointer-events-none absolute -bottom-2 left-1/2 flex h-2 w-4 -translate-x-1/2 items-center justify-center rounded-xs border border-white/25 bg-[#1b1b22]"
@@ -1718,36 +1885,61 @@ export default function TestSolutionStage({
             </button>
           </div>
 
-          {/* NODE 3: +$100 (SCALE & SHIP) */}
+          {/* NODE 3: +$10,000/m (FEATURES & DEV) */}
           <div className=" absolute right-[0%] top-[6px] z-30">
             <button
               type="button"
-              onClick={() => handleInjectSpend(100)}
-              className={`group relative flex h-[76px] w-[116px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-all duration-200 active:scale-[0.97] sm:h-[82px] sm:w-[126px] ${
-                activeTier === 100
+              onClick={() => handleInjectSpend(10000)}
+              aria-label="Inject $10,000/m into Features & Dev"
+              className={`group relative flex h-[82px] w-[124px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-all duration-200 active:scale-[0.97] sm:h-[88px] sm:w-[144px] ${
+                activeTier === 10000
                   ? "bg-[#10b981] text-[#08080a] shadow-[0_0_38px_rgba(16,185,129,0.65)]"
                   : isLight
                   ? "bg-[#fbf9f5] text-[#141413] ring-1 ring-[#10b981]/45 shadow-[0_14px_32px_rgba(20,20,19,0.10)] hover:bg-[#10b981] hover:text-[#08080a]"
                   : "bg-[#111116] text-[#f4f0ea] ring-1 ring-[#10b981]/35 shadow-[0_18px_42px_rgba(0,0,0,0.8)] hover:bg-[#10b981] hover:text-[#08080a]"
               }`}
             >
-              <div className="flex w-full items-center justify-between">
+              <div className="flex w-full items-center justify-between gap-1">
                 <span className="font-mono-label text-[7.5px] font-semibold uppercase tracking-[0.13em] text-[#10b981] group-hover:text-[#08080a] sm:text-[8px]">
-                  SCALE &amp; SHIP
+                  FEATURES &amp; DEV
                 </span>
-                <span className="h-1.5 w-1.5 rounded-full bg-[#10b981] shadow-[0_0_8px_#10b981]" />
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#10b981] shadow-[0_0_8px_#10b981]" />
               </div>
-              <span className="font-mono-label text-xl font-semibold tracking-tight sm:text-2xl">
-                +$100
+              <span className="font-mono-label text-base font-semibold tracking-tight sm:text-lg">
+                +$10,000/m
               </span>
               <div className="flex w-full items-center justify-between border-t border-current/15 pt-0.5">
-                <span className="font-mono-label text-[7.5px] uppercase tracking-[0.14em] opacity-80">
-                  ⚡ +$420 rev
+                <span className="font-mono-label text-[7.5px] uppercase tracking-[0.12em] opacity-80">
+                  ⚡ +$42,000 rev
                 </span>
                 <span className="font-mono-label text-[8.5px] opacity-80">
                   →
                 </span>
               </div>
+
+              {/* Single border glow when "Click me" is active */}
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-0 rounded-xl shadow-[0_0_26px_rgba(16,185,129,0.6),inset_0_0_12px_rgba(16,185,129,0.24)] transition-opacity duration-500 ${
+                  activeClickMeTier === 10000 && !hasClickedAnyLaunchOrb
+                    ? "opacity-100"
+                    : "opacity-0"
+                }`}
+              />
+
+              {/* Subtle floating "Click me" badge centered at bottom of card */}
+              <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute -bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono-label text-[7.5px] font-medium uppercase tracking-[0.14em] transition-all duration-300 ${
+                  activeClickMeTier === 10000 && !hasClickedAnyLaunchOrb
+                    ? "translate-y-0 scale-100 opacity-100"
+                    : "translate-y-1 scale-95 opacity-0"
+                } border-[#10b981]/80 bg-[#121216] text-[#f4f0ea] shadow-[0_4px_12px_rgba(0,0,0,0.38)]`}
+              >
+                <span className="h-1 w-1 rounded-full bg-[#10b981]" />
+                Click me
+              </span>
+
               <span
                 aria-hidden="true"
                 className="pointer-events-none absolute -bottom-2 left-1/2 flex h-2 w-4 -translate-x-1/2 items-center justify-center rounded-xs border border-[#10b981]/60 bg-[#1b1b22]"
@@ -2461,12 +2653,18 @@ export default function TestSolutionStage({
                     {isIterateModeActive
                       ? "POWERED BY STEWARD"
                       : isLaunchModeActive
-                      ? "✓ HIGH-YIELD ENGINE — 4.2x RETURN"
+                      ? activeTier === 20
+                        ? "⚡ INVESTING +$20/M — 4.2x RETURN"
+                        : activeTier === 5000
+                        ? "⚡ INVESTING +$5000/M — 4.2x RETURN"
+                        : activeTier === 10000
+                        ? "⚡ INVESTING +$10,000/M — 4.2x RETURN"
+                        : "✓ HIGH-YIELD ENGINE — 4.2x RETURN"
                       : isTesting
-                      ? "⚡ TESTING SOLUTION LIVE..."
+                      ? "⚡ TESTING WITH REAL USERS..."
                       : hasTested
-                      ? "✓ TEST PASSED — HIGH YIELD"
-                      : "⚡ ASSEMBLED — CLICK TEST BELOW"}
+                      ? "✓ PROVEN WITH REAL USERS"
+                      : "⚡ FIX READY — TEST BEFORE SPENDING"}
                   </span>
                 </div>
 
@@ -2525,7 +2723,7 @@ export default function TestSolutionStage({
                   >
                     {isLaunchModeActive || isIterateModeActive
                       ? "tty://revenue.log"
-                      : "tty://spend.log"}
+                      : "tty://user-test.log"}
                   </span>
                   <span
                     className={`font-mono-label text-[7.5px] uppercase tracking-[0.16em] ${
@@ -2570,7 +2768,7 @@ export default function TestSolutionStage({
                         : "border-l-2 border-[#e89b3c] bg-[#e89b3c]/15 text-[#f4f0ea]"
                     }`}
                   >
-                    ▸ {activeTerminalLines[activeTerminalLines.length - 1]}
+                    -&gt; {activeTerminalLines[activeTerminalLines.length - 1]}
                   </div>
                 </div>
               </div>
@@ -2630,77 +2828,35 @@ export default function TestSolutionStage({
             </div>
           </div>
         </div>
-
-        {/* ===================================================================
-            STAGE 3 BOTTOM ACCESSORY: "TEST" BUTTON DIRECTLY BELOW TYPEWRITER
-        =================================================================== */}
-        <div
-          style={{
-            opacity: testAccessoriesOpacity,
-            transform: `translateY(${((1 - testAccessoriesOpacity) * 8).toFixed(1)}px)`,
-            pointerEvents: isTestModeInteractive ? "auto" : "none",
-          }}
-          className="absolute -bottom-[52px] left-1/2 -translate-x-1/2"
-        >
-          <button
-            type="button"
-            onClick={handleRunTest}
-            disabled={isTesting}
-            className={`group relative inline-flex h-[36px] w-[132px] cursor-pointer items-center justify-between rounded-lg border border-[#f3b15c] bg-[#e89b3c] px-3.5 text-[#08080a] shadow-[0_0_24px_rgba(232,155,60,0.6),inset_0_0_10px_rgba(255,255,255,0.22)] transition-all duration-200 hover:border-[#e89b3c] hover:bg-[#111116] hover:text-[#f4f0ea] hover:shadow-[0_0_28px_rgba(232,155,60,0.45)] active:scale-[0.97] disabled:cursor-wait sm:w-[144px] ${
-              !hasTested && !isTesting ? "orb-begging" : ""
-            }`}
-          >
-            {/* Glowing border aura animation */}
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute -inset-[1px] rounded-lg border border-[#e89b3c] shadow-[0_0_18px_rgba(232,155,60,0.75)] animate-pulse"
-            />
-
-            <span className="relative z-10 flex items-center gap-2">
-              <span
-                className={`h-1.5 w-1.5 rounded-full transition-colors ${
-                  isTesting
-                    ? "animate-ping bg-[#08080a] group-hover:bg-[#e89b3c]"
-                    : "bg-[#08080a] group-hover:bg-[#e89b3c] group-hover:shadow-[0_0_6px_#e89b3c]"
-                }`}
-              />
-              <span className="font-mono-label text-[10.5px] font-semibold uppercase tracking-[0.2em]">
-                {isTesting ? "Testing..." : "Test"}
-              </span>
-            </span>
-
-            <span className="relative z-10 font-mono-label text-[10.5px] opacity-85 transition-transform duration-200 group-hover:translate-x-0.5">
-              →
-            </span>
-          </button>
-        </div>
       </div>
 
       {/* =====================================================================
           STAGE 3 RIGHT PANEL: VERSION 1 (OLD BILL) vs. VERSION 1.1 (NEW BILL)
-          (Sits 36px to the right of the Stage 3 typewriter position)
+          (Sits 36px to the right of the Stage 3 typewriter on Desktop, or side-by-side below on Mobile)
       ===================================================================== */}
       <div
         style={{
           opacity: testAccessoriesOpacity,
-          transform: `translate(${(260 + (1 - testAccessoriesOpacity) * 24).toFixed(1)}px, -24px)`,
+          transform: isMobileStage
+            ? `translate(0px, ${(138 + (1 - testAccessoriesOpacity) * 14).toFixed(1)}px)`
+            : `translate(${(260 + (1 - testAccessoriesOpacity) * 24).toFixed(1)}px, -24px)`,
           pointerEvents: isTestModeInteractive ? "auto" : "none",
         }}
-        className="absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-start gap-4 sm:gap-5"
+        className="absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 flex-row items-start gap-3 sm:gap-5 lg:flex-col"
       >
         {/* TOP PLACEHOLDER: VERSION 1 (OLD BILL) */}
-        <div className="flex flex-col items-start gap-1.5">
-          <span className="font-mono-label text-[9.5px] font-medium uppercase tracking-[0.16em] text-[var(--text-secondary)]">
+        <div className="flex flex-col items-start gap-1 sm:gap-1.5">
+          <span className="font-mono-label text-[8.5px] font-medium uppercase tracking-[0.14em] text-[var(--text-secondary)] sm:text-[9.5px] sm:tracking-[0.16em]">
             Version 1
           </span>
-          <div className="relative h-[132px] w-[256px] overflow-hidden rounded-md sm:h-[148px] sm:w-[288px]">
+          <div className="relative h-[74px] w-[144px] overflow-hidden rounded-md sm:h-[110px] sm:w-[214px] lg:h-[148px] lg:w-[288px]">
             <DollarBillGraphic idPrefix="comparison-old-bill" />
           </div>
         </div>
 
         {/* BOTTOM PLACEHOLDER: VERSION 1.1 - TEST {testCount} (NEW BILL) */}
-        <div className="flex flex-col items-start gap-1.5">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col items-start gap-1 sm:gap-1.5">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <span
               className={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${
                 isTesting
@@ -2713,7 +2869,7 @@ export default function TestSolutionStage({
               }`}
             />
             <span
-              className={`font-mono-label text-[9.5px] font-medium uppercase tracking-[0.16em] transition-colors duration-300 ${
+              className={`font-mono-label text-[8.5px] font-medium uppercase tracking-[0.14em] transition-colors duration-300 sm:text-[9.5px] sm:tracking-[0.16em] ${
                 testCount > 0 || isTesting
                   ? "text-[var(--text-primary)]"
                   : "text-[var(--text-secondary)]"
@@ -2725,7 +2881,7 @@ export default function TestSolutionStage({
 
           <div
             ref={newBillSlotRef}
-            className={`relative h-[132px] w-[256px] overflow-hidden rounded-md transition-all duration-300 sm:h-[148px] sm:w-[288px] ${
+            className={`relative h-[74px] w-[144px] overflow-hidden rounded-md transition-all duration-300 sm:h-[110px] sm:w-[214px] lg:h-[148px] lg:w-[288px] ${
               hasTested
                 ? "shadow-[0_14px_34px_rgba(16,185,129,0.2)]"
                 : isLight

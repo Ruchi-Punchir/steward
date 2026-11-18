@@ -7,9 +7,9 @@ import { getPublishedPosts } from "@/lib/blog/public-queries";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Insights — Steward",
+  title: "Growth Insights & Business Strategy | Steward",
   description:
-    "Direct field notes from Ashish and Ruchi on pricing, product onboarding, positioning, and fixing revenue leaks.",
+    "Explore insights on product strategy, customer experience, technology and business growth to understand what drives sustainable business growth.",
   alternates: {
     canonical: "/insights",
     types: {

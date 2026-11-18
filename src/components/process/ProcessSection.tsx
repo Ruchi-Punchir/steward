@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useTheme } from "@/context/ThemeContext";
@@ -16,26 +17,31 @@ const PROCESS_STEPS = [
     id: "understand",
     number: "1.",
     label: "Understand the problem",
+    shortLabel: "1. Understand",
   },
   {
     id: "fix",
     number: "2.",
     label: "Build a solution",
+    shortLabel: "2. Build",
   },
   {
     id: "test",
     number: "3.",
     label: "Test the solution",
+    shortLabel: "3. Test",
   },
   {
     id: "launch",
     number: "4.",
     label: "Launch and measure",
+    shortLabel: "4. Launch",
   },
   {
     id: "iterate",
     number: "5.",
     label: "Iterate and scale",
+    shortLabel: "5. Scale",
   },
 ];
 
@@ -90,6 +96,18 @@ export default function ProcessSection({
   const [iterateProgress, setIterateProgress] = useState<number>(0);
   const [activeStage, setActiveStage] = useState<0 | 1 | 2 | 3 | 4 | 5>(0);
   const activeStageRef = useRef<0 | 1 | 2 | 3 | 4 | 5>(0);
+
+  const [testTriggerCount, setTestTriggerCount] = useState<number>(0);
+  const [isStage3Testing, setIsStage3Testing] = useState<boolean>(false);
+  const [hasStage3Tested, setHasStage3Tested] = useState<boolean>(false);
+
+  const handleTestStateChange = useCallback(
+    (testing: boolean, tested: boolean) => {
+      setIsStage3Testing((prev) => (prev === testing ? prev : testing));
+      setHasStage3Tested((prev) => (prev === tested ? prev : tested));
+    },
+    [],
+  );
 
   const [activeUnitIndex, setActiveUnitIndex] = useState<number>(1);
   const [isUserPaused, setIsUserPaused] = useState<boolean>(false);
@@ -148,7 +166,7 @@ export default function ProcessSection({
           topRightHeaderRef.current,
           { y: 28, opacity: 0 },
           { y: 0, opacity: 1, duration: 1, ease: "power2.out" },
-          0
+          0,
         );
       }
 
@@ -157,7 +175,7 @@ export default function ProcessSection({
           bottomBarRef.current,
           { y: 24, opacity: 0 },
           { y: 0, opacity: 1, duration: 1, ease: "power2.out" },
-          0.1
+          0.1,
         );
       }
 
@@ -166,7 +184,7 @@ export default function ProcessSection({
           explodedStageWrapRef.current,
           { opacity: 0, scale: 0.94 },
           { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" },
-          0.5
+          0.5,
         );
       }
 
@@ -211,17 +229,17 @@ export default function ProcessSection({
             setIsStartSectionActive(p >= 0.91);
 
             const nextStage: 0 | 1 | 2 | 3 | 4 | 5 =
-              p >= 0.615
+              p >= 0.635
                 ? 5
-                : p >= 0.5
-                ? 4
-                : p >= 0.36
-                ? 3
-                : p >= 0.21
-                ? 2
-                : p >= 0.045
-                ? 1
-                : 0;
+                : p >= 0.535
+                  ? 4
+                  : p >= 0.39
+                    ? 3
+                    : p >= 0.235
+                      ? 2
+                      : p >= 0.045
+                        ? 1
+                        : 0;
 
             if (nextStage !== activeStageRef.current) {
               activeStageRef.current = nextStage;
@@ -242,7 +260,7 @@ export default function ProcessSection({
             ease: "power2.inOut",
             immediateRender: false,
           },
-          0.025
+          0.025,
         );
       }
 
@@ -261,7 +279,7 @@ export default function ProcessSection({
             ease: "power2.out",
             immediateRender: false,
           },
-          0.035
+          0.035,
         );
       }
 
@@ -277,7 +295,7 @@ export default function ProcessSection({
             ease: "none",
             immediateRender: false,
           },
-          0.0
+          0.0,
         );
       }
 
@@ -292,7 +310,7 @@ export default function ProcessSection({
             ease: "none",
             immediateRender: false,
           },
-          0.195
+          0.195,
         );
       }
 
@@ -307,7 +325,7 @@ export default function ProcessSection({
             ease: "none",
             immediateRender: false,
           },
-          0.35
+          0.35,
         );
       }
 
@@ -322,7 +340,7 @@ export default function ProcessSection({
             ease: "none",
             immediateRender: false,
           },
-          0.49
+          0.49,
         );
       }
 
@@ -337,7 +355,7 @@ export default function ProcessSection({
             ease: "none",
             immediateRender: false,
           },
-          0.6
+          0.6,
         );
       }
 
@@ -355,7 +373,7 @@ export default function ProcessSection({
             duration: 0.1,
             ease: "power2.inOut",
           },
-          0.71
+          0.71,
         );
       }
 
@@ -367,7 +385,7 @@ export default function ProcessSection({
             duration: 0.1,
             ease: "power2.inOut",
           },
-          0.71
+          0.71,
         );
       }
 
@@ -381,7 +399,7 @@ export default function ProcessSection({
             duration: 0.075,
             ease: "power2.out",
           },
-          0.735
+          0.735,
         );
       }
 
@@ -396,7 +414,7 @@ export default function ProcessSection({
             duration: 0.085,
             ease: "power2.out",
           },
-          0.745
+          0.745,
         );
       }
 
@@ -410,7 +428,7 @@ export default function ProcessSection({
             duration: 0.085,
             ease: "power2.out",
           },
-          0.76
+          0.76,
         );
       }
 
@@ -424,7 +442,7 @@ export default function ProcessSection({
             duration: 0.075,
             ease: "power2.out",
           },
-          0.775
+          0.775,
         );
       }
 
@@ -445,7 +463,7 @@ export default function ProcessSection({
             ease: "power2.inOut",
             immediateRender: false,
           },
-          0.86
+          0.86,
         );
       }
 
@@ -458,7 +476,7 @@ export default function ProcessSection({
             duration: 0.08,
             ease: "power2.inOut",
           },
-          0.86
+          0.86,
         );
       }
 
@@ -472,7 +490,7 @@ export default function ProcessSection({
             duration: 0.065,
             ease: "power2.out",
           },
-          0.91
+          0.91,
         );
       }
 
@@ -487,7 +505,7 @@ export default function ProcessSection({
             duration: 0.075,
             ease: "power2.out",
           },
-          0.92
+          0.92,
         );
       }
 
@@ -501,7 +519,7 @@ export default function ProcessSection({
             duration: 0.075,
             ease: "power2.out",
           },
-          0.935
+          0.935,
         );
       }
 
@@ -515,7 +533,7 @@ export default function ProcessSection({
             duration: 0.07,
             ease: "power2.out",
           },
-          0.948
+          0.948,
         );
       }
 
@@ -529,7 +547,7 @@ export default function ProcessSection({
             duration: 0.065,
             ease: "power2.out",
           },
-          0.96
+          0.96,
         );
       }
     }, sectionEl);
@@ -554,378 +572,424 @@ export default function ProcessSection({
       />
 
       {/* Sticky Full-Screen Stage: Intro -> 1..5 -> 04 / WHO WE WORK WITH -> 05 / LET’S START */}
-      <div className="sticky top-0 flex h-screen w-full flex-col justify-between overflow-hidden pt-24 pb-10 sm:pt-28 sm:pb-12">
+      <div className="sticky top-0 flex h-screen w-full flex-col justify-between overflow-hidden pt-18 pb-6 sm:pt-24 sm:pb-10 lg:pt-28 lg:pb-12">
         <div
           ref={processStageBlurRef}
           className="relative flex h-full w-full flex-col justify-between will-change-[opacity,transform]"
         >
-        {/* TOP ROW: Left Editorial Column + Right "03 How we work together" Header */}
-        <div className="pointer-events-none relative z-10 mx-auto grid w-full max-w-[1560px] grid-cols-1 items-start gap-8 px-6 sm:px-10 lg:grid-cols-12 lg:px-16 xl:px-24">
-          {/* LEFT COLUMN: 4 Stage Editorials */}
-          <div
-            ref={understandLeftColRef}
-            className="pointer-events-auto relative z-30 flex flex-col items-start text-left opacity-0 will-change-[opacity,transform] lg:col-span-4"
-          >
-            {/* Stage 1: Understand the problem */}
+          {/* TOP ROW: Left Editorial Column + Right "03 How we work together" Header */}
+          <div className="pointer-events-none relative z-50 mx-auto grid w-full max-w-[1560px] grid-cols-1 items-start gap-4 px-4 sm:gap-8 sm:px-10 lg:grid-cols-12 lg:px-16 xl:px-24">
+            {/* LEFT COLUMN: 5 Stage Editorials */}
             <div
-              className={`w-full transition-all duration-300 ${
-                activeStage <= 1
-                  ? "opacity-100 translate-y-0"
-                  : "pointer-events-none absolute inset-x-0 top-0 opacity-0 -translate-y-2"
+              ref={understandLeftColRef}
+              className={`pointer-events-auto relative z-50 flex-col items-start text-left opacity-0 will-change-[opacity,transform] lg:col-span-4 lg:flex ${
+                activeStage === 0 ? "hidden lg:flex" : "flex"
               }`}
             >
-              <div className="flex items-baseline gap-2">
-                <div className="relative inline-flex flex-col items-start">
-                  <span className="font-mono-label text-5xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-6xl">
-                    1.
-                  </span>
-                  <span className="mt-1 h-[3px] w-11 rounded-full bg-[#e89b3c]" />
-                </div>
-                <h3 className="-ml-2 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:text-3xl xl:text-[2.25rem]">
-                  Understand the problem
-                </h3>
+              {/* Mobile/Tablet compact section eyebrow so "03 / How we work together" stays visible without colliding with the center stage */}
+              <div className="mb-1.5 inline-flex items-center gap-2 lg:hidden">
+                <span className="font-mono-label text-[9.5px] font-semibold uppercase tracking-[0.2em] text-[#e89b3c]">
+                  03
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="h-px w-5 bg-[var(--text-muted)] opacity-45"
+                />
+                <span className="font-mono-label text-[9.5px] uppercase tracking-[0.18em] text-[var(--text-secondary)]">
+                  How we work together
+                </span>
               </div>
 
-              <p className="mt-4 max-w-[380px] text-sm font-normal leading-[1.68] text-[var(--text-secondary)] sm:text-[16px]">
-                We start with your numbers and your story, and find what’s
-                actually holding growth back before anything gets built.
-              </p>
-
-              {/* Live Periodic Diagnostic Scanner Card */}
+              {/* Stage 1: Understand the problem */}
               <div
-                className={`mt-6 w-full max-w-[370px] rounded-xl border p-4 transition-colors duration-300 ${
-                  isLight
-                    ? "border-black/10 bg-[#eae5dc]/90 shadow-sm"
-                    : "border-white/[0.08] bg-[#111116]/90 shadow-[0_18px_40px_rgba(0,0,0,0.65)]"
+                className={`w-full ${
+                  activeStage <= 1 ? "block" : "hidden pointer-events-none"
                 }`}
               >
-                <div className="flex items-center justify-between border-b border-current/10 pb-2.5">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 animate-pulse rounded-full bg-[#e89b3c] shadow-[0_0_8px_#e89b3c]" />
-                    <span className="font-mono-label text-[10px] font-semibold uppercase tracking-[0.18em] text-[#e89b3c]">
-                      Inspecting Unit {currentUnit.code}/05
+                <div className="flex items-baseline gap-2">
+                  <div className="relative inline-flex flex-col items-start">
+                    <span className="font-mono-label text-3xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-5xl lg:text-6xl">
+                      1.
                     </span>
+                    <span className="mt-0.5 h-[2.5px] w-7 rounded-full bg-[#e89b3c] sm:mt-1 sm:h-[3px] sm:w-11" />
                   </div>
-                  {/* 5 Quick Unit Selector Dots */}
-                  <div className="flex items-center gap-1.5">
-                    {PRODUCT_UNITS.map((u, idx) => (
-                      <button
-                        key={u.id}
-                        type="button"
-                        onClick={() => handleManualSelectUnit(idx)}
-                        aria-label={`Inspect ${u.name}`}
-                        className={`h-2 rounded-full transition-all duration-200 cursor-pointer ${
-                          activeUnitIndex === idx
-                            ? "w-5 bg-[#e89b3c]"
-                            : "w-2 bg-[var(--text-muted)]/40 hover:bg-[var(--text-secondary)]"
-                        }`}
-                      />
-                    ))}
-                  </div>
+                  <h3 className="-ml-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:-ml-2 sm:text-3xl xl:text-[2.25rem]">
+                    Understand the problem
+                  </h3>
                 </div>
 
-                {/* Active Big Part Title & Diagnostic Activity */}
-                <div className="mt-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-base font-semibold tracking-[-0.01em] text-[var(--text-primary)]">
-                      {currentUnit.name}
-                    </span>
-                    <span className="font-mono-label text-[9px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
-                      Big Part #{currentUnit.code}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-xs leading-relaxed text-[var(--text-secondary)]">
-                    {currentUnit.finding}
-                  </p>
-                </div>
+                <p className="mt-1.5 max-w-[380px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-4 sm:text-[16px] sm:leading-[1.68]">
+                  Before writing a single line of code or running another ad, we
+                  scan your numbers, product, and funnel to pinpoint the exact
+                  bottlenecks costing you sales.
+                </p>
 
-                {/* Smaller Related Sub-Parts Pills */}
-                <div className="mt-3 pt-2.5 border-t border-current/10">
-                  <span className="block font-mono-label text-[9px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
-                    Related Sub-Components:
-                  </span>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {currentUnit.subParts.map((sub) => (
-                      <span
-                        key={sub.id}
-                        className="inline-flex items-center gap-1.5 rounded-md border border-[#e89b3c]/40 bg-[#e89b3c]/12 px-2 py-0.5 font-mono-label text-[9.5px] font-medium text-[var(--text-primary)]"
-                      >
-                        <span className="h-1 w-1 rounded-full bg-[#e89b3c]" />
-                        {sub.label}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Stage 2: Build a solution */}
-            <div
-              className={`w-full transition-all duration-300 ${
-                activeStage === 2
-                  ? "opacity-100 translate-y-0"
-                  : "pointer-events-none absolute inset-x-0 top-0 opacity-0 translate-y-2"
-              }`}
-            >
-              <div className="flex items-baseline gap-2">
-                <div className="relative inline-flex flex-col items-start">
-                  <span className="font-mono-label text-5xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-6xl">
-                    2.
-                  </span>
-                  <span className="mt-1 h-[3px] w-11 rounded-full bg-[#10b981]" />
-                </div>
-                <h3 className="-ml-2 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:text-3xl xl:text-[2.25rem]">
-                  Build a solution
-                </h3>
-              </div>
-
-              <p className="mt-4 max-w-[380px] text-sm font-normal leading-[1.68] text-[var(--text-secondary)] sm:text-[16px]">
-                We fix what’s costing you sales, starting with the biggest leak.
-                And if something’s missing, we build it.
-              </p>
-            </div>
-
-            {/* Stage 3: Test the solution */}
-            <div
-              className={`w-full transition-all duration-300 ${
-                activeStage === 3
-                  ? "opacity-100 translate-y-0"
-                  : "pointer-events-none absolute inset-x-0 top-0 opacity-0 translate-y-2"
-              }`}
-            >
-              <div className="flex items-baseline gap-2">
-                <div className="relative inline-flex flex-col items-start">
-                  <span className="font-mono-label text-5xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-6xl">
-                    3.
-                  </span>
-                  <span className="mt-1 h-[3px] w-11 rounded-full bg-[#e89b3c]" />
-                </div>
-                <h3 className="-ml-2 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:text-3xl xl:text-[2.25rem]">
-                  Test the solution
-                </h3>
-              </div>
-
-              <p className="mt-4 max-w-[380px] text-sm font-normal leading-[1.68] text-[var(--text-secondary)] sm:text-[16px]">
-                Before going wide, we put it in front of real people and watch
-                what they actually do.
-              </p>
-            </div>
-
-            {/* Stage 4: Launch and measure */}
-            <div
-              className={`w-full transition-all duration-300 ${
-                activeStage === 4
-                  ? "opacity-100 translate-y-0"
-                  : "pointer-events-none absolute inset-x-0 top-0 opacity-0 translate-y-2"
-              }`}
-            >
-              <div className="flex items-baseline gap-2">
-                <div className="relative inline-flex flex-col items-start">
-                  <span className="font-mono-label text-5xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-6xl">
-                    4.
-                  </span>
-                  <span className="mt-1 h-[3px] w-11 rounded-full bg-[#10b981]" />
-                </div>
-                <h3 className="-ml-2 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:text-3xl xl:text-[2.25rem]">
-                  Launch and measure
-                </h3>
-              </div>
-
-              <p className="mt-4 max-w-[380px] text-sm font-normal leading-[1.68] text-[var(--text-secondary)] sm:text-[16px]">
-                We ship fast, then track what’s working and what isn’t. No
-                guessing, no vanity metrics, just real signal, judged by one
-                number: revenue.
-              </p>
-            </div>
-
-            {/* Stage 5: Iterate and scale */}
-            <div
-              className={`w-full transition-all duration-300 ${
-                activeStage === 5
-                  ? "opacity-100 translate-y-0"
-                  : "pointer-events-none absolute inset-x-0 top-0 opacity-0 translate-y-2"
-              }`}
-            >
-              <div className="flex items-baseline gap-2">
-                <div className="relative inline-flex flex-col items-start">
-                  <span className="font-mono-label text-5xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-6xl">
-                    5.
-                  </span>
-                  <span className="mt-1 h-[3px] w-11 rounded-full bg-[#e89b3c]" />
-                </div>
-                <h3 className="-ml-2 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:text-3xl xl:text-[2.25rem]">
-                  Iterate and scale
-                </h3>
-              </div>
-
-              <p className="mt-4 max-w-[380px] text-sm font-normal leading-[1.68] text-[var(--text-secondary)] sm:text-[16px]">
-                We stay, adjust, and keep pushing that number up, quarter after
-                quarter.
-              </p>
-            </div>
-          </div>
-
-          {/* RIGHT COLUMN: "03 — Revenue is the only metric / How we work together" */}
-          <div
-            ref={topRightHeaderRef}
-            className="pointer-events-none flex flex-col items-start text-left will-change-[opacity,transform] lg:col-span-5 lg:col-start-8 lg:ml-auto lg:items-end lg:text-right"
-          >
-            <div className="mb-3 inline-flex items-center gap-3">
-              <span className="font-mono-label text-[11px] uppercase tracking-[0.22em] text-[#e89b3c]">
-                03
-              </span>
-              <span
-                aria-hidden="true"
-                className="h-px w-8 bg-[var(--text-muted)] opacity-45"
-              />
-              <span className="font-mono-label text-[11px] uppercase tracking-[0.2em] text-[var(--text-secondary)]">
-                Revenue is the only metric
-              </span>
-            </div>
-
-            <h2
-              id="process-heading"
-              className="text-4xl font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text-primary)] sm:text-5xl xl:text-[3.5rem]"
-            >
-              How we work
-              <span className="font-serif-editorial mt-1 block font-normal italic tracking-[-0.015em] text-[#e89b3c]">
-                together
-              </span>
-            </h2>
-          </div>
-        </div>
-
-        {/* CENTER STAGE: 3D ISOMETRIC EXPLODED TYPEWRITER (Stages 1 & 2) */}
-        <div
-          ref={explodedStageWrapRef}
-          style={{
-            top: "52%",
-            transform: "translateY(-50%)",
-          }}
-          className="pointer-events-auto absolute inset-x-0 z-40 mx-auto flex h-[540px] w-full max-w-[1040px] items-center justify-center px-4 will-change-[opacity,transform]"
-        >
-          <div
-            ref={explodedStageShiftRef}
-            className="relative flex h-full w-full items-center justify-center will-change-transform"
-          >
-            {/* 3D Isometric Exploded Typewriter: Explodes in Stage 1, Repairs in Stage 2, Re-assembles (with no labels) into Stage 3 */}
-            <div
-              style={{
-                opacity: Math.max(0, 1 - Math.max(0, (testProgress - 0.42) / 0.32)),
-                pointerEvents: testProgress > 0.55 ? "none" : "auto",
-              }}
-              className="flex h-full w-full items-center justify-center"
-            >
-              <ExplodedTypewriter3D
-                explosionProgress={explosionProgress}
-                fixProgress={fixProgress}
-                testProgress={testProgress}
-                launchProgress={launchProgress}
-                activeUnitIndex={activeUnitIndex}
-                onSelectUnit={handleManualSelectUnit}
-                isLight={isLight}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* UNIFIED STAGES 3, 4 & 5 ("Test the solution" -> "Launch and measure" -> "Iterate and scale"):
-            Uses ONE single front-view typewriter across all three stages */}
-        <div
-          style={{
-            top: "165px",
-            bottom: "88px",
-            pointerEvents: testProgress > 0.55 ? "auto" : "none",
-          }}
-          className="pointer-events-none absolute inset-x-0 z-40 mx-auto flex w-full max-w-[1560px] items-center justify-center px-6 sm:px-10 lg:px-16 xl:px-24"
-        >
-          <TestSolutionStage
-            testProgress={testProgress}
-            launchProgress={launchProgress}
-            iterateProgress={iterateProgress}
-            isLight={isLight}
-          />
-        </div>
-
-        {/* BOTTOM 5-STAGE PROCESS BAR */}
-        <div
-          ref={bottomBarRef}
-          className="pointer-events-auto relative z-40 mx-auto w-full max-w-[1560px] px-6 sm:px-10 lg:px-16 xl:px-24"
-        >
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-5 sm:gap-6 lg:gap-8">
-            {PROCESS_STEPS.map((step, idx) => {
-              const stageNum = (idx + 1) as 1 | 2 | 3 | 4 | 5;
-              const isCurrentStage = activeStage === stageNum;
-              const isCompletedStage = activeStage > stageNum;
-
-              return (
-                <button
-                  key={step.id}
-                  type="button"
-                  onClick={() => onStepSelect?.(idx)}
-                  className="group flex cursor-pointer flex-col text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
+                {/* Live Periodic Diagnostic Scanner Card */}
+                <div
+                  className={`mt-2.5 w-full max-w-[370px] rounded-xl border p-2.5 transition-colors duration-300 sm:mt-6 sm:p-4 ${
+                    isLight
+                      ? "border-black/10 bg-[#eae5dc]/90 shadow-sm"
+                      : "border-white/[0.08] bg-[#111116]/90 shadow-[0_18px_40px_rgba(0,0,0,0.65)]"
+                  }`}
                 >
-                  <span
-                    className={`mb-2.5 font-mono-label text-xs tracking-[0.04em] transition-colors duration-300 group-hover:text-[#e89b3c] sm:text-sm ${
-                      isCurrentStage
-                        ? "font-semibold text-[var(--text-primary)]"
-                        : isCompletedStage
-                        ? "font-medium text-[var(--text-secondary)]"
-                        : "font-normal text-[var(--text-secondary)]"
-                    }`}
-                  >
-                    {step.label}
-                  </span>
-
-                  {/* Step Bottom Progress Track (thin underline that fills with orange on scroll) */}
-                  <div
-                    className={`relative h-[1.5px] w-full overflow-hidden rounded-full transition-colors duration-200 ${
-                      isLight
-                        ? "bg-black/15 group-hover:bg-black/30"
-                        : "bg-white/20 group-hover:bg-white/35"
-                    }`}
-                  >
-                    {idx === 0 && (
-                      <div
-                        ref={understandProgressFillRef}
-                        style={{ transformOrigin: "left center" }}
-                        className="h-full w-full scale-x-0 bg-[#e89b3c] will-change-transform"
-                      />
-                    )}
-                    {idx === 1 && (
-                      <div
-                        ref={fixProgressFillRef}
-                        style={{ transformOrigin: "left center" }}
-                        className="h-full w-full scale-x-0 bg-[#e89b3c] will-change-transform"
-                      />
-                    )}
-                    {idx === 2 && (
-                      <div
-                        ref={testProgressFillRef}
-                        style={{ transformOrigin: "left center" }}
-                        className="h-full w-full scale-x-0 bg-[#e89b3c] will-change-transform"
-                      />
-                    )}
-                    {idx === 3 && (
-                      <div
-                        ref={launchProgressFillRef}
-                        style={{ transformOrigin: "left center" }}
-                        className="h-full w-full scale-x-0 bg-[#e89b3c] will-change-transform"
-                      />
-                    )}
-                    {idx === 4 && (
-                      <div
-                        ref={iterateProgressFillRef}
-                        style={{ transformOrigin: "left center" }}
-                        className="h-full w-full scale-x-0 bg-[#e89b3c] will-change-transform"
-                      />
-                    )}
+                  <div className="flex items-center justify-between border-b border-current/10 pb-1.5 sm:pb-2.5">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#e89b3c] shadow-[0_0_8px_#e89b3c] sm:h-2 sm:w-2" />
+                      <span className="font-mono-label text-[9px] font-semibold uppercase tracking-[0.16em] text-[#e89b3c] sm:text-[10px] sm:tracking-[0.18em]">
+                        Inspecting Unit {currentUnit.code}/05
+                      </span>
+                    </div>
+                    {/* 5 Quick Unit Selector Dots */}
+                    <div className="flex items-center gap-1.5">
+                      {PRODUCT_UNITS.map((u, idx) => (
+                        <button
+                          key={u.id}
+                          type="button"
+                          onClick={() => handleManualSelectUnit(idx)}
+                          aria-label={`Inspect ${u.name}`}
+                          className={`h-1.5 cursor-pointer rounded-full transition-all duration-200 sm:h-2 ${
+                            activeUnitIndex === idx
+                              ? "w-4 bg-[#e89b3c] sm:w-5"
+                              : "w-1.5 bg-[var(--text-muted)]/40 hover:bg-[var(--text-secondary)] sm:w-2"
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </button>
-              );
-            })}
+
+                  {/* Active Big Part Title & Diagnostic Activity */}
+                  <div className="mt-1.5 sm:mt-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold tracking-[-0.01em] text-[var(--text-primary)] sm:text-base">
+                        {currentUnit.name}
+                      </span>
+                      <span className="font-mono-label text-[8.5px] uppercase tracking-[0.14em] text-[var(--text-muted)] sm:text-[9px]">
+                        #{currentUnit.code}
+                      </span>
+                    </div>
+                    <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-[var(--text-secondary)] sm:mt-1 sm:line-clamp-none sm:text-xs sm:leading-relaxed">
+                      {currentUnit.finding}
+                    </p>
+                  </div>
+
+                  {/* Smaller Related Sub-Parts Pills (Hidden on compact mobile so 3D typewriter below is unobstructed) */}
+                  <div className="mt-3 hidden border-t border-current/10 pt-2.5 sm:block">
+                    <span className="block font-mono-label text-[9px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                      Tags:
+                    </span>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {currentUnit.subParts.map((sub) => (
+                        <span
+                          key={sub.id}
+                          className="inline-flex items-center gap-1.5 rounded-md border border-[#e89b3c]/40 bg-[#e89b3c]/12 px-2 py-0.5 font-mono-label text-[9.5px] font-medium text-[var(--text-primary)]"
+                        >
+                          <span className="h-1 w-1 rounded-full bg-[#e89b3c]" />
+                          {sub.label}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stage 2: Build a solution */}
+              <div
+                className={`w-full ${
+                  activeStage === 2 ? "block" : "hidden pointer-events-none"
+                }`}
+              >
+                <div className="flex items-baseline gap-2">
+                  <div className="relative inline-flex flex-col items-start">
+                    <span className="font-mono-label text-3xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-5xl lg:text-6xl">
+                      2.
+                    </span>
+                    <span className="mt-0.5 h-[2.5px] w-7 rounded-full bg-[#10b981] sm:mt-1 sm:h-[3px] sm:w-11" />
+                  </div>
+                  <h3 className="-ml-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:-ml-2 sm:text-3xl xl:text-[2.25rem]">
+                    Build a solution
+                  </h3>
+                </div>
+
+                <p className="mt-1.5 max-w-[380px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-4 sm:text-[16px] sm:leading-[1.68]">
+                  We fix what’s costing you sales, starting with the biggest
+                  leak. And if something’s missing, we build it.
+                </p>
+              </div>
+
+              {/* Stage 3: Test the solution */}
+              <div
+                className={`w-full ${
+                  activeStage === 3 ? "block" : "hidden pointer-events-none"
+                }`}
+              >
+                <div className="flex items-baseline gap-2">
+                  <div className="relative inline-flex flex-col items-start">
+                    <span className="font-mono-label text-3xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-5xl lg:text-6xl">
+                      3.
+                    </span>
+                    <span className="mt-0.5 h-[2.5px] w-7 rounded-full bg-[#e89b3c] sm:mt-1 sm:h-[3px] sm:w-11" />
+                  </div>
+                  <h3 className="-ml-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:-ml-2 sm:text-3xl xl:text-[2.25rem]">
+                    Test the solution
+                  </h3>
+                </div>
+
+                <p className="mt-1.5 max-w-[380px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-4 sm:text-[16px] sm:leading-[1.68]">
+                  Before going wide, we put it in front of real people and watch
+                  what they actually do. We prove it works before you spend
+                  another dime on ads or development.
+                </p>
+
+                <div className="mt-3 sm:mt-6">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!isStage3Testing) {
+                        setTestTriggerCount((c) => c + 1);
+                      }
+                    }}
+                    disabled={isStage3Testing}
+                    className={`group relative inline-flex cursor-pointer items-center gap-2.5 rounded-full bg-[#e89b3c] px-5 py-2 font-mono-label text-[11px] font-semibold uppercase tracking-[0.16em] text-[#08080a] shadow-[0_0_24px_rgba(232,155,60,0.45)] transition-all duration-200 hover:bg-[var(--text-primary)] hover:text-[var(--bg-stage)] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] disabled:cursor-wait sm:gap-3 sm:px-8 sm:py-3.5 sm:text-xs ${
+                      !hasStage3Tested && !isStage3Testing ? "orb-begging" : ""
+                    }`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full transition-colors sm:h-2 sm:w-2 ${
+                        isStage3Testing
+                          ? "animate-ping bg-current"
+                          : "bg-current"
+                      }`}
+                    />
+                    <span>{isStage3Testing ? "Testing..." : "Test"}</span>
+                    <span
+                      aria-hidden="true"
+                      className="transition-transform duration-200 group-hover:translate-x-0.5"
+                    >
+                      →
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Stage 4: Launch and measure */}
+              <div
+                className={`w-full ${
+                  activeStage === 4 ? "block" : "hidden pointer-events-none"
+                }`}
+              >
+                <div className="flex items-baseline gap-2">
+                  <div className="relative inline-flex flex-col items-start">
+                    <span className="font-mono-label text-3xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-5xl lg:text-6xl">
+                      4.
+                    </span>
+                    <span className="mt-0.5 h-[2.5px] w-7 rounded-full bg-[#10b981] sm:mt-1 sm:h-[3px] sm:w-11" />
+                  </div>
+                  <h3 className="-ml-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:-ml-2 sm:text-3xl xl:text-[2.25rem]">
+                    Launch and measure
+                  </h3>
+                </div>
+
+                <p className="mt-1.5 max-w-[380px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-4 sm:text-[16px] sm:leading-[1.68]">
+                  Same budget. Completely different outcome. We ship the winning
+                  fix fast and track one number: net revenue. No vanity clicks
+                  or guesswork. You see every dollar come back with profit.
+                </p>
+              </div>
+
+              {/* Stage 5: Iterate and scale */}
+              <div
+                className={`w-full ${
+                  activeStage === 5 ? "block" : "hidden pointer-events-none"
+                }`}
+              >
+                <div className="flex items-baseline gap-2">
+                  <div className="relative inline-flex flex-col items-start">
+                    <span className="font-mono-label text-3xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-5xl lg:text-6xl">
+                      5.
+                    </span>
+                    <span className="mt-0.5 h-[2.5px] w-7 rounded-full bg-[#e89b3c] sm:mt-1 sm:h-[3px] sm:w-11" />
+                  </div>
+                  <h3 className="-ml-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:-ml-2 sm:text-3xl xl:text-[2.25rem]">
+                    Iterate and scale
+                  </h3>
+                </div>
+
+                <p className="mt-1.5 max-w-[380px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-4 sm:text-[16px] sm:leading-[1.68]">
+                  We stay, adjust, and keep pushing that number up, quarter
+                  after quarter.
+                </p>
+              </div>
+            </div>
+
+            {/* RIGHT COLUMN: "03 — Revenue is the only metric / How we work together"
+                (Shown at intro activeStage === 0 on mobile, and always on Desktop lg+) */}
+            <div
+              ref={topRightHeaderRef}
+              className={`pointer-events-none flex-col items-start text-left will-change-[opacity,transform] lg:col-span-5 lg:col-start-8 lg:ml-auto lg:flex lg:items-end lg:text-right ${
+                activeStage >= 1 ? "hidden lg:flex" : "flex"
+              }`}
+            >
+              <div className="mb-3 inline-flex items-center gap-3">
+                <span className="font-mono-label text-[11px] uppercase tracking-[0.22em] text-[#e89b3c]">
+                  03
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="h-px w-8 bg-[var(--text-muted)] opacity-45"
+                />
+                <span className="font-mono-label text-[11px] uppercase tracking-[0.2em] text-[var(--text-secondary)]">
+                  Revenue is the only metric
+                </span>
+              </div>
+
+              <h2
+                id="process-heading"
+                className="text-4xl font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text-primary)] sm:text-5xl xl:text-[3.5rem]"
+              >
+                How we work
+                <span className="font-serif-editorial mt-1 block font-normal italic tracking-[-0.015em] text-[#e89b3c]">
+                  together
+                </span>
+              </h2>
+            </div>
           </div>
-        </div>
+
+          {/* CENTER STAGE: 3D ISOMETRIC EXPLODED TYPEWRITER (Stages 1 & 2) */}
+          <div
+            ref={explodedStageWrapRef}
+            style={{
+              pointerEvents: testProgress > 0.55 ? "none" : "auto",
+            }}
+            className="absolute inset-x-0 top-[63%] z-30 mx-auto flex h-[540px] w-full max-w-[1040px] -translate-y-1/2 items-center justify-center px-4 will-change-[opacity,transform] sm:top-[58%] lg:top-[52%]"
+          >
+            <div
+              ref={explodedStageShiftRef}
+              className="relative flex h-full w-full scale-[0.72] items-center justify-center will-change-transform sm:scale-[0.88] lg:scale-100"
+            >
+              {/* 3D Isometric Exploded Typewriter: Explodes in Stage 1, Repairs in Stage 2, Re-assembles (with no labels) into Stage 3 */}
+              <div
+                style={{
+                  opacity: Math.max(
+                    0,
+                    1 - Math.max(0, (testProgress - 0.42) / 0.32),
+                  ),
+                  pointerEvents: testProgress > 0.55 ? "none" : "auto",
+                }}
+                className="flex h-full w-full items-center justify-center"
+              >
+                <ExplodedTypewriter3D
+                  explosionProgress={explosionProgress}
+                  fixProgress={fixProgress}
+                  testProgress={testProgress}
+                  launchProgress={launchProgress}
+                  activeUnitIndex={activeUnitIndex}
+                  onSelectUnit={handleManualSelectUnit}
+                  isLight={isLight}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* UNIFIED STAGES 3, 4 & 5 ("Test the solution" -> "Launch and measure" -> "Iterate and scale"):
+            Uses ONE single front-view typewriter across all three stages */}
+          <div
+            style={{
+              top: "165px",
+              bottom: "68px",
+              pointerEvents: testProgress > 0.55 ? "auto" : "none",
+            }}
+            className="pointer-events-none absolute inset-x-0 z-40 mx-auto flex w-full max-w-[1560px] items-center justify-center px-4 sm:px-10 lg:bottom-[88px] lg:px-16 xl:px-24"
+          >
+            <TestSolutionStage
+              testProgress={testProgress}
+              launchProgress={launchProgress}
+              iterateProgress={iterateProgress}
+              isLight={isLight}
+              externalTestTrigger={testTriggerCount}
+              onTestStateChange={handleTestStateChange}
+            />
+          </div>
+
+          {/* BOTTOM 5-STAGE PROCESS BAR */}
+          <div
+            ref={bottomBarRef}
+            className="pointer-events-auto relative z-50 mx-auto w-full max-w-[1560px] px-4 sm:px-10 lg:px-16 xl:px-24"
+          >
+            <div className="grid grid-cols-5 gap-1.5 sm:gap-6 lg:gap-8">
+              {PROCESS_STEPS.map((step, idx) => {
+                const stageNum = (idx + 1) as 1 | 2 | 3 | 4 | 5;
+                const isCurrentStage = activeStage === stageNum;
+                const isCompletedStage = activeStage > stageNum;
+
+                return (
+                  <button
+                    key={step.id}
+                    type="button"
+                    onClick={() => onStepSelect?.(idx)}
+                    className="group flex cursor-pointer flex-col text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
+                  >
+                    <span
+                      className={`mb-1.5 truncate font-mono-label text-[8.5px] tracking-[0.02em] transition-colors duration-300 group-hover:text-[#e89b3c] sm:mb-2.5 sm:text-sm sm:tracking-[0.04em] ${
+                        isCurrentStage
+                          ? "font-semibold text-[var(--text-primary)]"
+                          : isCompletedStage
+                            ? "font-medium text-[var(--text-secondary)]"
+                            : "font-normal text-[var(--text-secondary)]"
+                      }`}
+                    >
+                      <span className="sm:hidden">{step.shortLabel}</span>
+                      <span className="hidden sm:inline">{step.label}</span>
+                    </span>
+
+                    {/* Step Bottom Progress Track (thin underline that fills with orange on scroll) */}
+                    <div
+                      className={`relative h-[1.5px] w-full overflow-hidden rounded-full transition-colors duration-200 ${
+                        isLight
+                          ? "bg-black/15 group-hover:bg-black/30"
+                          : "bg-white/20 group-hover:bg-white/35"
+                      }`}
+                    >
+                      {idx === 0 && (
+                        <div
+                          ref={understandProgressFillRef}
+                          style={{ transformOrigin: "left center" }}
+                          className="h-full w-full scale-x-0 bg-[#e89b3c] will-change-transform"
+                        />
+                      )}
+                      {idx === 1 && (
+                        <div
+                          ref={fixProgressFillRef}
+                          style={{ transformOrigin: "left center" }}
+                          className="h-full w-full scale-x-0 bg-[#e89b3c] will-change-transform"
+                        />
+                      )}
+                      {idx === 2 && (
+                        <div
+                          ref={testProgressFillRef}
+                          style={{ transformOrigin: "left center" }}
+                          className="h-full w-full scale-x-0 bg-[#e89b3c] will-change-transform"
+                        />
+                      )}
+                      {idx === 3 && (
+                        <div
+                          ref={launchProgressFillRef}
+                          style={{ transformOrigin: "left center" }}
+                          className="h-full w-full scale-x-0 bg-[#e89b3c] will-change-transform"
+                        />
+                      )}
+                      {idx === 4 && (
+                        <div
+                          ref={iterateProgressFillRef}
+                          style={{ transformOrigin: "left center" }}
+                          className="h-full w-full scale-x-0 bg-[#e89b3c] will-change-transform"
+                        />
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         {/* ===================================================================
@@ -980,9 +1044,9 @@ export default function ProcessSection({
             ref={whoLineRef}
             className="mt-6 max-w-[680px] text-lg font-normal leading-[1.6] tracking-[-0.015em] text-[var(--text-primary)]/90 opacity-0 will-change-[opacity,transform] sm:text-xl lg:text-[1.35rem]"
           >
-            For founders and product leaders who’ve built something with real
-            potential. You’re solving a real problem for real people. Now let’s
-            get you profitable.
+            You’ve built the product. We take on everything between it and your
+            next paying customer: finding what’s in the way, fixing it, and
+            tracking whether it worked.
           </p>
 
           {/* Boundary line (smaller) */}
@@ -990,8 +1054,8 @@ export default function ProcessSection({
             ref={whoBoundaryLineRef}
             className="mt-5 max-w-[560px] text-sm font-normal leading-[1.65] text-[var(--text-secondary)] opacity-0 will-change-[opacity,transform] sm:text-base"
           >
-            You keep the vision and the decisions. We own the work, and the
-            result we agree on up front.
+            You keep the vision and the decisions. We agree on one number up
+            front, and we answer for it.
           </p>
         </div>
 
@@ -1023,9 +1087,9 @@ export default function ProcessSection({
             style={{ textWrap: "balance" }}
             className="max-w-[18ch] text-balance text-4xl font-semibold leading-[1.06] tracking-[-0.035em] text-[var(--text-primary)] opacity-0 will-change-[opacity,transform] sm:text-5xl xl:text-[3.75rem]"
           >
-            Revenue is the only metric{" "}
+            Let’s find what’s costing{" "}
             <span className="font-serif-editorial text-[1.05em] font-normal italic tracking-[-0.015em] text-[#e89b3c] drop-shadow-[0_0_24px_rgba(232,155,60,0.3)]">
-              we care about.
+              you revenue.
             </span>
           </h2>
 
@@ -1034,8 +1098,7 @@ export default function ProcessSection({
             ref={startSublineRef}
             className="mt-6 max-w-[600px] text-base font-normal leading-[1.68] text-[var(--text-secondary)] opacity-0 will-change-[opacity,transform] sm:text-lg"
           >
-            Start with a free audit. Send us your product and your numbers, and
-            we’ll show you where the biggest leak is.
+            Clear diagnosis. Prioritized fixes. Zero guesswork.
           </p>
 
           {/* Primary button & Secondary email link */}
@@ -1043,19 +1106,15 @@ export default function ProcessSection({
             ref={startActionsRef}
             className="mt-9 flex flex-col items-center justify-center gap-4 opacity-0 will-change-[opacity,transform] sm:flex-row sm:gap-6"
           >
-            <button
-              type="button"
+            <Link
+              href="/audit?source=close-section"
+              target="_blank"
+              rel="noopener noreferrer"
               data-cta-source="close-section"
-              onClick={(e) =>
-                onAuditClick?.(
-                  e.currentTarget.getAttribute("data-cta-source") ??
-                    "close-section"
-                )
-              }
               className="cursor-pointer rounded-full bg-[#e89b3c] px-8 py-3.5 font-mono-label text-xs font-medium uppercase tracking-[0.16em] text-[#08080a] transition-all duration-200 hover:bg-[var(--text-primary)] hover:text-[var(--bg-stage)] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
             >
               Get a free audit
-            </button>
+            </Link>
 
             <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
               <span>Or just say hello,</span>

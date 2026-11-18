@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -143,13 +144,14 @@ export default function ContactSection({ onAuditClick }: ContactSectionProps) {
           ref={actionsRef}
           className="mt-9 flex flex-col items-center justify-center gap-4 will-change-[opacity,transform] sm:flex-row sm:gap-6"
         >
-          <button
-            type="button"
-            onClick={onAuditClick}
+          <Link
+            href="/audit?source=contact-section"
+            target="_blank"
+            rel="noopener noreferrer"
             className="cursor-pointer rounded-full bg-[#e89b3c] px-8 py-3.5 font-mono-label text-xs font-medium uppercase tracking-[0.16em] text-[#08080a] transition-all duration-200 hover:bg-[var(--text-primary)] hover:text-[var(--bg-stage)] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
           >
             Get a free audit
-          </button>
+          </Link>
 
           <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
             <span>Or just say hello,</span>
