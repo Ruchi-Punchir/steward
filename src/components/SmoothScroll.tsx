@@ -17,7 +17,10 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    if (prefersReducedMotion) {
+    // Disable Lenis smooth scrolling on mobile/tablet (< 1024px) to keep touch scrolling 100% native and lag-free
+    const isMobileViewport = window.matchMedia("(max-width: 1023px)").matches;
+
+    if (prefersReducedMotion || isMobileViewport) {
       return;
     }
 

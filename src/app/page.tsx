@@ -11,6 +11,7 @@ import DashboardSection from "@/components/dashboard/DashboardSection";
 import ProcessSection from "@/components/process/ProcessSection";
 import Footer from "@/components/Footer";
 import HomeLoader from "@/components/HomeLoader";
+import MobileStaticHome from "@/components/MobileStaticHome";
 import { captureFirstLandingAttribution } from "@/components/leads/LeadCaptureModal";
 import type { LeadIntent } from "@/config/leadCopy";
 
@@ -20,7 +21,18 @@ if (typeof window !== "undefined") {
 
 export default function HomePage() {
   const [isLoaderActive, setIsLoaderActive] = useState<boolean>(true);
+  const [isDesktop, setIsDesktop] = useState<boolean>(false);
   const snapToBeatRef = useRef<((beat: number) => void) | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const updateViewport = () => {
+      setIsDesktop(mq.matches);
+    };
+    updateViewport();
+    mq.addEventListener("change", updateViewport);
+    return () => mq.removeEventListener("change", updateViewport);
+  }, []);
 
   const openCtaPageInNewTab = useCallback(
     (intent: LeadIntent, sourceButton: string) => {
@@ -86,6 +98,8 @@ export default function HomePage() {
   // Beat 8: "4. Launch and measure" active
   // Beat 9: "5. Iterate and scale" active
   useEffect(() => {
+    if (!isDesktop) return;
+
     const getSection2Top = () => {
       const el = document.getElementById("dashboard");
       return el ? el.offsetTop : window.innerHeight;
@@ -141,7 +155,7 @@ export default function HomePage() {
       window.removeEventListener("scroll", syncFixedStage);
       window.removeEventListener("resize", syncFixedStage);
     };
-  }, [syncFixedStage]);
+  }, [syncFixedStage, isDesktop]);
 
   const handleSpend = useCallback(
     (tier: 20 | 5000 | 10000, customEarnedDelta?: number) => {
@@ -177,62 +191,74 @@ export default function HomePage() {
       />
 
       <main>
-        {/* Shared Section 1 + Section 2 Stage Wrapper:
-            Keeps the exact same TypewriterStage instance alive across both sections
-            so the typewriter and $20/$50/$100 buttons smoothly transition into Section 2. */}
-        <div
-          ref={handoffWrapperRef}
-          className="relative w-full overflow-x-clip"
-        >
-          {/* Desktop Fixed Shared Typewriter Stage (spans Section 1 & Section 2 so the exact same typewriter stays in view and transitions on scroll) */}
-          <div
-            ref={desktopFixedStageRef}
-            className="pointer-events-none hidden lg:fixed lg:inset-x-0 lg:top-0 lg:z-30 lg:flex lg:h-screen lg:w-full lg:items-center lg:overflow-hidden"
-          >
-            <div className="mx-auto grid w-full max-w-[1560px] grid-cols-12 items-center gap-8 px-6 sm:px-10 lg:gap-10 lg:px-16 xl:px-24">
-              <div className="col-span-6 col-start-7 w-full">
-                <TypewriterStage
-                  externalSpent={spent}
-                  externalEarned={earned}
-                  onSpend={handleSpend}
-                  isTransitionLocked={isTransitionLocked}
-                  handoffTriggerRef={handoffWrapperRef}
-                  onTransitionLockChange={setIsTransitionLocked}
-                />
-              </div>
-            </div>
+        {/* Static Mobile-Only View (< 1024px): Zero GSAP ScrollTriggers, zero sticky pinning, zero canvas loops */}
+        {!isDesktop && (
+          <div className="lg:hidden">
+            <MobileStaticHome />
           </div>
+        )}
 
-          <HeroSection
-            onAuditClick={(sourceButton = "hero") =>
-              openCtaPageInNewTab("audit", sourceButton)
-            }
-            onConversationClick={(sourceButton = "hero") =>
-              openCtaPageInNewTab("conversation", sourceButton)
-            }
-            externalSpent={spent}
-            externalEarned={earned}
-            onSpend={handleSpend}
-            isTransitionLocked={isTransitionLocked}
-          />
+        {/* Animated Desktop View (>= 1024px): Only mounted on desktop viewports so mobile never pays the DOM/JS/SVG cost */}
+        {isDesktop && (
+          <div className="hidden lg:block">
+            {/* Shared Section 1 + Section 2 Stage Wrapper:
+                Keeps the exact same TypewriterStage instance alive across both sections
+                so the typewriter and $20/$50/$100 buttons smoothly transition into Section 2. */}
+            <div
+              ref={handoffWrapperRef}
+              className="relative w-full overflow-x-clip"
+            >
+              {/* Desktop Fixed Shared Typewriter Stage (spans Section 1 & Section 2 so the exact same typewriter stays in view and transitions on scroll) */}
+              <div
+                ref={desktopFixedStageRef}
+                className="pointer-events-none hidden lg:fixed lg:inset-x-0 lg:top-0 lg:z-30 lg:flex lg:h-screen lg:w-full lg:items-center lg:overflow-hidden"
+              >
+                <div className="mx-auto grid w-full max-w-[1560px] grid-cols-12 items-center gap-8 px-6 sm:px-10 lg:gap-10 lg:px-16 xl:px-24">
+                  <div className="col-span-6 col-start-7 w-full">
+                    <TypewriterStage
+                      externalSpent={spent}
+                      externalEarned={earned}
+                      onSpend={handleSpend}
+                      isTransitionLocked={isTransitionLocked}
+                      handoffTriggerRef={handoffWrapperRef}
+                      onTransitionLockChange={setIsTransitionLocked}
+                    />
+                  </div>
+                </div>
+              </div>
 
-          <DashboardSection
-            spent={spent}
-            earned={earned}
-            hundredClickCount={hundredClickCount}
-            onSpend={handleSpend}
-            isTransitionLocked={isTransitionLocked}
-          />
-        </div>
+              <HeroSection
+                onAuditClick={(sourceButton = "hero") =>
+                  openCtaPageInNewTab("audit", sourceButton)
+                }
+                onConversationClick={(sourceButton = "hero") =>
+                  openCtaPageInNewTab("conversation", sourceButton)
+                }
+                externalSpent={spent}
+                externalEarned={earned}
+                onSpend={handleSpend}
+                isTransitionLocked={isTransitionLocked}
+              />
 
-        <ProcessSection
-          onAuditClick={(sourceButton = "close-section") =>
-            openCtaPageInNewTab("audit", sourceButton)
-          }
-          onStepSelect={(stepIndex) => {
-            snapToBeatRef.current?.(5 + stepIndex);
-          }}
-        />
+              <DashboardSection
+                spent={spent}
+                earned={earned}
+                hundredClickCount={hundredClickCount}
+                onSpend={handleSpend}
+                isTransitionLocked={isTransitionLocked}
+              />
+            </div>
+
+            <ProcessSection
+              onAuditClick={(sourceButton = "close-section") =>
+                openCtaPageInNewTab("audit", sourceButton)
+              }
+              onStepSelect={(stepIndex) => {
+                snapToBeatRef.current?.(5 + stepIndex);
+              }}
+            />
+          </div>
+        )}
       </main>
 
       <Footer

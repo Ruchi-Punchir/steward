@@ -134,16 +134,19 @@ export default function ExplodedTypewriter3D({
 
   // Isometric explosion offsets along the 3D CAD diagonal (Back-Top-Right -> Front-Bottom-Left)
   // Matches the exact 5-tier exploded isometric axis in the reference illustration
+  // In Step 2 ("Build a solution"), shift the isolated Units 02 & 04 left by 56px so their combined bounding box + right-hand callout badges sit dead-center
+  const fixCenterShiftX = -56 * fixP * (1 - collapseP);
+
   const tier1X = 112 * p;
   const tier1Y = -112 * p;
 
-  const tier2X = 58 * p;
+  const tier2X = 58 * p + fixCenterShiftX;
   const tier2Y = -58 * p;
 
   const tier3X = 4 * p;
   const tier3Y = -4 * p;
 
-  const tier4X = -52 * p;
+  const tier4X = -52 * p + fixCenterShiftX;
   const tier4Y = 52 * p;
 
   const tier5X = -114 * p;
@@ -214,7 +217,7 @@ export default function ExplodedTypewriter3D({
 
       <svg
         viewBox="0 0 960 660"
-        className="pointer-events-auto h-full w-full max-w-[920px] overflow-visible"
+        className="pointer-events-none h-full w-full max-w-[920px] overflow-visible"
         role="img"
         aria-label="3D isometric exploded view of your business machine showing Monetization, Marketing, Positioning, Development, and Onboarding subsystems"
       >

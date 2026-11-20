@@ -249,7 +249,8 @@ export default function ProcessSection({
         },
       });
 
-      // Shift the inner 3D typewriter stage rightward to make room for the left editorial panel
+      // Shift the inner 3D typewriter stage rightward in Stage 1 to make room for the left editorial panel,
+      // then bring it back to dead-center in Stage 2 ("Build a solution")
       if (explodedStageShiftRef.current) {
         stepTl.fromTo(
           explodedStageShiftRef.current,
@@ -261,6 +262,16 @@ export default function ProcessSection({
             immediateRender: false,
           },
           0.025,
+        );
+
+        stepTl.to(
+          explodedStageShiftRef.current,
+          {
+            x: 0,
+            duration: 0.085,
+            ease: "power2.inOut",
+          },
+          0.195,
         );
       }
 
@@ -578,11 +589,11 @@ export default function ProcessSection({
           className="relative flex h-full w-full flex-col justify-between will-change-[opacity,transform]"
         >
           {/* TOP ROW: Left Editorial Column + Right "03 How we work together" Header */}
-          <div className="pointer-events-none relative z-50 mx-auto grid w-full max-w-[1560px] grid-cols-1 items-start gap-4 px-4 sm:gap-8 sm:px-10 lg:grid-cols-12 lg:px-16 xl:px-24">
+          <div className="pointer-events-none relative z-20 mx-auto grid w-full max-w-[1560px] grid-cols-1 items-start gap-4 px-4 sm:gap-8 sm:px-10 lg:grid-cols-12 lg:px-16 xl:px-24">
             {/* LEFT COLUMN: 5 Stage Editorials */}
             <div
               ref={understandLeftColRef}
-              className={`pointer-events-auto relative z-50 flex-col items-start text-left opacity-0 will-change-[opacity,transform] lg:col-span-4 lg:flex ${
+              className={`pointer-events-auto relative z-20 flex-col items-start text-left opacity-0 will-change-[opacity,transform] lg:col-span-4 lg:flex ${
                 activeStage === 0 ? "hidden lg:flex" : "flex"
               }`}
             >
@@ -857,14 +868,11 @@ export default function ProcessSection({
           {/* CENTER STAGE: 3D ISOMETRIC EXPLODED TYPEWRITER (Stages 1 & 2) */}
           <div
             ref={explodedStageWrapRef}
-            style={{
-              pointerEvents: testProgress > 0.55 ? "none" : "auto",
-            }}
-            className="absolute inset-x-0 top-[63%] z-30 mx-auto flex h-[540px] w-full max-w-[1040px] -translate-y-1/2 items-center justify-center px-4 will-change-[opacity,transform] sm:top-[58%] lg:top-[52%]"
+            className="pointer-events-none absolute inset-x-0 top-[63%] z-40 mx-auto flex h-[540px] w-full max-w-[1040px] -translate-y-1/2 items-center justify-center px-4 will-change-[opacity,transform] sm:top-[58%] lg:top-[52%]"
           >
             <div
               ref={explodedStageShiftRef}
-              className="relative flex h-full w-full scale-[0.72] items-center justify-center will-change-transform sm:scale-[0.88] lg:scale-100"
+              className="pointer-events-none relative flex h-full w-full scale-[0.72] items-center justify-center will-change-transform sm:scale-[0.88] lg:scale-100"
             >
               {/* 3D Isometric Exploded Typewriter: Explodes in Stage 1, Repairs in Stage 2, Re-assembles (with no labels) into Stage 3 */}
               <div
@@ -875,7 +883,7 @@ export default function ProcessSection({
                   ),
                   pointerEvents: testProgress > 0.55 ? "none" : "auto",
                 }}
-                className="flex h-full w-full items-center justify-center"
+                className="pointer-events-none flex h-full w-full items-center justify-center"
               >
                 <ExplodedTypewriter3D
                   explosionProgress={explosionProgress}

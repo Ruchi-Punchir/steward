@@ -79,15 +79,6 @@ export default function HeroSection({
             On desktop (lg+), the shared fixed TypewriterStage in page.tsx occupies this exact space
             so the same typewriter seamlessly transitions into Section 2 on scroll. */}
         <div className="w-full lg:col-span-6 xl:col-span-6">
-          <div className="lg:hidden">
-            <TypewriterStage
-              instanceId="mobile"
-              externalSpent={externalSpent}
-              externalEarned={externalEarned}
-              onSpend={onSpend}
-              isTransitionLocked={isTransitionLocked}
-            />
-          </div>
           <div
             aria-hidden="true"
             className="hidden lg:block lg:h-[580px] lg:w-full xl:h-[610px] 2xl:h-[640px]"

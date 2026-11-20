@@ -41,6 +41,11 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
 
   // Keep Section 1's underlying typewriter hidden while the loader typewriter is on stage
   useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      setIsUnmounted(true);
+      onComplete?.();
+      return;
+    }
     if (isUnmounted) return;
 
     const setHeroTypewritersOpacity = (val: string) => {
@@ -54,6 +59,13 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
 
     setHeroTypewritersOpacity("0");
 
+    const observer = new MutationObserver(() => {
+      if (!hasTriggeredRef.current) {
+        setHeroTypewritersOpacity("0");
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
     if (loaderTypewriterRef.current) {
       gsap.set(loaderTypewriterRef.current, {
         x: 0,
@@ -64,6 +76,11 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
     }
 
     const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsUnmounted(true);
+        onComplete?.();
+        return;
+      }
       if (!hasTriggeredRef.current && loaderTypewriterRef.current) {
         gsap.set(loaderTypewriterRef.current, {
           x: 0,
@@ -75,13 +92,15 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
 
     window.addEventListener("resize", handleResize);
     return () => {
+      observer.disconnect();
       window.removeEventListener("resize", handleResize);
       setHeroTypewritersOpacity("1");
     };
-  }, [isUnmounted, getInitialScale]);
+  }, [isUnmounted, getInitialScale, onComplete]);
 
   // 1) Animate bottom progress bar from 0% -> 100%, then reveal "Scroll to begin"
   useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) return;
     const startTime = performance.now();
     const totalDuration = 2100; // 2.1s smooth progress fill
     let rafId: number;
@@ -215,6 +234,7 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
   // 3) Intercept scroll-down while loader is active; once 100% is reached, scrolling down triggers the handoff
   useEffect(() => {
     if (isUnmounted) return;
+    if (typeof window !== "undefined" && window.innerWidth < 1024) return;
 
     window.scrollTo(0, 0);
 
@@ -289,7 +309,7 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
     <div
       role="region"
       aria-label="Welcome to Hello Steward"
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-between overflow-hidden px-6 py-7 select-none sm:px-12 sm:py-9"
+      className="fixed inset-0 z-[100] hidden flex-col items-center justify-between overflow-hidden px-6 py-7 select-none sm:px-12 sm:py-9 lg:flex"
     >
       {/* Loader Backdrop + Ambient Radial Glow (fades out as typewriter glides to Section 1) */}
       <div
