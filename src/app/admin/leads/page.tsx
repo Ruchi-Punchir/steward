@@ -11,6 +11,7 @@ import {
   formatLeadSource,
   isNeedsReply,
   LEAD_STATUS_META,
+  parseLeadAdAttribution,
   type LeadRecord,
 } from "@/lib/leads/format";
 import type { LeadStatus } from "@/app/admin/leads/actions";
@@ -63,6 +64,12 @@ export default async function AdminLeadsPage({
     const t = new Date(l.created_at).getTime();
     return !Number.isNaN(t) && t >= sevenDaysAgoMs;
   }).length;
+
+  const adLeadsCount = allLeads.filter(
+    (l) =>
+      l.source_button?.startsWith("ad:") ||
+      Boolean(parseLeadAdAttribution(l.message).adAttribution),
+  ).length;
 
   const awaitingReplyLeads = allLeads.filter((l) => l.status === "new");
   const awaitingReplyCount = awaitingReplyLeads.length;
@@ -127,6 +134,12 @@ export default async function AdminLeadsPage({
         </div>
 
         <div className="flex items-center gap-3">
+          <Link
+            href="/admin/campaigns"
+            className="inline-flex items-center gap-2 rounded-lg border border-[#e89b3c]/35 bg-[#e89b3c]/10 px-3.5 py-2 font-mono-label text-[11px] uppercase tracking-[0.14em] text-[#e89b3c] transition-colors hover:bg-[#e89b3c]/20"
+          >
+            Ad Campaigns ({adLeadsCount}) →
+          </Link>
           <a
             href="/api/admin/leads/export"
             className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-[#101014] px-3.5 py-2 font-mono-label text-[11px] uppercase tracking-[0.14em] text-[#f4f0ea] transition-colors hover:border-[#e89b3c] hover:text-[#e89b3c]"

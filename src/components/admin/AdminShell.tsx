@@ -13,6 +13,7 @@ interface AdminShellProps {
 
 const NAV_ITEMS = [
   { href: "/admin/leads", label: "Leads" },
+  { href: "/admin/campaigns", label: "Ad Campaigns" },
   { href: "/admin/blog", label: "Blog" },
 ];
 

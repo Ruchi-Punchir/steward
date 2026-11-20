@@ -120,3 +120,44 @@ export function formatDateTimeStable(isoDate: string): string {
   }).format(d);
 }
 
+export interface ParsedAdAttributionMeta {
+  lead_type: "mvp-rescue" | "conversion-engineering" | "speed-audit";
+  visitor_id: string;
+  gclid: string;
+  utm_source: string;
+  utm_medium: string;
+  utm_campaign: string;
+  utm_adgroup: string;
+  utm_term: string;
+  utm_matchtype: string;
+  utm_device: string;
+  landing_page: string;
+  referrer: string;
+  first_seen: string;
+  pages_visited: string[];
+  form_fields?: Record<string, string | undefined>;
+}
+
+const AD_META_REGEX = /<!--STEWARD_AD_ATTRIBUTION:(\{[\s\S]*?\})-->/;
+
+export function parseLeadAdAttribution(message: string): {
+  cleanMessage: string;
+  adAttribution: ParsedAdAttributionMeta | null;
+} {
+  if (!message) {
+    return { cleanMessage: "", adAttribution: null };
+  }
+  const match = message.match(AD_META_REGEX);
+  if (!match) {
+    return { cleanMessage: message, adAttribution: null };
+  }
+  const cleanMessage = message.replace(AD_META_REGEX, "").trim();
+  try {
+    const parsed = JSON.parse(match[1]) as ParsedAdAttributionMeta;
+    return { cleanMessage, adAttribution: parsed };
+  } catch {
+    return { cleanMessage, adAttribution: null };
+  }
+}
+
+

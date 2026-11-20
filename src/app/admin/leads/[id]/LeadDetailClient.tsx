@@ -13,6 +13,7 @@ import {
 import {
   formatDateTimeStable,
   LEAD_STATUS_META,
+  parseLeadAdAttribution,
   type LeadEventRecord,
   type LeadNoteRecord,
   type LeadRecord,
@@ -44,6 +45,8 @@ export default function LeadDetailClient({
 
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const { cleanMessage, adAttribution } = parseLeadAdAttribution(lead.message);
 
   const handleStatusChange = (newStatus: LeadStatus) => {
     setStatus(newStatus);
@@ -163,12 +166,88 @@ export default function LeadDetailClient({
           {/* Message / What feels stuck? */}
           <div className="mt-5">
             <span className="font-mono-label text-[10px] uppercase tracking-[0.16em] text-[#66635c]">
-              {lead.intent === "audit" ? "What feels stuck?" : "Message"}
+              {adAttribution
+                ? `Google Ads Lead Details (/${adAttribution.lead_type})`
+                : lead.intent === "audit"
+                  ? "What feels stuck?"
+                  : "Message"}
             </span>
             <div className="mt-2 whitespace-pre-wrap rounded-lg border border-white/[0.07] bg-[#0a0a0d] p-4 text-sm leading-relaxed text-[#f4f0ea]">
-              {lead.message}
+              {cleanMessage}
             </div>
           </div>
+
+          {adAttribution && (
+            <div className="mt-5 rounded-xl border border-[#e89b3c]/30 bg-[#e89b3c]/[0.05] p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/[0.08] pb-3">
+                <span className="font-mono-label text-[10px] font-semibold uppercase tracking-[0.18em] text-[#e89b3c]">
+                  Google Ads Attribution &amp; Session Journey
+                </span>
+                <span className="rounded bg-[#e89b3c]/15 px-2 py-0.5 font-mono-label text-[9.5px] font-semibold uppercase tracking-[0.14em] text-[#e89b3c]">
+                  /{adAttribution.lead_type}
+                </span>
+              </div>
+
+              <dl className="mt-3 grid grid-cols-1 gap-3 text-xs sm:grid-cols-2">
+                <div>
+                  <dt className="font-mono-label text-[9.5px] uppercase tracking-[0.14em] text-[#66635c]">
+                    GCLID
+                  </dt>
+                  <dd className="mt-0.5 break-all font-mono-label text-[#f4f0ea]">
+                    {adAttribution.gclid || "—"}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="font-mono-label text-[9.5px] uppercase tracking-[0.14em] text-[#66635c]">
+                    Visitor ID
+                  </dt>
+                  <dd className="mt-0.5 break-all font-mono-label text-[#a09c94]">
+                    {adAttribution.visitor_id || "—"}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="font-mono-label text-[9.5px] uppercase tracking-[0.14em] text-[#66635c]">
+                    UTM Term / Match Type
+                  </dt>
+                  <dd className="mt-0.5 font-mono-label text-[#f4f0ea]">
+                    {[adAttribution.utm_term, adAttribution.utm_matchtype]
+                      .filter(Boolean)
+                      .join(" · ") || "—"}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="font-mono-label text-[9.5px] uppercase tracking-[0.14em] text-[#66635c]">
+                    UTM AdGroup / Device
+                  </dt>
+                  <dd className="mt-0.5 font-mono-label text-[#a09c94]">
+                    {[adAttribution.utm_adgroup, adAttribution.utm_device]
+                      .filter(Boolean)
+                      .join(" · ") || "—"}
+                  </dd>
+                </div>
+                <div className="sm:col-span-2">
+                  <dt className="font-mono-label text-[9.5px] uppercase tracking-[0.14em] text-[#66635c]">
+                    Visited Path Journey ({adAttribution.pages_visited?.length || 1} pages)
+                  </dt>
+                  <dd className="mt-1 flex flex-wrap items-center gap-1.5 font-mono-label text-[11px] text-[#f4f0ea]">
+                    {(adAttribution.pages_visited?.length
+                      ? adAttribution.pages_visited
+                      : [adAttribution.landing_page]
+                    ).map((p, idx, arr) => (
+                      <React.Fragment key={`${p}-${idx}`}>
+                        <span className="rounded border border-white/[0.1] bg-[#0a0a0d] px-2 py-0.5">
+                          {p}
+                        </span>
+                        {idx < arr.length - 1 && (
+                          <span className="text-[#e89b3c]">→</span>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          )}
 
           {/* All Fields Grid */}
           <dl className="mt-6 grid grid-cols-1 gap-4 border-t border-white/[0.08] pt-5 text-xs sm:grid-cols-2">

@@ -4,7 +4,10 @@ import {
   createSupabaseAdminClient,
   createSupabaseServerClient,
 } from "@/lib/supabase/server";
-import type { LeadRecord } from "@/lib/leads/format";
+import {
+  parseLeadAdAttribution,
+  type LeadRecord,
+} from "@/lib/leads/format";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +50,7 @@ export async function GET() {
     "id",
     "created_at",
     "intent",
+    "lead_type",
     "name",
     "email",
     "product_link",
@@ -54,9 +58,16 @@ export async function GET() {
     "message",
     "source_button",
     "source_page",
+    "gclid",
     "utm_source",
     "utm_medium",
     "utm_campaign",
+    "utm_adgroup",
+    "utm_term",
+    "utm_matchtype",
+    "utm_device",
+    "visitor_id",
+    "pages_visited",
     "referrer",
     "status",
     "assigned_to",
@@ -64,28 +75,39 @@ export async function GET() {
 
   const rows = [
     headers.join(","),
-    ...leads.map((l) =>
-      [
+    ...leads.map((l) => {
+      const { cleanMessage, adAttribution } = parseLeadAdAttribution(
+        l.message,
+      );
+      return [
         l.id,
         l.created_at,
         l.intent,
+        adAttribution?.lead_type ?? "",
         l.name,
         l.email,
         l.product_link,
         l.stage,
-        l.message,
+        cleanMessage,
         l.source_button,
         l.source_page,
+        adAttribution?.gclid ?? "",
         l.utm_source,
         l.utm_medium,
         l.utm_campaign,
+        adAttribution?.utm_adgroup ?? "",
+        adAttribution?.utm_term ?? "",
+        adAttribution?.utm_matchtype ?? "",
+        adAttribution?.utm_device ?? "",
+        adAttribution?.visitor_id ?? "",
+        adAttribution?.pages_visited?.join(" -> ") ?? "",
         l.referrer,
         l.status,
         l.assigned_to,
       ]
         .map(escapeCsvCell)
-        .join(",")
-    ),
+        .join(",");
+    }),
   ];
 
   const csvContent = rows.join("\r\n");
