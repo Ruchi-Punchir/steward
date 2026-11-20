@@ -131,3 +131,138 @@ body {
     animation: none !important;
   }
 }
+
+/* =============================================================================
+   ADMIN DASHBOARD (/admin) LIGHT MODE ADAPTATION
+   Maps dark admin surfaces, borders, and text tokens to Steward's warm paper
+   light theme when html[data-theme="light"] is active.
+============================================================================= */
+html[data-theme="light"] .admin-theme-root {
+  background-color: #f5f2eb;
+  color: #121216;
+}
+
+html[data-theme="light"] .admin-theme-root .bg-\[\#08080a\],
+html[data-theme="light"] .admin-theme-root .bg-\[\#0a0a0d\],
+html[data-theme="light"] .admin-theme-root .bg-\[\#09090c\],
+html[data-theme="light"] .admin-theme-root .bg-\[\#070709\] {
+  background-color: #f5f2eb !important;
+}
+
+html[data-theme="light"] .admin-theme-root .bg-\[\#0c0c10\]\/95,
+html[data-theme="light"] .admin-theme-root .bg-\[\#101014\]\/95 {
+  background-color: rgba(245, 242, 235, 0.92) !important;
+}
+
+html[data-theme="light"] .admin-theme-root .bg-\[\#101014\],
+html[data-theme="light"] .admin-theme-root .bg-\[\#0d0d11\] {
+  background-color: #fbf9f5 !important;
+  box-shadow: 0 8px 26px rgba(20, 20, 19, 0.04);
+}
+
+html[data-theme="light"] .admin-theme-root .bg-white\/\[0\.02\],
+html[data-theme="light"] .admin-theme-root .bg-white\/\[0\.03\],
+html[data-theme="light"] .admin-theme-root .bg-white\/\[0\.04\],
+html[data-theme="light"] .admin-theme-root .bg-white\/\[0\.06\],
+html[data-theme="light"] .admin-theme-root .bg-white\/\[0\.08\] {
+  background-color: rgba(20, 20, 24, 0.045) !important;
+}
+
+html[data-theme="light"] .admin-theme-root .hover\:bg-white\/\[0\.03\]:hover,
+html[data-theme="light"] .admin-theme-root .hover\:bg-white\/\[0\.06\]:hover,
+html[data-theme="light"] .admin-theme-root .hover\:bg-white\/\[0\.08\]:hover {
+  background-color: rgba(20, 20, 24, 0.075) !important;
+}
+
+html[data-theme="light"] .admin-theme-root .text-\[\#f4f0ea\] {
+  color: #121216 !important;
+}
+
+html[data-theme="light"] .admin-theme-root .hover\:text-\[\#f4f0ea\]:hover {
+  color: #121216 !important;
+}
+
+html[data-theme="light"] .admin-theme-root .text-\[\#a09c94\] {
+  color: #524e46 !important;
+}
+
+html[data-theme="light"] .admin-theme-root .text-\[\#66635c\],
+html[data-theme="light"] .admin-theme-root .placeholder-\[\#66635c\]::placeholder {
+  color: #7c776d !important;
+}
+
+html[data-theme="light"] .admin-theme-root .border-white\/\[0\.06\],
+html[data-theme="light"] .admin-theme-root .border-white\/\[0\.07\],
+html[data-theme="light"] .admin-theme-root .border-white\/\[0\.08\],
+html[data-theme="light"] .admin-theme-root .border-white\/\[0\.09\],
+html[data-theme="light"] .admin-theme-root .border-white\/\[0\.1\],
+html[data-theme="light"] .admin-theme-root .border-white\/\[0\.12\],
+html[data-theme="light"] .admin-theme-root .border-white\/\[0\.14\],
+html[data-theme="light"] .admin-theme-root .border-white\/\[0\.15\],
+html[data-theme="light"] .admin-theme-root .border-white\/10 {
+  border-color: rgba(20, 20, 24, 0.12) !important;
+}
+
+html[data-theme="light"] .admin-theme-root .divide-white\/\[0\.06\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(20, 20, 24, 0.09) !important;
+}
+
+html[data-theme="light"] .admin-theme-root .text-red-200,
+html[data-theme="light"] .admin-theme-root .text-red-300 {
+  color: #b91c1c !important;
+}
+
+html[data-theme="light"] .admin-theme-root .text-amber-200 {
+  color: #92400e !important;
+}
+
+html[data-theme="light"] .admin-theme-root .text-sky-300 {
+  color: #0369a1 !important;
+}
+
+html[data-theme="light"] .admin-theme-root .text-purple-300 {
+  color: #6d28d9 !important;
+}
+
+html[data-theme="light"] .admin-theme-root .text-indigo-300 {
+  color: #4338ca !important;
+}
+
+/* =============================================================================
+   UNIFORM <SELECT> CHEVRON RIGHT PADDING (MATCHES LEFT TEXT PADDING)
+   Replaces the browser-native select chevron (which hugs the right border edge)
+   with a crisp SVG chevron positioned at the exact same offset from the right
+   border as the left text padding (padding-left).
+============================================================================= */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a09c94' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 14px 14px;
+  background-position: right 0.875rem center;
+  padding-right: 2.5rem !important;
+}
+
+html[data-theme="light"] select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23524e46' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* Match px-3 (0.75rem / 12px) left padding on compact admin filter selects */
+select.px-3 {
+  background-position: right 0.75rem center;
+  padding-right: 2.25rem !important;
+}
+
+/* Match px-3.5 (0.875rem / 14px) left padding on form and detail selects */
+select.px-3\.5 {
+  background-position: right 0.875rem center;
+  padding-right: 2.5rem !important;
+}
+
+/* Match px-4 (1rem / 16px) left padding */
+select.px-4 {
+  background-position: right 1rem center;
+  padding-right: 2.75rem !important;
+}

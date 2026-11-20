@@ -5,6 +5,7 @@ import {
   Instrument_Serif,
   JetBrains_Mono,
 } from "next/font/google";
+// @ts-ignore Next.js handles CSS imports with its global type declarations.
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import { ThemeProvider } from "@/context/ThemeContext";

@@ -14,7 +14,7 @@ export default function Navbar({ showInsights }: NavbarProps) {
   const isLight = theme === "light";
 
   const [hasPublishedPosts, setHasPublishedPosts] = useState<boolean>(
-    showInsights ?? false
+    showInsights ?? false,
   );
 
   useEffect(() => {
@@ -75,7 +75,7 @@ export default function Navbar({ showInsights }: NavbarProps) {
           )}
           <li>
             <Link
-              href="/#contact"
+              href="/talk?source=navbar"
               className="whitespace-nowrap font-mono-label text-[11px] uppercase tracking-[0.18em] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
             >
               Contact
