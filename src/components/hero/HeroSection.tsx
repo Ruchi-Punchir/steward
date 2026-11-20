@@ -24,7 +24,7 @@ export default function HeroSection({
     <section
       id="top"
       aria-labelledby="hero-heading"
-      className="relative flex min-h-screen w-full items-center overflow-hidden pt-20 pb-10 lg:py-0"
+      className="relative flex min-h-screen w-full items-center overflow-hidden pt-20 pb-10 lg:py-0 [@media(max-height:800px)]:lg:pt-12 [@media(max-height:740px)]:lg:pt-14 [@media(max-height:740px)]:lg:pb-3"
     >
       {/* Subtle atmospheric radial glow */}
       <div
@@ -36,7 +36,7 @@ export default function HeroSection({
       <div className="relative z-10 mx-auto grid w-full max-w-[1560px] grid-cols-1 items-center gap-10 px-6 sm:px-10 lg:grid-cols-12 lg:gap-10 lg:px-16 xl:px-24">
         {/* LEFT COLUMN: Editorial Headline, Subline, and Spend Cards Slot */}
         <div className="flex flex-col items-start text-left lg:col-span-6 xl:col-span-6">
-          <div className="mb-4 inline-flex items-center gap-3">
+          <div className="mb-4 inline-flex items-center gap-3 [@media(max-height:740px)]:mb-2">
             <span className="font-mono-label text-[11px] uppercase tracking-[0.24em] text-[#e89b3c]">
               01
             </span>
@@ -52,7 +52,7 @@ export default function HeroSection({
           <h1
             id="hero-heading"
             style={{ textWrap: "balance" }}
-            className="max-w-[18ch] text-balance text-[2.45rem] font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text-primary)] sm:text-5xl lg:text-[3.35rem] xl:text-[3.9rem] 2xl:text-[4.35rem]"
+            className="max-w-[18ch] text-balance text-[2.45rem] font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text-primary)] sm:text-5xl lg:text-[3.35rem] xl:text-[3.9rem] 2xl:text-[4.35rem] [@media(max-height:740px)]:lg:text-[2.4rem] [@media(max-height:740px)]:lg:leading-[1.04]"
           >
             Increasing your revenue is the{" "}
             <span className="font-serif-editorial mt-1 block text-[1.06em] font-normal italic tracking-[-0.01em] text-[#e89b3c]">
@@ -60,7 +60,7 @@ export default function HeroSection({
             </span>
           </h1>
 
-          <p className="mt-5 max-w-lg text-base font-normal leading-[1.65] text-[var(--text-secondary)] sm:text-[17px]">
+          <p className="mt-5 max-w-lg text-base font-normal leading-[1.65] text-[var(--text-secondary)] sm:text-[17px] [@media(max-height:740px)]:mt-2.5 [@media(max-height:740px)]:text-[13.5px] [@media(max-height:740px)]:leading-[1.5]">
             We help startups uncover growth bottlenecks, identify untapped
             opportunities and build practical soutions to improve acquisition,
             conversion and retention through research, marketing expertise,
@@ -71,7 +71,7 @@ export default function HeroSection({
           <div
             data-hero-cta-slot="true"
             aria-hidden="true"
-            className="mt-14 hidden h-[118px] w-full lg:block"
+            className="mt-14 hidden h-[118px] w-full lg:block [@media(max-height:740px)]:mt-5 [@media(max-height:740px)]:h-[96px]"
           />
         </div>
 
@@ -81,7 +81,7 @@ export default function HeroSection({
         <div className="w-full lg:col-span-6 xl:col-span-6">
           <div
             aria-hidden="true"
-            className="hidden lg:block lg:h-[580px] lg:w-full xl:h-[610px] 2xl:h-[640px]"
+            className="hidden lg:block lg:h-[580px] lg:w-full xl:h-[610px] 2xl:h-[640px] [@media(max-height:740px)]:lg:h-[470px]"
           />
         </div>
       </div>

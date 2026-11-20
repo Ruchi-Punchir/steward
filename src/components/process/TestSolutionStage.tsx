@@ -522,10 +522,15 @@ export default function TestSolutionStage({
   const [isContinuousPrinting, setIsContinuousPrinting] = useState(false);
   const [litModuleCount, setLitModuleCount] = useState(0);
   const [isMobileStage, setIsMobileStage] = useState(false);
+  const [viewportSize, setViewportSize] = useState<{ w: number; h: number }>({
+    w: 1440,
+    h: 900,
+  });
 
   useEffect(() => {
     const checkViewport = () => {
       setIsMobileStage(window.innerWidth < 1024);
+      setViewportSize({ w: window.innerWidth, h: window.innerHeight });
     };
     checkViewport();
     window.addEventListener("resize", checkViewport, { passive: true });
@@ -602,6 +607,37 @@ export default function TestSolutionStage({
   const typewriterMobileScale = isMobileStage
     ? 0.66 + 0.04 * iterateMoveT
     : 1;
+
+  // Responsive scaling & centering offsets for compact/short desktop viewports (e.g. 1024x600)
+  // so Stages 3, 4, and 5 never collide with the left editorial column, right header, or bottom 5-step bar.
+  const isShortDesktop = !isMobileStage && viewportSize.h <= 700;
+  const isMediumShortDesktop =
+    !isMobileStage && viewportSize.h > 700 && viewportSize.h <= 820;
+  const isNarrowDesktop = !isMobileStage && viewportSize.w < 1280;
+
+  const desktopFitScale = isShortDesktop
+    ? 0.65 - 0.03 * moveT * (1 - iterateMoveT)
+    : isMediumShortDesktop
+      ? isNarrowDesktop
+        ? 0.74
+        : 0.82
+      : isNarrowDesktop
+        ? 0.8
+        : 1;
+
+  const desktopShiftX = isShortDesktop
+    ? (1 - iterateMoveT) * (54 * (1 - moveT) + 34 * moveT)
+    : isNarrowDesktop
+      ? (1 - iterateMoveT) * (42 * (1 - moveT) + 22 * moveT)
+      : 0;
+
+  const desktopShiftY = isShortDesktop
+    ? 10 * (1 - moveT) + 28 * moveT * (1 - iterateMoveT) + 6 * iterateMoveT
+    : isMediumShortDesktop
+      ? 6 * (1 - moveT) + 16 * moveT * (1 - iterateMoveT) + 4 * iterateMoveT
+      : 0;
+
+  const combinedStageScale = stageScale * desktopFitScale;
 
   // Stage 5 ("Iterate and scale"): 5-Part "Jetpower Optimus Prime" Mech-Armor Assembly -> Continuous Money Printing loop
   useEffect(() => {
@@ -1035,16 +1071,20 @@ export default function TestSolutionStage({
       const stageRect = stageEl.getBoundingClientRect();
       const platenRect = platenEl.getBoundingClientRect();
       const targetRect = targetEl.getBoundingClientRect();
+      const currentScale =
+        stageEl.offsetWidth > 0 ? stageRect.width / stageEl.offsetWidth : 1;
 
       const startX =
-        platenRect.left - stageRect.left + platenRect.width / 2;
+        (platenRect.left - stageRect.left + platenRect.width / 2) /
+        currentScale;
       const startY =
-        platenRect.top - stageRect.top + platenRect.height / 2;
+        (platenRect.top - stageRect.top + platenRect.height / 2) / currentScale;
 
       const endX =
-        targetRect.left - stageRect.left + targetRect.width / 2;
+        (targetRect.left - stageRect.left + targetRect.width / 2) /
+        currentScale;
       const endY =
-        targetRect.top - stageRect.top + targetRect.height / 2;
+        (targetRect.top - stageRect.top + targetRect.height / 2) / currentScale;
 
       const midX = startX + (endX - startX) * 0.48;
       const midY = Math.min(startY, endY) - 48;
@@ -1345,10 +1385,9 @@ export default function TestSolutionStage({
       ref={stageContainerRef}
       style={{
         opacity: stageOpacity,
-        transform: `scale(${stageScale.toFixed(3)})`,
-        pointerEvents: isStageVisible ? "auto" : "none",
+        transform: `translate(${desktopShiftX.toFixed(1)}px, ${desktopShiftY.toFixed(1)}px) scale(${combinedStageScale.toFixed(3)})`,
       }}
-      className="relative flex h-full w-full items-center justify-center select-none"
+      className="pointer-events-none relative flex h-full w-full items-center justify-center select-none"
     >
       {/* Flying Crisp New $1 Bill (animates from Typewriter Platen -> "New bill" Comparison Slot in Stage 3) */}
       <div

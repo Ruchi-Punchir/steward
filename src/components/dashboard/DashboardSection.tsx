@@ -189,7 +189,7 @@ export default function DashboardSection({
       }
 
       // Measure exact offset of inline "Let's fix it together" relative to the center headline target (50% X, 24% Y)
-      // Evaluated ONLY on ScrollTrigger refresh/resize — never during scroll frames!
+      // Uses offsetLeft/offsetTop traversal up to stickyStageRef so it is 100% independent of active scroll transforms.
       let cachedOffset = { x: 240, y: 36, scale: 0.31 };
       const measureInlineOffset = () => {
         const stageEl = stickyStageRef.current;
@@ -197,27 +197,29 @@ export default function DashboardSection({
         const floatEl = floatingHeadlineRef.current;
         if (!stageEl || !inlineEl || !floatEl) return cachedOffset;
 
-        const stageRect = stageEl.getBoundingClientRect();
-        const inlineRect = inlineEl.getBoundingClientRect();
-        const copyY =
-          (gsap.getProperty(copyBlockRef.current, "y") as number) || 0;
-        const bgScale =
-          (gsap.getProperty(dashboardBgBlurRef.current, "scaleX") as number) ||
-          1;
+        let ix = 0;
+        let iy = 0;
+        let node: HTMLElement | null = inlineEl;
+        while (node && node !== stageEl) {
+          ix += node.offsetLeft;
+          iy += node.offsetTop;
+          node = node.offsetParent as HTMLElement | null;
+        }
 
-        const inlineCenterX =
-          (inlineRect.left - stageRect.left + inlineRect.width * 0.5) / bgScale;
-        const inlineCenterY =
-          (inlineRect.top - stageRect.top - copyY + inlineRect.height * 0.5) /
-          bgScale;
+        const stageW = stageEl.clientWidth || window.innerWidth;
+        const stageH = stageEl.clientHeight || window.innerHeight;
 
-        const targetCenterX = stageRect.width * 0.5;
-        const targetCenterY = stageRect.height * 0.24;
+        const inlineCenterX = ix + inlineEl.offsetWidth * 0.5;
+        const inlineCenterY = iy + inlineEl.offsetHeight * 0.5;
+
+        const targetCenterX = stageW * 0.5;
+        const targetCenterY =
+          stageH * (window.innerWidth >= 640 ? 0.24 : 0.2);
 
         const naturalFloatW = floatEl.offsetWidth || 380;
         const naturalInlineW = inlineEl.offsetWidth || 125;
         const ratio = Math.max(
-          0.24,
+          0.16,
           Math.min(0.55, naturalInlineW / naturalFloatW),
         );
 
@@ -665,7 +667,7 @@ export default function DashboardSection({
       {/* Sticky Layer 1 (z-10): Section 2 Dashboard & Copy (sits below the lg:z-30 interactive Typewriter & Spend buttons) */}
       <div
         ref={stickyStageRef}
-        className="sticky top-0 z-10 flex h-screen w-full items-center overflow-hidden py-16 lg:py-20"
+        className="sticky top-0 z-10 flex h-screen w-full items-center overflow-hidden py-16 lg:py-20 [@media(max-height:800px)]:lg:pt-18 [@media(max-height:800px)]:lg:pb-4 [@media(max-height:740px)]:lg:pt-15 [@media(max-height:740px)]:lg:pb-3"
       >
         {/* Subtle ambient glow behind the dashboard */}
         <div
@@ -688,7 +690,7 @@ export default function DashboardSection({
         ===================================================================== */}
           <div
             ref={dashboardShellRef}
-            className={`order-2 w-full rounded-2xl border p-3.5 transition-colors duration-300 sm:p-6 lg:order-1 lg:col-span-6 lg:p-7 ${
+            className={`order-2 w-full rounded-2xl border p-3.5 transition-colors duration-300 sm:p-6 lg:order-1 lg:col-span-6 lg:p-7 [@media(max-height:800px)]:lg:p-4 [@media(max-height:740px)]:lg:p-3.5 ${
               isLight
                 ? "border-black/10 bg-[#eae5dc] shadow-[0_24px_60px_rgba(20,20,19,0.08)]"
                 : "border-white/[0.08] bg-[#101015] shadow-[0_28px_70px_rgba(0,0,0,0.75)]"
@@ -698,27 +700,27 @@ export default function DashboardSection({
             <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
               <div className="flex items-center gap-2">
                 <div>
-                  <span className="font-mono-label text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--text-primary)] sm:text-[13px] sm:tracking-[0.16em]">
+                  <span className="font-mono-label text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--text-primary)] sm:text-[13px] sm:tracking-[0.16em] [@media(max-height:800px)]:text-[11px]">
                     Your Business <br />
                   </span>
-                  <span className="font-serif-editorial mt-0.5 inline-block text-sm font-normal italic tracking-[-0.01em] text-[#e89b3c] sm:mt-1 sm:text-[1.5em]">
+                  <span className="font-serif-editorial mt-0.5 inline-block text-sm font-normal italic tracking-[-0.01em] text-[#e89b3c] sm:mt-1 sm:text-[1.5em] [@media(max-height:800px)]:mt-0 [@media(max-height:800px)]:text-base">
                     Dashboard
                   </span>
                 </div>
               </div>
 
               {/* SPENT & EARNED RECTANGULAR BOXES (Top-Right of Dashboard Container) */}
-              <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3.5">
+              <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3.5 [@media(max-height:800px)]:gap-2">
                 {/* SPENT BOX */}
                 <div
-                  className={`flex min-w-[96px] flex-col justify-between rounded-xl border px-2.5 py-1.5 sm:min-w-[136px] sm:px-4 sm:py-3 ${
+                  className={`flex min-w-[96px] flex-col justify-between rounded-xl border px-2.5 py-1.5 sm:min-w-[136px] sm:px-4 sm:py-3 [@media(max-height:800px)]:min-w-[112px] [@media(max-height:800px)]:px-3 [@media(max-height:800px)]:py-2 [@media(max-height:740px)]:min-w-[106px] [@media(max-height:740px)]:px-2.5 [@media(max-height:740px)]:py-1.5 ${
                     isLight
                       ? "border-black/10 bg-[#fbf9f5] shadow-xs"
                       : "border-white/[0.08] bg-[#17171f]"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-1.5">
-                    <span className="font-mono-label text-[8.5px] uppercase tracking-[0.16em] text-[var(--text-muted)] sm:text-[10px] sm:tracking-[0.2em]">
+                    <span className="font-mono-label text-[8.5px] uppercase tracking-[0.16em] text-[var(--text-muted)] sm:text-[10px] sm:tracking-[0.2em] [@media(max-height:800px)]:text-[9px]">
                       Investment
                     </span>
                     <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#e89b3c]" />
@@ -726,7 +728,7 @@ export default function DashboardSection({
                   <span
                     ref={spentTileValueRef}
                     data-testid="dashboard-spent-tile"
-                    className="mt-0.5 inline-block font-mono-label text-base font-semibold tabular-nums tracking-tight text-[#e89b3c] sm:mt-1 sm:text-[26px]"
+                    className="mt-0.5 inline-block font-mono-label text-base font-semibold tabular-nums tracking-tight text-[#e89b3c] sm:mt-1 sm:text-[26px] [@media(max-height:800px)]:mt-0.5 [@media(max-height:800px)]:text-xl [@media(max-height:740px)]:mt-0 [@media(max-height:740px)]:text-lg"
                   >
                     ${displaySpent}
                   </span>
@@ -734,14 +736,14 @@ export default function DashboardSection({
 
                 {/* EARNED BOX */}
                 <div
-                  className={`flex min-w-[96px] flex-col justify-between rounded-xl border px-2.5 py-1.5 sm:min-w-[136px] sm:px-4 sm:py-3 ${
+                  className={`flex min-w-[96px] flex-col justify-between rounded-xl border px-2.5 py-1.5 sm:min-w-[136px] sm:px-4 sm:py-3 [@media(max-height:800px)]:min-w-[112px] [@media(max-height:800px)]:px-3 [@media(max-height:800px)]:py-2 [@media(max-height:740px)]:min-w-[106px] [@media(max-height:740px)]:px-2.5 [@media(max-height:740px)]:py-1.5 ${
                     isLight
                       ? "border-black/10 bg-[#fbf9f5] shadow-xs"
                       : "border-white/[0.08] bg-[#17171f]"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-1.5">
-                    <span className="font-mono-label text-[8.5px] uppercase tracking-[0.16em] text-[var(--text-muted)] sm:text-[10px] sm:tracking-[0.2em]">
+                    <span className="font-mono-label text-[8.5px] uppercase tracking-[0.16em] text-[var(--text-muted)] sm:text-[10px] sm:tracking-[0.2em] [@media(max-height:800px)]:text-[9px]">
                       Revenue
                     </span>
                     <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#ff383c]" />
@@ -749,7 +751,7 @@ export default function DashboardSection({
                   <span
                     ref={earnedTileValueRef}
                     data-testid="dashboard-earned-tile"
-                    className="mt-0.5 inline-block font-mono-label text-base font-semibold tabular-nums tracking-tight text-[var(--text-primary)] sm:mt-1 sm:text-[26px]"
+                    className="mt-0.5 inline-block font-mono-label text-base font-semibold tabular-nums tracking-tight text-[var(--text-primary)] sm:mt-1 sm:text-[26px] [@media(max-height:800px)]:mt-0.5 [@media(max-height:800px)]:text-xl [@media(max-height:740px)]:mt-0 [@media(max-height:740px)]:text-lg"
                   >
                     {formattedEarned}
                   </span>
@@ -759,14 +761,14 @@ export default function DashboardSection({
 
             {/* MIDDLE WIDE BOX: THE CHART (Spend vs. Revenue over time) */}
             <div
-              className={`relative mt-2.5 rounded-xl border p-2.5 sm:mt-5 sm:p-5 ${
+              className={`relative mt-2.5 rounded-xl border p-2.5 sm:mt-5 sm:p-5 [@media(max-height:800px)]:mt-3 [@media(max-height:800px)]:p-3 [@media(max-height:740px)]:mt-2.5 [@media(max-height:740px)]:p-2.5 ${
                 isLight
                   ? "border-black/10 bg-[#f6f3ec]"
                   : "border-white/[0.07] bg-[#0b0b0f]"
               }`}
             >
               {/* Chart Title, Timeframe Pill & Legend */}
-              <div className="mb-1.5 flex flex-wrap items-center justify-between gap-1.5 sm:mb-3 sm:gap-2">
+              <div className="mb-1.5 flex flex-wrap items-center justify-between gap-1.5 sm:mb-3 sm:gap-2 [@media(max-height:800px)]:mb-2 [@media(max-height:740px)]:mb-1.5">
                 <div className="flex items-center gap-2">
                   <span className="font-mono-label text-[9px] uppercase tracking-[0.18em] text-[var(--text-secondary)] sm:text-[10px] sm:tracking-[0.2em]">
                     Spend vs. Revenue
@@ -799,7 +801,7 @@ export default function DashboardSection({
               </div>
 
               {/* SVG Chart Canvas */}
-              <div className="relative h-[125px] w-full sm:h-[200px] lg:h-[256px]">
+              <div className="relative h-[125px] w-full sm:h-[200px] lg:h-[256px] [@media(max-height:800px)]:lg:h-[164px] [@media(max-height:740px)]:lg:h-[148px]">
                 <svg
                   viewBox="0 0 680 256"
                   preserveAspectRatio="none"
@@ -1042,32 +1044,32 @@ export default function DashboardSection({
             </div>
 
             {/* BOTTOM TWO SIDE-BY-SIDE BOXES INSIDE DASHBOARD */}
-            <div className="mt-2.5 grid grid-cols-2 gap-2.5 sm:mt-5 sm:gap-4">
+            <div className="mt-2.5 grid grid-cols-2 gap-2.5 sm:mt-5 sm:gap-4 [@media(max-height:800px)]:mt-3 [@media(max-height:800px)]:gap-3 [@media(max-height:740px)]:mt-2.5 [@media(max-height:740px)]:gap-2.5">
               {/* BOTTOM-LEFT BOX: LIVE DATA-DRIVEN RETURN CARD */}
               <div
-                className={`flex flex-col justify-between rounded-xl border p-2.5 sm:p-5 ${
+                className={`flex flex-col justify-between rounded-xl border p-2.5 sm:p-5 [@media(max-height:800px)]:p-3 [@media(max-height:740px)]:p-2.5 ${
                   isLight
                     ? "border-black/10 bg-[#fbf9f5]"
                     : "border-white/[0.08] bg-[#16161d]"
                 }`}
               >
                 <div className="flex items-center justify-between gap-1">
-                  <span className="font-mono-label text-[8.5px] uppercase tracking-[0.18em] text-[var(--text-muted)] sm:text-[10px] sm:tracking-[0.22em]">
+                  <span className="font-mono-label text-[8.5px] uppercase tracking-[0.18em] text-[var(--text-muted)] sm:text-[10px] sm:tracking-[0.22em] [@media(max-height:800px)]:text-[9px] [@media(max-height:740px)]:text-[8.5px]">
                     Return
                   </span>
-                  <span className="rounded bg-[#e89b3c]/15 px-1.5 py-0.5 font-mono-label text-[8px] font-semibold uppercase tracking-[0.12em] text-[#e89b3c] tabular-nums sm:px-2 sm:text-[10px]">
+                  <span className="rounded bg-[#e89b3c]/15 px-1.5 py-0.5 font-mono-label text-[8px] font-semibold uppercase tracking-[0.12em] text-[#e89b3c] tabular-nums sm:px-2 sm:text-[10px] [@media(max-height:800px)]:text-[8.5px] [@media(max-height:740px)]:text-[8px]">
                     {yieldPercent}% Yield
                   </span>
                 </div>
 
-                <div className="my-1.5 sm:my-3">
+                <div className="my-1.5 sm:my-3 [@media(max-height:800px)]:my-1.5 [@media(max-height:740px)]:my-1">
                   <span
                     data-testid="dashboard-return-tile"
-                    className="font-mono-label text-xs font-semibold tabular-nums tracking-tight text-[var(--text-primary)] sm:text-xl"
+                    className="font-mono-label text-xs font-semibold tabular-nums tracking-tight text-[var(--text-primary)] sm:text-xl [@media(max-height:800px)]:text-[15px] [@media(max-height:740px)]:text-sm"
                   >
                     ${returnPerDollar.toFixed(2)} back per $1
                   </span>
-                  <p className="mt-0.5 line-clamp-2 text-[10px] leading-snug text-[var(--text-secondary)] sm:mt-1 sm:line-clamp-none sm:text-xs sm:leading-relaxed">
+                  <p className="mt-0.5 line-clamp-2 text-[10px] leading-snug text-[var(--text-secondary)] sm:mt-1 sm:line-clamp-none sm:text-xs sm:leading-relaxed [@media(max-height:800px)]:line-clamp-2 [@media(max-height:800px)]:text-[10.5px] [@media(max-height:740px)]:line-clamp-2 [@media(max-height:740px)]:text-[10px]">
                     {displaySpent > 0
                       ? `${burnPercent}% of your spend ($${netBurnDollars} burned) went to tools, agencies, and rebuilds.`
                       : "Click +$20/m, +$5000/m, or +$10,000/m to measure your return per $1 spent."}
@@ -1075,14 +1077,14 @@ export default function DashboardSection({
                 </div>
 
                 {/* Live Data-Driven Visual Bar Comparison */}
-                <div className="space-y-1 pt-0.5 sm:space-y-1.5 sm:pt-1">
-                  <div className="hidden items-center justify-between font-mono-label text-[9px] uppercase tracking-[0.16em] tabular-nums text-[var(--text-muted)] sm:flex">
+                <div className="space-y-1 pt-0.5 sm:space-y-1.5 sm:pt-1 [@media(max-height:800px)]:pt-0">
+                  <div className="hidden items-center justify-between font-mono-label text-[9px] uppercase tracking-[0.16em] tabular-nums text-[var(--text-muted)] sm:flex [@media(max-height:800px)]:hidden">
                     <span>Burned (${(1 - returnPerDollar).toFixed(2)})</span>
                     <span className="text-[#4ea885]">
                       Returned (${returnPerDollar.toFixed(2)})
                     </span>
                   </div>
-                  <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-black/20 sm:h-2">
+                  <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-black/20 sm:h-2 [@media(max-height:800px)]:h-1.5">
                     <div
                       style={{ width: `${burnPercent}%` }}
                       className="h-full bg-[#e89b3c] transition-all duration-300"
@@ -1097,25 +1099,25 @@ export default function DashboardSection({
 
               {/* BOTTOM-RIGHT BOX: RESPECTFUL FOUNDER-EMPATHETIC DIAGNOSIS */}
               <div
-                className={`flex flex-col justify-between rounded-xl border p-2.5 sm:p-5 ${
+                className={`flex flex-col justify-between rounded-xl border p-2.5 sm:p-5 [@media(max-height:800px)]:p-3 [@media(max-height:740px)]:p-2.5 ${
                   isLight
                     ? "border-black/10 bg-[#fbf9f5]"
                     : "border-white/[0.08] bg-[#16161d]"
                 }`}
               >
                 <div className="flex items-center justify-between gap-1">
-                  <span className="font-mono-label text-[8.5px] uppercase tracking-[0.18em] text-[var(--text-muted)] sm:text-[10px] sm:tracking-[0.22em]">
+                  <span className="font-mono-label text-[8.5px] uppercase tracking-[0.18em] text-[var(--text-muted)] sm:text-[10px] sm:tracking-[0.22em] [@media(max-height:800px)]:text-[9px] [@media(max-height:740px)]:text-[8.5px]">
                     Diagnosis
                   </span>
-                  <span className="truncate rounded bg-[#ff383c]/15 px-1.5 py-0.5 font-mono-label text-[8px] font-semibold uppercase tracking-[0.1em] text-[#ff383c] tabular-nums sm:px-2 sm:text-[10px]">
+                  <span className="truncate rounded bg-[#ff383c]/15 px-1.5 py-0.5 font-mono-label text-[8px] font-semibold uppercase tracking-[0.1em] text-[#ff383c] tabular-nums sm:px-2 sm:text-[10px] [@media(max-height:800px)]:text-[8.5px] [@media(max-height:740px)]:text-[8px]">
                     {displaySpent > 0
                       ? `Loss: -$${netBurnDollars}`
                       : "Funnel audit"}
                   </span>
                 </div>
 
-                <div className="my-1.5 sm:my-3">
-                  <p className="text-xs font-semibold leading-snug tracking-[-0.02em] text-[var(--text-primary)] sm:text-xl">
+                <div className="my-1.5 sm:my-3 [@media(max-height:800px)]:my-1.5 [@media(max-height:740px)]:my-1">
+                  <p className="text-xs font-semibold leading-snug tracking-[-0.02em] text-[var(--text-primary)] sm:text-xl [@media(max-height:800px)]:text-[15px] [@media(max-height:740px)]:text-sm">
                     Your product isn&apos;t the problem.{" "}
                     <span className="font-serif-editorial font-normal italic text-[#e89b3c]">
                       The leak is.
@@ -1123,7 +1125,7 @@ export default function DashboardSection({
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between border-t border-[var(--border-subtle)] pt-1.5 font-mono-label text-[8.5px] uppercase tracking-[0.14em] text-[var(--text-muted)] sm:pt-2.5 sm:text-[10px] sm:tracking-[0.16em]">
+                <div className="flex items-center justify-between border-t border-[var(--border-subtle)] pt-1.5 font-mono-label text-[8.5px] uppercase tracking-[0.14em] text-[var(--text-muted)] sm:pt-2.5 sm:text-[10px] sm:tracking-[0.16em] [@media(max-height:800px)]:pt-1.5 [@media(max-height:800px)]:text-[8.5px] [@media(max-height:740px)]:pt-1">
                   <span className="text-[#e89b3c]">Conversion: Leaking</span>
                 </div>
               </div>
@@ -1136,34 +1138,34 @@ export default function DashboardSection({
             - Bottom-Right Space reserved for the shared Section 1 TypewriterStage
               (which slides its $20/$50/$100 buttons & vintage typewriter here)
         ===================================================================== */}
-          <div className="order-1 flex flex-col justify-between lg:order-2 lg:col-span-6 lg:min-h-[640px]">
+          <div className="order-1 flex flex-col justify-between lg:order-2 lg:col-span-6 lg:min-h-[640px] [@media(max-height:800px)]:lg:min-h-[485px] [@media(max-height:740px)]:lg:min-h-[420px]">
             {/* TOP-RIGHT EDITORIAL COPY (Right-Aligned on Desktop as in Reference Image) */}
             <div
               ref={copyBlockRef}
               data-typewriter-anchor="dashboard-copy"
               className="flex flex-col items-start text-left lg:ml-auto lg:max-w-[520px] lg:items-end lg:text-right"
             >
-              <div className="mb-1 inline-flex items-center gap-2 sm:mb-2 lg:mb-3 lg:gap-2.5">
-                <span className="font-mono-label text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] sm:text-[11px] sm:tracking-[0.22em]">
+              <div className="mb-1 inline-flex items-center gap-2 sm:mb-2 lg:mb-3 lg:gap-2.5 [@media(max-height:800px)]:lg:mb-2 [@media(max-height:740px)]:lg:mb-1">
+                <span className="font-mono-label text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] sm:text-[11px] sm:tracking-[0.22em] [@media(max-height:740px)]:text-[9.5px]">
                   02 / WHERE THE MONEY WENT
                 </span>
               </div>
 
               <h2
                 id="dashboard-heading"
-                className="text-2xl font-semibold leading-[1.06] tracking-[-0.035em] text-[var(--text-primary)] sm:text-4xl lg:text-5xl xl:text-[3.5rem]"
+                className="text-2xl font-semibold leading-[1.06] tracking-[-0.035em] text-[var(--text-primary)] sm:text-4xl lg:text-5xl xl:text-[3.5rem] [@media(max-height:800px)]:lg:text-[2.65rem] [@media(max-height:740px)]:lg:text-[2.1rem]"
               >
                 You keep paying.{" "}
-                <span className="font-serif-editorial inline font-normal italic tracking-[-0.015em] text-[#e89b3c] lg:mt-1 lg:block">
+                <span className="font-serif-editorial inline font-normal italic tracking-[-0.015em] text-[#e89b3c] lg:mt-1 lg:block [@media(max-height:740px)]:lg:mt-0.5">
                   Still not profitable.
                 </span>
               </h2>
 
-              <p className="mt-1.5 max-w-[480px] text-xs font-medium leading-snug text-[var(--text-primary)] sm:mt-3 sm:text-base lg:mt-4 lg:text-[18px]">
+              <p className="mt-1.5 max-w-[480px] text-xs font-medium leading-snug text-[var(--text-primary)] sm:mt-3 sm:text-base lg:mt-4 lg:text-[18px] [@media(max-height:800px)]:lg:mt-2.5 [@media(max-height:800px)]:lg:text-[15.5px] [@media(max-height:740px)]:lg:mt-1.5 [@media(max-height:740px)]:lg:text-xs">
                 The product is live. People visit. Revenue stays flat.
               </p>
 
-              <p className="mt-1 max-w-[480px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-2 sm:text-sm lg:mt-2.5 lg:text-[16px] lg:leading-[1.65]">
+              <p className="mt-1 max-w-[480px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-2 sm:text-sm lg:mt-2.5 lg:text-[16px] lg:leading-[1.65] [@media(max-height:800px)]:lg:mt-1.5 [@media(max-height:800px)]:lg:text-[14px] [@media(max-height:800px)]:lg:leading-[1.52] [@media(max-height:740px)]:lg:mt-1 [@media(max-height:740px)]:lg:text-[11.5px] [@media(max-height:740px)]:lg:leading-[1.42]">
                 Every new tool, agency and relaunch costs more, and none of them
                 moves the one number that matters. Most stuck products break in
                 one specific place.{" "}
@@ -1174,7 +1176,17 @@ export default function DashboardSection({
                   <span ref={inlineLetsFixRef}>Let&apos;s fix it </span>
                   <span className="relative inline-grid items-baseline">
                     {/* Upright base "together!" */}
-                    <span className="col-start-1 row-start-1 will-change-[opacity]">
+                    <span
+                      ref={inlineTogetherBaseRef}
+                      className="col-start-1 row-start-1 will-change-[opacity]"
+                    >
+                      together!
+                    </span>
+                    {/* Italic orange serif "together!" that fades in during Phase A */}
+                    <span
+                      ref={inlineTogetherSerifRef}
+                      className="font-serif-editorial col-start-1 row-start-1 text-[1.08em] font-normal italic tracking-[-0.015em] text-[#e89b3c] opacity-0 will-change-[opacity,transform]"
+                    >
                       together!
                     </span>
                   </span>
@@ -1185,7 +1197,7 @@ export default function DashboardSection({
             {/* Desktop spacer so the right column matches the height needed for the shared Typewriter below the copy */}
             <div
               aria-hidden="true"
-              className="hidden pointer-events-none lg:block lg:h-[370px]"
+              className="pointer-events-none hidden lg:block lg:h-[370px] [@media(max-height:800px)]:lg:h-[260px] [@media(max-height:740px)]:lg:h-[230px]"
             />
           </div>
         </div>
@@ -1206,15 +1218,17 @@ export default function DashboardSection({
 
         {/* LAYER 3: PARTNERSHIP LOCKUP OVERLAY (Matches User Mockup & Section 2 Headline Typography) */}
         <div className="pointer-events-none absolute inset-0 z-40">
-          {/* Top-Center Headline: Same font & size as "You keep paying. Still not profitable." */}
-          <div
-            ref={floatingHeadlineRef}
-            className="pointer-events-none absolute left-1/2 top-[20%] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap text-3xl font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text-primary)] opacity-0 will-change-transform sm:top-[24%] sm:text-5xl xl:text-[3.5rem]"
-          >
-            Let&apos;s fix it{" "}
-            <span className="font-serif-editorial text-[1.05em] font-normal italic tracking-[-0.015em] text-[#e89b3c] drop-shadow-[0_0_24px_rgba(232,155,60,0.32)]">
-              together
-            </span>
+          {/* Top-Center Headline: Outer wrapper handles -50%/-50% centering so GSAP's scale() on floatingHeadlineRef scales around its true center */}
+          <div className="pointer-events-none absolute left-1/2 top-[20%] -translate-x-1/2 -translate-y-1/2 sm:top-[24%]">
+            <div
+              ref={floatingHeadlineRef}
+              className="whitespace-nowrap text-3xl font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text-primary)] opacity-0 will-change-transform sm:text-5xl xl:text-[3.5rem]"
+            >
+              Let&apos;s fix it{" "}
+              <span className="font-serif-editorial text-[1.05em] font-normal italic tracking-[-0.015em] text-[#e89b3c] drop-shadow-[0_0_24px_rgba(232,155,60,0.32)]">
+                together
+              </span>
+            </div>
           </div>
 
           {/* Static Partner Typewriter: centered vertically on mobile (< sm), side-by-side on sm+ */}

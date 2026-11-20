@@ -256,7 +256,12 @@ export default function ProcessSection({
           explodedStageShiftRef.current,
           { x: 0 },
           {
-            x: () => (window.innerWidth >= 1024 ? 90 : 0),
+            x: () =>
+              window.innerWidth >= 1280
+                ? 90
+                : window.innerWidth >= 1024
+                  ? 96
+                  : 0,
             duration: 0.085,
             ease: "power2.inOut",
             immediateRender: false,
@@ -583,17 +588,17 @@ export default function ProcessSection({
       />
 
       {/* Sticky Full-Screen Stage: Intro -> 1..5 -> 04 / WHO WE WORK WITH -> 05 / LET’S START */}
-      <div className="sticky top-0 flex h-screen w-full flex-col justify-between overflow-hidden pt-18 pb-6 sm:pt-24 sm:pb-10 lg:pt-28 lg:pb-12">
+      <div className="sticky top-0 flex h-screen w-full flex-col justify-between overflow-hidden pt-18 pb-6 sm:pt-24 sm:pb-10 lg:pt-28 lg:pb-12 [@media(max-height:800px)]:lg:pt-20 [@media(max-height:800px)]:lg:pb-7 [@media(max-height:740px)]:lg:pt-16 [@media(max-height:740px)]:lg:pb-4">
         <div
           ref={processStageBlurRef}
           className="relative flex h-full w-full flex-col justify-between will-change-[opacity,transform]"
         >
           {/* TOP ROW: Left Editorial Column + Right "03 How we work together" Header */}
-          <div className="pointer-events-none relative z-20 mx-auto grid w-full max-w-[1560px] grid-cols-1 items-start gap-4 px-4 sm:gap-8 sm:px-10 lg:grid-cols-12 lg:px-16 xl:px-24">
+          <div className="pointer-events-none relative z-50 mx-auto grid w-full max-w-[1560px] grid-cols-1 items-start gap-4 px-4 sm:gap-8 sm:px-10 lg:grid-cols-12 lg:px-16 xl:px-24">
             {/* LEFT COLUMN: 5 Stage Editorials */}
             <div
               ref={understandLeftColRef}
-              className={`pointer-events-auto relative z-20 flex-col items-start text-left opacity-0 will-change-[opacity,transform] lg:col-span-4 lg:flex ${
+              className={`pointer-events-auto relative z-50 flex-col items-start text-left opacity-0 will-change-[opacity,transform] lg:col-span-4 lg:flex ${
                 activeStage === 0 ? "hidden lg:flex" : "flex"
               }`}
             >
@@ -619,17 +624,17 @@ export default function ProcessSection({
               >
                 <div className="flex items-baseline gap-2">
                   <div className="relative inline-flex flex-col items-start">
-                    <span className="font-mono-label text-3xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-5xl lg:text-6xl">
+                    <span className="font-mono-label text-3xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-5xl lg:text-6xl [@media(max-height:800px)]:lg:text-4xl [@media(max-height:740px)]:lg:text-3xl">
                       1.
                     </span>
-                    <span className="mt-0.5 h-[2.5px] w-7 rounded-full bg-[#e89b3c] sm:mt-1 sm:h-[3px] sm:w-11" />
+                    <span className="mt-0.5 h-[2.5px] w-7 rounded-full bg-[#e89b3c] sm:mt-1 sm:h-[3px] sm:w-11 [@media(max-height:800px)]:lg:w-8 [@media(max-height:740px)]:lg:w-7" />
                   </div>
-                  <h3 className="-ml-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:-ml-2 sm:text-3xl xl:text-[2.25rem]">
+                  <h3 className="-ml-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:-ml-2 sm:text-3xl xl:text-[2.25rem] [@media(max-height:800px)]:lg:text-2xl [@media(max-height:740px)]:lg:text-xl">
                     Understand the problem
                   </h3>
                 </div>
 
-                <p className="mt-1.5 max-w-[380px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-4 sm:text-[16px] sm:leading-[1.68]">
+                <p className="mt-1.5 max-w-[380px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-4 sm:text-[16px] sm:leading-[1.68] [@media(max-height:800px)]:lg:mt-2 [@media(max-height:800px)]:lg:max-w-[265px] [@media(max-height:800px)]:lg:text-[13px] [@media(max-height:800px)]:lg:leading-[1.5] [@media(max-height:740px)]:lg:mt-1.5 [@media(max-height:740px)]:lg:max-w-[280px] [@media(max-height:740px)]:lg:text-xs [@media(max-height:740px)]:lg:leading-[1.45]">
                   Before writing a single line of code or running another ad, we
                   scan your numbers, product, and funnel to pinpoint the exact
                   bottlenecks costing you sales.
@@ -637,16 +642,16 @@ export default function ProcessSection({
 
                 {/* Live Periodic Diagnostic Scanner Card */}
                 <div
-                  className={`mt-2.5 w-full max-w-[370px] rounded-xl border p-2.5 transition-colors duration-300 sm:mt-6 sm:p-4 ${
+                  className={`mt-2.5 w-full max-w-[370px] rounded-xl border p-2.5 transition-colors duration-300 sm:mt-6 sm:p-4 [@media(max-height:800px)]:lg:mt-3 [@media(max-height:800px)]:lg:max-w-[255px] [@media(max-height:800px)]:lg:p-3 [@media(max-height:740px)]:lg:mt-2 [@media(max-height:740px)]:lg:max-w-[255px] [@media(max-height:740px)]:lg:p-2.5 ${
                     isLight
                       ? "border-black/10 bg-[#eae5dc]/90 shadow-sm"
                       : "border-white/[0.08] bg-[#111116]/90 shadow-[0_18px_40px_rgba(0,0,0,0.65)]"
                   }`}
                 >
-                  <div className="flex items-center justify-between border-b border-current/10 pb-1.5 sm:pb-2.5">
+                  <div className="flex items-center justify-between border-b border-current/10 pb-1.5 sm:pb-2.5 [@media(max-height:740px)]:lg:pb-1.5">
                     <div className="flex items-center gap-1.5 sm:gap-2">
                       <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#e89b3c] shadow-[0_0_8px_#e89b3c] sm:h-2 sm:w-2" />
-                      <span className="font-mono-label text-[9px] font-semibold uppercase tracking-[0.16em] text-[#e89b3c] sm:text-[10px] sm:tracking-[0.18em]">
+                      <span className="font-mono-label text-[9px] font-semibold uppercase tracking-[0.16em] text-[#e89b3c] sm:text-[10px] sm:tracking-[0.18em] [@media(max-height:740px)]:lg:text-[9px]">
                         Inspecting Unit {currentUnit.code}/05
                       </span>
                     </div>
@@ -669,22 +674,22 @@ export default function ProcessSection({
                   </div>
 
                   {/* Active Big Part Title & Diagnostic Activity */}
-                  <div className="mt-1.5 sm:mt-3">
+                  <div className="mt-1.5 sm:mt-3 [@media(max-height:740px)]:lg:mt-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold tracking-[-0.01em] text-[var(--text-primary)] sm:text-base">
+                      <span className="text-xs font-semibold tracking-[-0.01em] text-[var(--text-primary)] sm:text-base [@media(max-height:740px)]:lg:text-xs">
                         {currentUnit.name}
                       </span>
                       <span className="font-mono-label text-[8.5px] uppercase tracking-[0.14em] text-[var(--text-muted)] sm:text-[9px]">
                         #{currentUnit.code}
                       </span>
                     </div>
-                    <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-[var(--text-secondary)] sm:mt-1 sm:line-clamp-none sm:text-xs sm:leading-relaxed">
+                    <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-[var(--text-secondary)] sm:mt-1 sm:line-clamp-none sm:text-xs sm:leading-relaxed [@media(max-height:740px)]:lg:line-clamp-2 [@media(max-height:740px)]:lg:text-[11px]">
                       {currentUnit.finding}
                     </p>
                   </div>
 
-                  {/* Smaller Related Sub-Parts Pills (Hidden on compact mobile so 3D typewriter below is unobstructed) */}
-                  <div className="mt-3 hidden border-t border-current/10 pt-2.5 sm:block">
+                  {/* Smaller Related Sub-Parts Pills (Hidden on compact mobile & short viewports so 3D typewriter below is unobstructed) */}
+                  <div className="mt-3 hidden border-t border-current/10 pt-2.5 sm:block [@media(max-height:800px)]:!hidden">
                     <span className="block font-mono-label text-[9px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
                       Tags:
                     </span>
@@ -711,17 +716,17 @@ export default function ProcessSection({
               >
                 <div className="flex items-baseline gap-2">
                   <div className="relative inline-flex flex-col items-start">
-                    <span className="font-mono-label text-3xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-5xl lg:text-6xl">
+                    <span className="font-mono-label text-3xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-5xl lg:text-6xl [@media(max-height:740px)]:lg:text-3xl">
                       2.
                     </span>
-                    <span className="mt-0.5 h-[2.5px] w-7 rounded-full bg-[#10b981] sm:mt-1 sm:h-[3px] sm:w-11" />
+                    <span className="mt-0.5 h-[2.5px] w-7 rounded-full bg-[#10b981] sm:mt-1 sm:h-[3px] sm:w-11 [@media(max-height:740px)]:lg:w-7" />
                   </div>
-                  <h3 className="-ml-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:-ml-2 sm:text-3xl xl:text-[2.25rem]">
+                  <h3 className="-ml-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:-ml-2 sm:text-3xl xl:text-[2.25rem] [@media(max-height:740px)]:lg:text-xl">
                     Build a solution
                   </h3>
                 </div>
 
-                <p className="mt-1.5 max-w-[380px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-4 sm:text-[16px] sm:leading-[1.68]">
+                <p className="mt-1.5 max-w-[380px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-4 sm:text-[16px] sm:leading-[1.68] [@media(max-height:740px)]:lg:mt-1.5 [@media(max-height:740px)]:lg:max-w-[280px] [@media(max-height:740px)]:lg:text-xs [@media(max-height:740px)]:lg:leading-[1.45]">
                   We fix what’s costing you sales, starting with the biggest
                   leak. And if something’s missing, we build it.
                 </p>
@@ -735,23 +740,23 @@ export default function ProcessSection({
               >
                 <div className="flex items-baseline gap-2">
                   <div className="relative inline-flex flex-col items-start">
-                    <span className="font-mono-label text-3xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-5xl lg:text-6xl">
+                    <span className="font-mono-label text-3xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-5xl lg:text-6xl [@media(max-height:740px)]:lg:text-3xl">
                       3.
                     </span>
-                    <span className="mt-0.5 h-[2.5px] w-7 rounded-full bg-[#e89b3c] sm:mt-1 sm:h-[3px] sm:w-11" />
+                    <span className="mt-0.5 h-[2.5px] w-7 rounded-full bg-[#e89b3c] sm:mt-1 sm:h-[3px] sm:w-11 [@media(max-height:740px)]:lg:w-7" />
                   </div>
-                  <h3 className="-ml-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:-ml-2 sm:text-3xl xl:text-[2.25rem]">
+                  <h3 className="-ml-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:-ml-2 sm:text-3xl xl:text-[2.25rem] [@media(max-height:740px)]:lg:text-xl">
                     Test the solution
                   </h3>
                 </div>
 
-                <p className="mt-1.5 max-w-[380px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-4 sm:text-[16px] sm:leading-[1.68]">
+                <p className="mt-1.5 max-w-[380px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-4 sm:text-[16px] sm:leading-[1.68] [@media(max-height:740px)]:lg:mt-1.5 [@media(max-height:740px)]:lg:max-w-[265px] [@media(max-height:740px)]:lg:text-xs [@media(max-height:740px)]:lg:leading-[1.45]">
                   Before going wide, we put it in front of real people and watch
                   what they actually do. We prove it works before you spend
                   another dime on ads or development.
                 </p>
 
-                <div className="mt-3 sm:mt-6">
+                <div className="mt-3 sm:mt-6 [@media(max-height:740px)]:lg:mt-2.5">
                   <button
                     type="button"
                     onClick={() => {
@@ -760,7 +765,7 @@ export default function ProcessSection({
                       }
                     }}
                     disabled={isStage3Testing}
-                    className={`group relative inline-flex cursor-pointer items-center gap-2.5 rounded-full bg-[#e89b3c] px-5 py-2 font-mono-label text-[11px] font-semibold uppercase tracking-[0.16em] text-[#08080a] shadow-[0_0_24px_rgba(232,155,60,0.45)] transition-all duration-200 hover:bg-[var(--text-primary)] hover:text-[var(--bg-stage)] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] disabled:cursor-wait sm:gap-3 sm:px-8 sm:py-3.5 sm:text-xs ${
+                    className={`group relative inline-flex cursor-pointer items-center gap-2.5 rounded-full bg-[#e89b3c] px-5 py-2 font-mono-label text-[11px] font-semibold uppercase tracking-[0.16em] text-[#08080a] shadow-[0_0_24px_rgba(232,155,60,0.45)] transition-all duration-200 hover:bg-[var(--text-primary)] hover:text-[var(--bg-stage)] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] disabled:cursor-wait sm:gap-3 sm:px-8 sm:py-3.5 sm:text-xs [@media(max-height:740px)]:lg:px-5 [@media(max-height:740px)]:lg:py-2 [@media(max-height:740px)]:lg:text-[11px] ${
                       !hasStage3Tested && !isStage3Testing ? "orb-begging" : ""
                     }`}
                   >
@@ -790,17 +795,17 @@ export default function ProcessSection({
               >
                 <div className="flex items-baseline gap-2">
                   <div className="relative inline-flex flex-col items-start">
-                    <span className="font-mono-label text-3xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-5xl lg:text-6xl">
+                    <span className="font-mono-label text-3xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-5xl lg:text-6xl [@media(max-height:740px)]:lg:text-3xl">
                       4.
                     </span>
-                    <span className="mt-0.5 h-[2.5px] w-7 rounded-full bg-[#10b981] sm:mt-1 sm:h-[3px] sm:w-11" />
+                    <span className="mt-0.5 h-[2.5px] w-7 rounded-full bg-[#10b981] sm:mt-1 sm:h-[3px] sm:w-11 [@media(max-height:740px)]:lg:w-7" />
                   </div>
-                  <h3 className="-ml-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:-ml-2 sm:text-3xl xl:text-[2.25rem]">
+                  <h3 className="-ml-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:-ml-2 sm:text-3xl xl:text-[2.25rem] [@media(max-height:740px)]:lg:text-xl">
                     Launch and measure
                   </h3>
                 </div>
 
-                <p className="mt-1.5 max-w-[380px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-4 sm:text-[16px] sm:leading-[1.68]">
+                <p className="mt-1.5 max-w-[380px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-4 sm:text-[16px] sm:leading-[1.68] [@media(max-height:740px)]:lg:mt-1.5 [@media(max-height:740px)]:lg:max-w-[275px] [@media(max-height:740px)]:lg:text-xs [@media(max-height:740px)]:lg:leading-[1.45]">
                   Same budget. Completely different outcome. We ship the winning
                   fix fast and track one number: net revenue. No vanity clicks
                   or guesswork. You see every dollar come back with profit.
@@ -815,17 +820,17 @@ export default function ProcessSection({
               >
                 <div className="flex items-baseline gap-2">
                   <div className="relative inline-flex flex-col items-start">
-                    <span className="font-mono-label text-3xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-5xl lg:text-6xl">
+                    <span className="font-mono-label text-3xl font-light leading-none tracking-tight text-[var(--text-primary)]/18 sm:text-5xl lg:text-6xl [@media(max-height:740px)]:lg:text-3xl">
                       5.
                     </span>
-                    <span className="mt-0.5 h-[2.5px] w-7 rounded-full bg-[#e89b3c] sm:mt-1 sm:h-[3px] sm:w-11" />
+                    <span className="mt-0.5 h-[2.5px] w-7 rounded-full bg-[#e89b3c] sm:mt-1 sm:h-[3px] sm:w-11 [@media(max-height:740px)]:lg:w-7" />
                   </div>
-                  <h3 className="-ml-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:-ml-2 sm:text-3xl xl:text-[2.25rem]">
+                  <h3 className="-ml-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--text-primary)] sm:-ml-2 sm:text-3xl xl:text-[2.25rem] [@media(max-height:740px)]:lg:text-xl">
                     Iterate and scale
                   </h3>
                 </div>
 
-                <p className="mt-1.5 max-w-[380px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-4 sm:text-[16px] sm:leading-[1.68]">
+                <p className="mt-1.5 max-w-[380px] text-xs font-normal leading-[1.5] text-[var(--text-secondary)] sm:mt-4 sm:text-[16px] sm:leading-[1.68] [@media(max-height:740px)]:lg:mt-1.5 [@media(max-height:740px)]:lg:max-w-[280px] [@media(max-height:740px)]:lg:text-xs [@media(max-height:740px)]:lg:leading-[1.45]">
                   We stay, adjust, and keep pushing that number up, quarter
                   after quarter.
                 </p>
@@ -840,25 +845,25 @@ export default function ProcessSection({
                 activeStage >= 1 ? "hidden lg:flex" : "flex"
               }`}
             >
-              <div className="mb-3 inline-flex items-center gap-3">
-                <span className="font-mono-label text-[11px] uppercase tracking-[0.22em] text-[#e89b3c]">
+              <div className="mb-3 inline-flex items-center gap-3 [@media(max-height:740px)]:lg:mb-1">
+                <span className="font-mono-label text-[11px] uppercase tracking-[0.22em] text-[#e89b3c] [@media(max-height:740px)]:lg:text-[9.5px]">
                   03
                 </span>
                 <span
                   aria-hidden="true"
-                  className="h-px w-8 bg-[var(--text-muted)] opacity-45"
+                  className="h-px w-8 bg-[var(--text-muted)] opacity-45 [@media(max-height:740px)]:lg:w-5"
                 />
-                <span className="font-mono-label text-[11px] uppercase tracking-[0.2em] text-[var(--text-secondary)]">
+                <span className="font-mono-label text-[11px] uppercase tracking-[0.2em] text-[var(--text-secondary)] [@media(max-height:740px)]:lg:text-[9.5px]">
                   Revenue is the only metric
                 </span>
               </div>
 
               <h2
                 id="process-heading"
-                className="text-4xl font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text-primary)] sm:text-5xl xl:text-[3.5rem]"
+                className="text-4xl font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--text-primary)] sm:text-5xl xl:text-[3.5rem] [@media(max-height:740px)]:lg:text-[1.85rem]"
               >
                 How we work
-                <span className="font-serif-editorial mt-1 block font-normal italic tracking-[-0.015em] text-[#e89b3c]">
+                <span className="font-serif-editorial mt-1 block font-normal italic tracking-[-0.015em] text-[#e89b3c] [@media(max-height:740px)]:lg:mt-0.5">
                   together
                 </span>
               </h2>
@@ -868,11 +873,11 @@ export default function ProcessSection({
           {/* CENTER STAGE: 3D ISOMETRIC EXPLODED TYPEWRITER (Stages 1 & 2) */}
           <div
             ref={explodedStageWrapRef}
-            className="pointer-events-none absolute inset-x-0 top-[63%] z-40 mx-auto flex h-[540px] w-full max-w-[1040px] -translate-y-1/2 items-center justify-center px-4 will-change-[opacity,transform] sm:top-[58%] lg:top-[52%]"
+            className="pointer-events-none absolute inset-x-0 top-[63%] z-40 mx-auto flex h-[540px] w-full max-w-[1040px] -translate-y-1/2 items-center justify-center px-4 will-change-[opacity,transform] sm:top-[58%] lg:top-[52%] [@media(max-height:800px)]:lg:top-[54%] [@media(max-height:740px)]:lg:top-[55%]"
           >
             <div
               ref={explodedStageShiftRef}
-              className="pointer-events-none relative flex h-full w-full scale-[0.72] items-center justify-center will-change-transform sm:scale-[0.88] lg:scale-100"
+              className="pointer-events-none relative flex h-full w-full items-center justify-center will-change-transform"
             >
               {/* 3D Isometric Exploded Typewriter: Explodes in Stage 1, Repairs in Stage 2, Re-assembles (with no labels) into Stage 3 */}
               <div
@@ -883,7 +888,7 @@ export default function ProcessSection({
                   ),
                   pointerEvents: testProgress > 0.55 ? "none" : "auto",
                 }}
-                className="pointer-events-none flex h-full w-full items-center justify-center"
+                className="pointer-events-none flex h-full w-full scale-[0.72] items-center justify-center sm:scale-[0.88] lg:scale-[0.76] xl:scale-[0.9] 2xl:scale-100 [@media(max-height:800px)]:lg:scale-[0.62] [@media(max-height:740px)]:lg:!scale-[0.58]"
               >
                 <ExplodedTypewriter3D
                   explosionProgress={explosionProgress}
@@ -904,9 +909,8 @@ export default function ProcessSection({
             style={{
               top: "165px",
               bottom: "68px",
-              pointerEvents: testProgress > 0.55 ? "auto" : "none",
             }}
-            className="pointer-events-none absolute inset-x-0 z-40 mx-auto flex w-full max-w-[1560px] items-center justify-center px-4 sm:px-10 lg:bottom-[88px] lg:px-16 xl:px-24"
+            className="pointer-events-none absolute inset-x-0 z-40 mx-auto flex w-full max-w-[1560px] items-center justify-center px-4 sm:px-10 lg:bottom-[88px] lg:px-16 xl:px-24 [@media(max-height:800px)]:!top-[146px] [@media(max-height:800px)]:!bottom-[62px] [@media(max-height:740px)]:!top-[128px] [@media(max-height:740px)]:!bottom-[46px]"
           >
             <TestSolutionStage
               testProgress={testProgress}

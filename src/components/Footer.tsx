@@ -107,7 +107,7 @@ export default function Footer({ onAuditClick }: FooterProps) {
           {/* RIGHT COLUMN (Cols 10-12): Direct Audit Card */}
           <div className="flex flex-col justify-between lg:col-span-3">
             <div
-              className={`flex flex-col justify-between rounded-2xl border p-5 ${
+              className={`flex flex-col justify-between rounded-2xl border p-5 [@media(min-width:1024px)_and_(max-width:1279px)]:px-3.5 [@media(min-width:1024px)_and_(max-width:1279px)]:py-4 ${
                 isLight
                   ? "border-black/10 bg-[#f6f3ec] shadow-[0_12px_30px_rgba(20,20,19,0.05)]"
                   : "border-white/[0.08] bg-[#0d0d12] shadow-[0_16px_40px_rgba(0,0,0,0.6)]"
@@ -134,13 +134,13 @@ export default function Footer({ onAuditClick }: FooterProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   data-cta-source="footer"
-                  className="inline-flex w-full cursor-pointer items-center justify-center rounded-full bg-[#e89b3c] px-5 py-2.5 font-mono-label text-[11px] font-semibold uppercase tracking-[0.16em] text-[#08080a] transition-all duration-200 hover:bg-[var(--text-primary)] hover:text-[var(--bg-stage)] active:scale-[0.98]"
+                  className="inline-flex w-full cursor-pointer items-center justify-center rounded-full bg-[#e89b3c] px-5 py-2.5 font-mono-label text-[11px] font-semibold uppercase tracking-[0.16em] text-[#08080a] transition-all duration-200 hover:bg-[var(--text-primary)] hover:text-[var(--bg-stage)] active:scale-[0.98] [@media(min-width:1024px)_and_(max-width:1279px)]:px-3 [@media(min-width:1024px)_and_(max-width:1279px)]:text-[10px] [@media(min-width:1024px)_and_(max-width:1279px)]:tracking-[0.12em] [@media(min-width:1024px)_and_(max-width:1279px)]:whitespace-nowrap"
                 >
                   Get a free audit →
                 </Link>
                 <a
                   href="mailto:connect@hellosteward.agency"
-                  className="text-center font-mono-label text-[11px] tracking-[0.06em] text-[var(--text-secondary)] transition-colors hover:text-[#e89b3c]"
+                  className="text-center font-mono-label text-[11px] tracking-[0.06em] text-[var(--text-secondary)] transition-colors hover:text-[#e89b3c] [@media(min-width:1024px)_and_(max-width:1279px)]:truncate [@media(min-width:1024px)_and_(max-width:1279px)]:text-[9.5px] [@media(min-width:1024px)_and_(max-width:1279px)]:tracking-normal"
                 >
                   connect@hellosteward.agency
                 </a>

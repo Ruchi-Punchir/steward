@@ -1086,7 +1086,43 @@ export default function TypewriterStage({
     const triggerEl = handoffTriggerRef.current;
 
     const ctx = gsap.context(() => {
-      const targetScale = 0.62;
+      const is1024x600 = () =>
+        window.innerWidth >= 1024 &&
+        window.innerWidth < 1280 &&
+        window.innerHeight <= 700;
+      const is1024x768 = () =>
+        window.innerWidth >= 1024 &&
+        window.innerWidth < 1280 &&
+        window.innerHeight > 700 &&
+        window.innerHeight <= 820;
+      const is768Height = () =>
+        window.innerWidth >= 1024 &&
+        window.innerHeight > 700 &&
+        window.innerHeight <= 820;
+      const getHeroScale = () =>
+        is1024x600()
+          ? 0.76
+          : is1024x768()
+            ? 0.79
+            : is768Height()
+              ? 0.88
+              : 1;
+      const getTargetScale = () =>
+        is1024x600()
+          ? 0.48
+          : is1024x768()
+            ? 0.52
+            : is768Height()
+              ? 0.54
+              : 0.62;
+      const getCardDashScale = () =>
+        is1024x600()
+          ? 0.68
+          : is1024x768()
+            ? 0.74
+            : is768Height()
+              ? 0.75
+              : 0.84;
       const partnerScale = 0.44;
       const totalScrollMultiplier = 2.6;
 
@@ -1197,12 +1233,13 @@ export default function TypewriterStage({
       };
 
       const measureDashboardAlignment = () => {
+        const curTargetScale = getTargetScale();
         const stageEl = stageRef.current;
         const twEl = typewriterGroupRef.current;
         const fallback = {
           x: Math.round(
             ((stageEl?.clientWidth ?? 680) -
-              (twEl?.offsetWidth ?? 630) * targetScale) /
+              (twEl?.offsetWidth ?? 630) * curTargetScale) /
               2 -
               6,
           ),
@@ -1230,23 +1267,60 @@ export default function TypewriterStage({
         const anchorRight = ax + anchor.offsetWidth;
         const anchorBottom = ay + anchor.offsetHeight;
 
+        const dashShellEl = anchor
+          .closest(".lg\\:grid-cols-12")
+          ?.firstElementChild as HTMLElement | null;
+        let dashBottom = 0;
+        if (dashShellEl) {
+          let dy = 0;
+          let dNode: HTMLElement | null = dashShellEl;
+          while (dNode && dNode !== sticky) {
+            dy += dNode.offsetTop;
+            dNode = dNode.offsetParent as HTMLElement | null;
+          }
+          if (dNode === sticky) {
+            dashBottom = dy + dashShellEl.offsetHeight;
+          }
+        }
+
         const stageRect = stageEl.getBoundingClientRect();
+        const stageHeight = stageEl.clientHeight;
         const twW = twEl.offsetWidth;
         const twH = twEl.offsetHeight;
+        const fixedStageEl = stageEl.closest(".lg\\:fixed") as HTMLElement | null;
+        const fixedPaddingTop = fixedStageEl
+          ? parseFloat(window.getComputedStyle(fixedStageEl).paddingTop) || 0
+          : 0;
+        const stageTopAtViewport =
+          fixedPaddingTop + (window.innerHeight - fixedPaddingTop - stageHeight) * 0.5;
         const untransformedCenterX = stageRect.left + stageRect.width / 2;
         const untransformedCenterY =
-          stageRect.top + twEl.offsetTop + twH * 0.5;
-        const scaledW = twW * targetScale;
-        const scaledH = twH * targetScale;
+          stageTopAtViewport + twEl.offsetTop + twH * 0.5;
+        const scaledW = twW * curTargetScale;
+        const scaledH = twH * curTargetScale;
 
         const targetCenterX = anchorRight - scaledW / 2;
 
-        const gap = 28;
-        const bottomMargin = 28;
-        let targetTop = anchorBottom + gap;
-        const maxTop = window.innerHeight - bottomMargin - scaledH;
-        if (targetTop > maxTop) targetTop = Math.max(anchorBottom + 8, maxTop);
-        const targetCenterY = targetTop + scaledH / 2;
+        // Note: top 34% of twEl is the emerging $1 bill slot (mostly empty at 30% feed),
+        // while the visible platen + keyboard chassis occupies the bottom 66% of twEl.
+        // On ~768px-height viewports (e.g. 1024x768 and 1366x768), align the bottom of the
+        // scaled typewriter with the bottom of the left Dashboard card so it never droops
+        // below the dashboard card or clips at the bottom of the viewport.
+        let targetCenterY: number;
+        if (is768Height() && dashBottom > anchorBottom) {
+          const targetBottom = dashBottom;
+          const maxTop = targetBottom - scaledH;
+          const minTop = anchorBottom - scaledH * 0.22;
+          const targetTop = Math.max(minTop, maxTop);
+          targetCenterY = targetTop + scaledH / 2;
+        } else {
+          const gap = is1024x600() ? 8 : 28;
+          const bottomMargin = is1024x600() ? 32 : 28;
+          let targetTop = anchorBottom + gap;
+          const maxTop = window.innerHeight - bottomMargin - scaledH;
+          if (targetTop > maxTop) targetTop = Math.max(anchorBottom + 4, maxTop);
+          targetCenterY = targetTop + scaledH / 2;
+        }
 
         return {
           x: Math.round(targetCenterX - untransformedCenterX),
@@ -1298,8 +1372,17 @@ export default function TypewriterStage({
           {
             x: 0,
             y: () =>
-              Math.round((stageRef.current?.clientHeight ?? 610) * 0.41),
-            scale: 0.84,
+              Math.round(
+                (stageRef.current?.clientHeight ?? 610) *
+                  (window.innerHeight <= 680
+                    ? 0.37
+                    : window.innerHeight <= 820
+                      ? window.innerWidth >= 1280
+                        ? 0.36
+                        : 0.43
+                      : 0.41),
+              ),
+            scale: () => getCardDashScale(),
             duration: 1,
             ease: "power2.inOut",
           },
@@ -1318,8 +1401,17 @@ export default function TypewriterStage({
           {
             x: 0,
             y: () =>
-              Math.round((stageRef.current?.clientHeight ?? 610) * 0.62),
-            scale: 0.84,
+              Math.round(
+                (stageRef.current?.clientHeight ?? 610) *
+                  (window.innerHeight <= 680
+                    ? 0.57
+                    : window.innerHeight <= 820
+                      ? window.innerWidth >= 1280
+                        ? 0.55
+                        : 0.62
+                      : 0.62),
+              ),
+            scale: () => getCardDashScale(),
             duration: 1,
             ease: "power2.inOut",
           },
@@ -1338,8 +1430,17 @@ export default function TypewriterStage({
           {
             x: 0,
             y: () =>
-              Math.round((stageRef.current?.clientHeight ?? 610) * 0.83),
-            scale: 0.84,
+              Math.round(
+                (stageRef.current?.clientHeight ?? 610) *
+                  (window.innerHeight <= 680
+                    ? 0.77
+                    : window.innerHeight <= 820
+                      ? window.innerWidth >= 1280
+                        ? 0.74
+                        : 0.81
+                      : 0.83),
+              ),
+            scale: () => getCardDashScale(),
             duration: 1,
             ease: "power2.inOut",
           },
@@ -1353,12 +1454,12 @@ export default function TypewriterStage({
           {
             x: 0,
             y: 0,
-            scale: 1,
+            scale: () => getHeroScale(),
           },
           {
             x: () => cachedDashboardOffset.x,
             y: () => cachedDashboardOffset.y,
-            scale: targetScale,
+            scale: () => getTargetScale(),
             duration: 1,
             ease: "power2.inOut",
           },
@@ -2091,7 +2192,7 @@ export default function TypewriterStage({
       {/* Minimalist Full-Bleed Typewriter & Nodes Stage */}
       <div
         ref={stageRef}
-        className="relative h-[500px] w-full sm:h-[560px] lg:h-[580px] xl:h-[610px] 2xl:h-[640px]"
+        className="relative h-[500px] w-full sm:h-[560px] lg:h-[580px] xl:h-[610px] 2xl:h-[640px] [@media(max-height:740px)]:lg:h-[470px]"
       >
         {/* Subtle ambient backlight */}
         <div
@@ -2248,7 +2349,7 @@ export default function TypewriterStage({
               onMouseMove={(e) => handleOrbMouseMove(e, 20, orb20BtnRef)}
               onMouseLeave={() => handleOrbMouseLeave(orb20BtnRef)}
               aria-label="Inject $20/m into AI & Tool Subscriptions"
-              className={`pointer-events-auto group relative flex h-[108px] w-[108px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-colors duration-200 will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[114px] sm:w-[148px] sm:p-3 lg:h-[116px] lg:w-[144px] xl:w-[174px] 2xl:w-[204px] ${
+              className={`pointer-events-auto group relative flex h-[108px] w-[108px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-colors duration-200 will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[114px] sm:w-[148px] sm:p-3 lg:h-[112px] lg:w-[132px] xl:h-[116px] xl:w-[174px] 2xl:w-[204px] [@media(max-height:740px)]:lg:h-[92px] [@media(max-height:740px)]:lg:p-2 ${
                 powerState === "surge20"
                   ? isLight
                     ? "bg-[#e89b3c] text-[#08080a] shadow-[0_0_28px_rgba(232,155,60,0.5)]"
@@ -2341,7 +2442,7 @@ export default function TypewriterStage({
               onMouseMove={(e) => handleOrbMouseMove(e, 5000, orb50BtnRef)}
               onMouseLeave={() => handleOrbMouseLeave(orb50BtnRef)}
               aria-label="Inject $5000/m into Growth & Ads"
-              className={`pointer-events-auto group relative flex h-[108px] w-[108px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-colors duration-200 will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[114px] sm:w-[148px] sm:p-3 lg:h-[116px] lg:w-[144px] xl:w-[174px] 2xl:w-[204px] ${
+              className={`pointer-events-auto group relative flex h-[108px] w-[108px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-colors duration-200 will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[114px] sm:w-[148px] sm:p-3 lg:h-[112px] lg:w-[132px] xl:h-[116px] xl:w-[174px] 2xl:w-[204px] [@media(max-height:740px)]:lg:h-[92px] [@media(max-height:740px)]:lg:p-2 ${
                 powerState === "surge50"
                   ? isLight
                     ? "bg-[#e89b3c] text-[#08080a] shadow-[0_0_32px_rgba(232,155,60,0.5)]"
@@ -2434,7 +2535,7 @@ export default function TypewriterStage({
               onMouseMove={(e) => handleOrbMouseMove(e, 10000, orb100BtnRef)}
               onMouseLeave={() => handleOrbMouseLeave(orb100BtnRef)}
               aria-label="Inject $10,000/m into Features & Dev"
-              className={`pointer-events-auto group relative flex h-[108px] w-[108px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-colors duration-200 will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[114px] sm:w-[148px] sm:p-3 lg:h-[116px] lg:w-[144px] xl:w-[174px] 2xl:w-[204px] ${
+              className={`pointer-events-auto group relative flex h-[108px] w-[108px] cursor-pointer flex-col justify-between rounded-xl p-2.5 text-left transition-colors duration-200 will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:h-[114px] sm:w-[148px] sm:p-3 lg:h-[112px] lg:w-[132px] xl:h-[116px] xl:w-[174px] 2xl:w-[204px] [@media(max-height:740px)]:lg:h-[92px] [@media(max-height:740px)]:lg:p-2 ${
                 powerState === "surge100"
                   ? "bg-[#e89b3c] text-[#08080a] shadow-[0_0_45px_rgba(232,155,60,0.75)]"
                   : isLight
@@ -2520,7 +2621,7 @@ export default function TypewriterStage({
         <div
           ref={typewriterGroupRef}
           data-typewriter-hero="true"
-          className="pointer-events-auto absolute bottom-6 left-1/2 z-20 flex w-[340px] -translate-x-1/2 flex-col items-center will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] sm:bottom-8 sm:w-[460px] lg:bottom-[136px] lg:w-[510px] xl:bottom-[148px] xl:w-[550px] 2xl:bottom-[160px] 2xl:w-[610px] [@media(max-height:820px)]:origin-bottom [@media(max-height:820px)]:scale-[0.88]"
+          className="pointer-events-auto absolute inset-x-0 bottom-6 z-20 mx-auto flex w-[340px] flex-col items-center will-change-transform [backface-visibility:hidden] [transform:translateZ(0)] sm:bottom-8 sm:w-[460px] lg:bottom-[136px] lg:w-[510px] xl:bottom-[148px] xl:w-[550px] 2xl:bottom-[160px] 2xl:w-[610px] [@media(min-width:1024px)_and_(max-width:1279px)_and_(min-height:701px)_and_(max-height:820px)]:lg:bottom-[96px] [@media(min-width:1024px)_and_(max-width:1279px)_and_(max-height:700px)]:lg:bottom-[46px]"
         >
           <div
             ref={typewriterTiltRef}
@@ -2958,20 +3059,20 @@ export default function TypewriterStage({
       {/* MINIMALIST EDITORIAL SPENT & EARNED COUNTER BELOW TYPEWRITER */}
       <div
         ref={heroCountersRef}
-        className={`relative z-50 mt-2 flex flex-col items-center justify-center lg:-mt-[96px] xl:-mt-[106px] 2xl:-mt-[116px] ${
+        className={`relative z-50 mt-2 flex flex-col items-center justify-center lg:-mt-[96px] xl:-mt-[106px] 2xl:-mt-[116px] [@media(max-height:740px)]:lg:-mt-[64px] ${
           inDashboardMode ? "pointer-events-none" : ""
         }`}
       >
-        <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-16 lg:gap-24">
+        <div className="flex flex-nowrap items-center justify-center gap-6 sm:gap-12 lg:gap-7 xl:gap-16 2xl:gap-24">
           {/* SPENT */}
-          <div className="relative flex items-baseline gap-2 sm:gap-3.5">
-            <span className="font-mono-label text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--text-muted)] sm:text-sm sm:tracking-[0.22em]">
+          <div className="relative flex items-baseline gap-2 sm:gap-3">
+            <span className="font-mono-label text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--text-muted)] sm:text-xs xl:text-sm sm:tracking-[0.22em]">
               Spent
             </span>
             <span
               ref={spentValueRef}
               data-testid="spent-counter"
-              className={`inline-block font-mono-label text-xl font-semibold tabular-nums tracking-tight transition-colors sm:text-4xl lg:text-[2.6rem] ${
+              className={`inline-block font-mono-label text-xl font-semibold tabular-nums tracking-tight transition-colors sm:text-3xl lg:text-[1.75rem] xl:text-[2.35rem] 2xl:text-[2.6rem] [@media(max-height:740px)]:lg:text-[1.55rem] ${
                 displaySpent > 0
                   ? "text-[#e89b3c]"
                   : "text-[var(--text-primary)]"
@@ -2986,14 +3087,14 @@ export default function TypewriterStage({
           </div>
 
           {/* EARNED */}
-          <div className="relative flex items-baseline gap-2 sm:gap-3.5">
-            <span className="font-mono-label text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--text-muted)] sm:text-sm sm:tracking-[0.22em]">
+          <div className="relative flex items-baseline gap-2 sm:gap-3">
+            <span className="font-mono-label text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--text-muted)] sm:text-xs xl:text-sm sm:tracking-[0.22em]">
               Earned
             </span>
             <span
               ref={earnedValueRef}
               data-testid="earned-counter"
-              className={`inline-block font-mono-label text-xl font-semibold tabular-nums tracking-tight transition-colors sm:text-4xl lg:text-[2.6rem] ${
+              className={`inline-block font-mono-label text-xl font-semibold tabular-nums tracking-tight transition-colors sm:text-3xl lg:text-[1.75rem] xl:text-[2.35rem] 2xl:text-[2.6rem] [@media(max-height:740px)]:lg:text-[1.55rem] ${
                 displayEarned > 0
                   ? "text-[var(--text-primary)]"
                   : "text-[var(--text-muted)]"
