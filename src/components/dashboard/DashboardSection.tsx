@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DollarBillGraphic } from "@/components/hero/TypewriterStage";
+import StewardLogo from "@/components/StewardLogo";
 import { number } from "zod";
 
 if (typeof window !== "undefined") {
@@ -1431,20 +1432,15 @@ export default function DashboardSection({
             <span className="absolute h-7 w-px bg-[var(--text-primary)]/85 sm:h-10 lg:h-11" />
           </div>
 
-          {/* Right-of-Center "Hello Steward / Product and Growth Partners" Lockup (Centered below "+" on mobile < sm, side-by-side on sm+) */}
+          {/* Right-of-Center "Steward / Product and Growth Partner for Founders" Lockup (Centered below "+" on mobile < sm, side-by-side on sm+) */}
           <div
             ref={stewardLockupRef}
             className="pointer-events-none absolute left-1/2 top-[77%] flex -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center opacity-0 will-change-transform sm:top-[55%] sm:ml-[56px] sm:translate-x-0 sm:items-start sm:text-left lg:ml-[64px] xl:ml-[74px]"
           >
             <div className="inline-flex flex-col items-center leading-none sm:items-start">
-              <span className="font-mono-label text-[10px] font-medium uppercase tracking-[0.32em] text-[#e89b3c] sm:text-[11px]">
-                Hello
-              </span>
-              <span className="mt-0.5 text-3xl font-medium leading-none tracking-[-0.025em] text-[var(--text-primary)] sm:text-4xl lg:text-[2.75rem]">
-                Steward
-              </span>
+              <StewardLogo className="h-9 w-auto sm:h-11 lg:h-13" />
             </div>
-            <span className="mt-2 whitespace-nowrap text-xs font-normal tracking-[-0.01em] text-[var(--text-secondary)] sm:text-sm lg:text-[15px]">
+            <span className="mt-2.5 whitespace-nowrap text-xs font-normal tracking-[-0.01em] text-[var(--text-secondary)] sm:text-sm lg:text-[15px]">
               Product and Growth Partner for Founders
             </span>
           </div>

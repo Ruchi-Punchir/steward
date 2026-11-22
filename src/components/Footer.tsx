@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useTheme } from "@/context/ThemeContext";
+import StewardLogo from "@/components/StewardLogo";
 
 interface FooterProps {
   onAuditClick?: (sourceButton?: string) => void;
@@ -39,16 +40,10 @@ export default function Footer({ onAuditClick }: FooterProps) {
             <div>
               <Link
                 href="/"
+                aria-label="Steward Home"
                 className="group inline-flex items-center text-[var(--text-primary)] transition-opacity hover:opacity-80"
               >
-                <span className="flex flex-col items-start leading-none">
-                  <span className="font-mono-label text-[8.5px] font-medium uppercase tracking-[0.32em] text-[#e89b3c]">
-                    Hello
-                  </span>
-                  <span className="mt-0.5 text-sm font-semibold tracking-[0.26em] text-[var(--text-primary)]">
-                    STEWARD
-                  </span>
-                </span>
+                <StewardLogo className="h-6 w-auto sm:h-7 lg:h-8" />
               </Link>
 
               <p className="mt-5 max-w-md text-lg font-medium leading-[1.45] tracking-[-0.02em] text-[var(--text-primary)] sm:text-xl">

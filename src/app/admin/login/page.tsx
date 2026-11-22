@@ -33,15 +33,13 @@ export default async function AdminLoginPage() {
       <div className="w-full max-w-sm rounded-2xl border border-white/[0.09] bg-[#101014] p-6 shadow-2xl sm:p-8">
         <div className="flex items-center justify-between">
           <div className="inline-flex items-center gap-2.5">
-            <span className="h-2 w-2 rounded-full bg-[#e89b3c]" />
-            <span className="flex flex-col leading-none">
-              <span className="font-mono-label text-[8.5px] font-medium uppercase tracking-[0.32em] text-[#e89b3c]">
-                Hello
-              </span>
-              <span className="mt-0.5 font-mono-label text-xs font-semibold tracking-[0.24em] text-[#f4f0ea]">
-                STEWARD
-              </span>
-            </span>
+            <img
+              src="/logo-dark.png"
+              alt="Steward"
+              width={991}
+              height={226}
+              className="h-6 w-auto select-none object-contain"
+            />
           </div>
           <span className="rounded border border-white/10 bg-white/[0.03] px-2 py-0.5 font-mono-label text-[9.5px] uppercase tracking-[0.18em] text-[#a09c94]">
             Admin

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Script from "next/script";
 import {
   LEAD_COPY,
@@ -65,6 +66,7 @@ export function LeadFormContent({
   onClose,
   isStandalonePage = false,
 }: LeadFormContentProps) {
+  const router = useRouter();
   const copy = intent === "audit" ? LEAD_COPY.audit : LEAD_COPY.conversation;
   const nameInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -163,7 +165,7 @@ export function LeadFormContent({
       }
 
       setIsSubmitting(false);
-      setIsSuccess(true);
+      router.push(intent === "audit" ? "/audit/thank-you" : "/talk/thank-you");
     } catch {
       setGeneralError(LEAD_COPY.common.genericError);
       setIsSubmitting(false);

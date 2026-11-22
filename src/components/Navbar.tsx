@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTheme } from "@/context/ThemeContext";
+import StewardLogo from "@/components/StewardLogo";
 
 interface NavbarProps {
   onAuditClick?: (sourceButton?: string) => void;
@@ -46,19 +47,13 @@ export default function Navbar({ showInsights }: NavbarProps) {
         aria-label="Primary Navigation"
         className="relative flex w-full items-center justify-between px-4 py-3.5 sm:px-8 sm:py-4 lg:px-16 xl:px-24"
       >
-        {/* Minimalist Wordmark: small HELLO on top (left-aligned), big STEWARD below, no dot */}
+        {/* Steward Brand Logo */}
         <Link
           href="/"
-          className="group flex shrink-0 items-center text-[var(--text-primary)] transition-opacity hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
+          aria-label="Steward Home"
+          className="group flex shrink-0 items-center text-[var(--text-primary)] transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
         >
-          <span className="flex flex-col items-start leading-none">
-            <span className="font-mono-label text-[7.5px] font-medium uppercase tracking-[0.3em] text-[#e89b3c] sm:text-[8.5px] sm:tracking-[0.32em]">
-              Hello
-            </span>
-            <span className="mt-0.5 text-xs font-semibold tracking-[0.22em] text-[var(--text-primary)] sm:text-sm sm:tracking-[0.26em]">
-              STEWARD
-            </span>
-          </span>
+          <StewardLogo className="h-5 w-auto sm:h-6 lg:h-7" />
         </Link>
 
         {/* Navigation Links (Centered horizontally on Desktop lg+, normal flow on Tablet md so it never collides with controls) */}

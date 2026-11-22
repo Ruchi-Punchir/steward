@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Script from "next/script";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -15,6 +16,10 @@ import {
   captureFirstLandingAttribution,
   type FirstLandingAttribution,
 } from "@/components/leads/LeadCaptureModal";
+import {
+  AUDIT_SUBMISSION_STORAGE_KEY,
+  TALK_SUBMISSION_STORAGE_KEY,
+} from "@/components/leads/ThankYouPages";
 
 const AUDIT_UNITS = [
   {
@@ -89,6 +94,7 @@ export function DedicatedAuditPage({
 }: {
   sourceButton?: string;
 }) {
+  const router = useRouter();
   const { theme } = useTheme();
   const isLight = theme === "light";
 
@@ -199,9 +205,34 @@ export function DedicatedAuditPage({
         return;
       }
 
-      setIsSubmitting(false);
-      setIsSuccess(true);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (typeof window !== "undefined") {
+        try {
+          window.sessionStorage.setItem(
+            AUDIT_SUBMISSION_STORAGE_KEY,
+            JSON.stringify({
+              name: name.trim(),
+              email: email.trim(),
+              productLink: productLink.trim(),
+              stage,
+              selectedUnits,
+              submittedAt: new Date().toISOString(),
+            }),
+          );
+        } catch {
+          // Ignore sessionStorage errors
+        }
+
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: "steward_lead_submitted",
+          lead_type: "audit",
+          user_data: {
+            email: email.trim().toLowerCase(),
+          },
+        });
+      }
+
+      router.push("/audit/thank-you");
     } catch {
       setGeneralError(LEAD_COPY.common.genericError);
       setIsSubmitting(false);
@@ -773,6 +804,7 @@ export function DedicatedTalkPage({
 }: {
   sourceButton?: string;
 }) {
+  const router = useRouter();
   const { theme } = useTheme();
   const isLight = theme === "light";
 
@@ -877,9 +909,32 @@ export function DedicatedTalkPage({
         return;
       }
 
-      setIsSubmitting(false);
-      setIsSuccess(true);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (typeof window !== "undefined") {
+        try {
+          window.sessionStorage.setItem(
+            TALK_SUBMISSION_STORAGE_KEY,
+            JSON.stringify({
+              name: name.trim(),
+              email: email.trim(),
+              selectedTopic,
+              submittedAt: new Date().toISOString(),
+            }),
+          );
+        } catch {
+          // Ignore sessionStorage errors
+        }
+
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: "steward_lead_submitted",
+          lead_type: "talk",
+          user_data: {
+            email: email.trim().toLowerCase(),
+          },
+        });
+      }
+
+      router.push("/talk/thank-you");
     } catch {
       setGeneralError(LEAD_COPY.common.genericError);
       setIsSubmitting(false);

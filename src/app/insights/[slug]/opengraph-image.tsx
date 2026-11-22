@@ -50,47 +50,34 @@ export default async function OpenGraphImage({ params }: OgProps) {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "14px",
+              gap: "16px",
               color: "#f4f0ea",
             }}
           >
-            <div
+            <svg
+              width="36"
+              height="32"
+              viewBox="0 0 262 226"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill="#ffffff"
+                fillRule="evenodd"
+                d="M131 0 L261 226 L1 226 Z M131 37 L33 207 L229 207 Z"
+              />
+              <circle cx="131" cy="149.5" r="41" fill="#e89b3c" />
+            </svg>
+            <span
               style={{
-                width: "12px",
-                height: "12px",
-                borderRadius: "999px",
-                backgroundColor: "#e89b3c",
-              }}
-            />
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                lineHeight: 1.05,
+                fontSize: "28px",
+                fontWeight: 500,
+                letterSpacing: "-0.02em",
+                color: "#f4f0ea",
               }}
             >
-              <span
-                style={{
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  letterSpacing: "0.32em",
-                  color: "#e89b3c",
-                  textTransform: "uppercase",
-                }}
-              >
-                HELLO
-              </span>
-              <span
-                style={{
-                  fontSize: "20px",
-                  fontWeight: 700,
-                  letterSpacing: "0.24em",
-                  color: "#f4f0ea",
-                }}
-              >
-                STEWARD
-              </span>
-            </div>
+              Steward
+            </span>
           </div>
 
           <div

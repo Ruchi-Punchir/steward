@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { signOutAdminAction } from "@/app/admin/actions";
 import type { AuthenticatedAdmin } from "@/lib/admin/auth";
 import { useTheme } from "@/context/ThemeContext";
+import StewardLogo from "@/components/StewardLogo";
 
 interface AdminShellProps {
   admin: AuthenticatedAdmin;
@@ -32,17 +33,9 @@ export default function AdminShell({ admin, children }: AdminShellProps) {
           <div className="flex items-center gap-6">
             <Link
               href="/admin/leads"
-              className="inline-flex items-center gap-2 text-[#f4f0ea]"
+              className="inline-flex items-center gap-2.5 text-[#f4f0ea]"
             >
-              <span className="h-2 w-2 rounded-full bg-[#e89b3c]" />
-              <span className="flex flex-col leading-none">
-                <span className="font-mono-label text-[8px] font-medium uppercase tracking-[0.32em] text-[#e89b3c]">
-                  Hello
-                </span>
-                <span className="mt-0.5 font-mono-label text-xs font-semibold tracking-[0.22em] text-[#f4f0ea]">
-                  STEWARD
-                </span>
-              </span>
+              <StewardLogo className="h-5 w-auto sm:h-6" />
               <span className="font-mono-label text-xs text-[#66635c]">/</span>
               <span className="font-mono-label text-xs tracking-[0.22em] text-[#a09c94]">
                 ADMIN

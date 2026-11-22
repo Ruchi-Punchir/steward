@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 262 262">
+  <style>
+    .tri { fill: #08080a; }
+    @media (prefers-color-scheme: dark) {
+      .tri { fill: #ffffff; }
+    }
+  </style>
+  <path class="tri" fill-rule="evenodd" d="M131 18 L261 244 L1 244 Z M131 55 L33 225 L229 225 Z" />
+  <circle cx="131" cy="167.5" r="41" fill="#e89b3c" />
+</svg>

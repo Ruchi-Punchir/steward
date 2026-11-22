@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useTheme } from "@/context/ThemeContext";
+import StewardLogo from "@/components/StewardLogo";
 import {
   AD_LANDING_PAGES,
   type AdLandingPageConfig,
@@ -169,16 +170,9 @@ export default function AdLandingPage({ slug }: AdLandingPageProps) {
         style={{ backgroundColor: "var(--bg-nav)" }}
       >
         <div className="mx-auto flex w-full max-w-[1380px] items-center justify-between gap-3 px-4 py-3.5 sm:px-8 lg:px-14">
-          {/* Non-distracting Wordmark */}
+          {/* Non-distracting Brand Logo */}
           <div className="flex shrink-0 items-center select-none">
-            <span className="flex flex-col items-start leading-none">
-              <span className="font-mono-label text-[7.5px] font-medium uppercase tracking-[0.3em] text-[#e89b3c] sm:text-[8.5px] sm:tracking-[0.32em]">
-                Hello
-              </span>
-              <span className="mt-0.5 text-xs font-semibold tracking-[0.22em] text-[var(--text-primary)] sm:text-sm sm:tracking-[0.26em]">
-                STEWARD
-              </span>
-            </span>
+            <StewardLogo className="h-5 w-auto sm:h-6 lg:h-7" />
           </div>
 
           {/* Right Controls: Theme Toggle + Single Primary CTA */}

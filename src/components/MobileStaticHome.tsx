@@ -6,6 +6,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { DollarBillGraphic } from "@/components/hero/TypewriterStage";
 import { CrispDollarBillGraphic } from "@/components/process/TestSolutionStage";
 import { PRODUCT_UNITS } from "@/components/process/ExplodedTypewriter3D";
+import StewardLogo from "@/components/StewardLogo";
 
 type SpendTier = 20 | 5000 | 10000;
 
@@ -1026,15 +1027,10 @@ export default function MobileStaticHome() {
                 <span className="absolute h-6 w-px bg-[var(--text-primary)]/85" />
               </div>
 
-              {/* Hello Steward Lockup */}
+              {/* Steward Lockup */}
               <div className="flex flex-col items-center text-center sm:items-start sm:text-left">
-                <span className="font-mono-label text-[10px] font-medium uppercase tracking-[0.32em] text-[#e89b3c]">
-                  Hello
-                </span>
-                <span className="mt-0.5 text-3xl font-medium leading-none tracking-[-0.025em] text-[var(--text-primary)]">
-                  Steward
-                </span>
-                <span className="mt-2 text-xs font-normal tracking-[-0.01em] text-[var(--text-secondary)]">
+                <StewardLogo className="h-8 w-auto sm:h-10" />
+                <span className="mt-2.5 text-xs font-normal tracking-[-0.01em] text-[var(--text-secondary)]">
                   Product and Growth Partner for Founders
                 </span>
               </div>

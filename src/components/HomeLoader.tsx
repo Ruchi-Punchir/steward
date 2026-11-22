@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useTheme } from "@/context/ThemeContext";
 import { DollarBillGraphic } from "@/components/hero/TypewriterStage";
+import StewardLogo from "@/components/StewardLogo";
 
 interface HomeLoaderProps {
   onComplete?: () => void;
@@ -322,19 +323,12 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
         <div className=" absolute left-1/2 top-1/2 h-[420px] w-[580px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(232,155,60,0.12)_0%,rgba(8,8,10,0)_70%)] blur-3xl" />
       </div>
 
-      {/* TOP: Stacked Hello / STEWARD Brand Lockup */}
+      {/* TOP: Steward Brand Lockup */}
       <div
         ref={topBarRef}
         className="relative z-10 flex w-full max-w-[1560px] items-center justify-between"
       >
-        <div className="inline-flex flex-col items-start leading-none">
-          <span className="font-mono-label text-[9px] font-medium uppercase tracking-[0.32em] text-[#e89b3c]">
-            Hello
-          </span>
-          <span className="mt-0.5 text-sm font-semibold tracking-[0.26em] text-[var(--text-primary)]">
-            STEWARD
-          </span>
-        </div>
+        <StewardLogo className="h-6 w-auto sm:h-7" />
 
         <span className="font-mono-label text-[10px] uppercase tracking-[0.2em] text-[var(--text-muted)]">
           Product &amp; Growth Partners
