@@ -71,6 +71,11 @@ export function trackStewardAttribution(currentPathname?: string): StewardAttrib
   if (typeof window === "undefined") return empty;
 
   try {
+    const consentStatus = window.localStorage.getItem("steward_cookie_consent");
+    if (consentStatus !== "granted") {
+      return empty;
+    }
+
     const visitorId = getOrCreateVisitorId();
     const pathname = currentPathname || window.location.pathname || "/";
     const params = new URLSearchParams(window.location.search);
@@ -137,7 +142,7 @@ export function trackStewardAttribution(currentPathname?: string): StewardAttrib
       window.sessionStorage.setItem(JOURNEY_STORAGE_KEY, JSON.stringify(journey));
     }
 
-    // 3. Microsoft Clarity integration if present
+    // 3. Microsoft Clarity integration if present (consent is already verified as 'granted' above)
     if (typeof window.clarity === "function") {
       try {
         window.clarity("identify", visitorId);

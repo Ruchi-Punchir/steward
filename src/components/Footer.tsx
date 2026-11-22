@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useTheme } from "@/context/ThemeContext";
 import StewardLogo from "@/components/StewardLogo";
+import { openStewardCookiePreferences } from "@/components/CookieConsentBanner";
 
 interface FooterProps {
   onAuditClick?: (sourceButton?: string) => void;
@@ -162,12 +163,27 @@ export default function Footer({ onAuditClick }: FooterProps) {
           </span>
         </div>
 
-        {/* BOTTOM BAR: Copyright & Back to Top */}
+        {/* BOTTOM BAR: Copyright, Legal Links & Back to Top */}
         <div className="mt-8 flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <div className="flex flex-wrap items-center gap-3 font-mono-label text-[11px] tracking-[0.12em] text-[var(--text-muted)]">
+          <div className="flex flex-wrap items-center justify-center gap-3 font-mono-label text-[11px] tracking-[0.12em] text-[var(--text-muted)] sm:justify-start">
             <span>© 2026 HELLO STEWARD</span>
             <span aria-hidden="true">•</span>
             <span>ALL RIGHTS RESERVED</span>
+            <span aria-hidden="true">•</span>
+            <Link
+              href="/privacy"
+              className="transition-colors hover:text-[#e89b3c]"
+            >
+              PRIVACY POLICY
+            </Link>
+            <span aria-hidden="true">•</span>
+            <button
+              type="button"
+              onClick={openStewardCookiePreferences}
+              className="cursor-pointer font-mono-label text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)] transition-colors hover:text-[#e89b3c]"
+            >
+              COOKIE PREFERENCES
+            </button>
           </div>
 
           <button

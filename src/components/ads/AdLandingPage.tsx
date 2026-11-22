@@ -13,6 +13,10 @@ import {
   getStewardAttributionSnapshot,
   type StewardAttributionPayload,
 } from "@/lib/attribution";
+import {
+  hasStewardMarketingConsent,
+  openStewardCookiePreferences,
+} from "@/components/CookieConsentBanner";
 
 interface AdLandingPageProps {
   slug: AdRouteSlug;
@@ -130,7 +134,7 @@ export default function AdLandingPage({ slug }: AdLandingPageProps) {
         return;
       }
 
-      // Only on HTTP 200 OK, push conversion event to window.dataLayer
+      // Only on HTTP 200 OK, push conversion event to window.dataLayer (include user_data only when marketing consent is granted)
       if (typeof window !== "undefined") {
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({
@@ -142,9 +146,13 @@ export default function AdLandingPage({ slug }: AdLandingPageProps) {
               ? crypto.randomUUID()
               : `lead-${Date.now()}`),
           lead_type: slug,
-          user_data: {
-            email: formFields.email.trim().toLowerCase(),
-          },
+          ...(hasStewardMarketingConsent()
+            ? {
+                user_data: {
+                  email: formFields.email.trim().toLowerCase(),
+                },
+              }
+            : {}),
         });
       }
 
@@ -977,19 +985,31 @@ export default function AdLandingPage({ slug }: AdLandingPageProps) {
 
       {/* =====================================================================
           8. MINIMAL FOOTER
-          Copyright © 2026 HELLO STEWARD + Privacy Policy link only.
+          Copyright © 2026 HELLO STEWARD + Privacy Policy & Cookie Preferences links.
       ===================================================================== */}
       <footer className="border-t border-[var(--border-hairline)] py-6">
         <div className="mx-auto flex w-full max-w-[1380px] flex-col items-center justify-between gap-3 px-4 sm:flex-row sm:px-8 lg:px-14">
           <p className="font-mono-label text-[10.5px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
             © 2026 HELLO STEWARD · ALL RIGHTS RESERVED
           </p>
-          <Link
-            href="/privacy"
-            className="font-mono-label text-[10.5px] uppercase tracking-[0.16em] text-[var(--text-secondary)] transition-colors hover:text-[#e89b3c]"
-          >
-            Privacy Policy
-          </Link>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link
+              href="/privacy"
+              className="font-mono-label text-[10.5px] uppercase tracking-[0.16em] text-[var(--text-secondary)] transition-colors hover:text-[#e89b3c]"
+            >
+              Privacy Policy
+            </Link>
+            <span aria-hidden="true" className="text-[var(--text-muted)]">
+              ·
+            </span>
+            <button
+              type="button"
+              onClick={openStewardCookiePreferences}
+              className="cursor-pointer font-mono-label text-[10.5px] uppercase tracking-[0.16em] text-[var(--text-secondary)] transition-colors hover:text-[#e89b3c]"
+            >
+              Cookie Preferences
+            </button>
+          </div>
         </div>
       </footer>
     </div>

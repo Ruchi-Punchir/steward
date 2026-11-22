@@ -20,6 +20,7 @@ import {
   AUDIT_SUBMISSION_STORAGE_KEY,
   TALK_SUBMISSION_STORAGE_KEY,
 } from "@/components/leads/ThankYouPages";
+import { hasStewardMarketingConsent } from "@/components/CookieConsentBanner";
 
 const AUDIT_UNITS = [
   {
@@ -183,6 +184,7 @@ export function DedicatedAuditPage({
           : "";
       const combinedMessage = `${focusPrefix}${message.trim()}`.slice(0, 1000);
 
+      const activeAttribution = captureFirstLandingAttribution();
       formData.set("intent", "audit");
       formData.set("name", name.trim());
       formData.set("email", email.trim());
@@ -191,10 +193,10 @@ export function DedicatedAuditPage({
       formData.set("message", combinedMessage);
       formData.set("source_button", sourceButton || "audit-page");
       formData.set("source_page", sourcePage || "/audit");
-      formData.set("utm_source", attribution.utm_source);
-      formData.set("utm_medium", attribution.utm_medium);
-      formData.set("utm_campaign", attribution.utm_campaign);
-      formData.set("referrer", attribution.referrer);
+      formData.set("utm_source", activeAttribution.utm_source || attribution.utm_source);
+      formData.set("utm_medium", activeAttribution.utm_medium || attribution.utm_medium);
+      formData.set("utm_campaign", activeAttribution.utm_campaign || attribution.utm_campaign);
+      formData.set("referrer", activeAttribution.referrer || attribution.referrer);
       formData.set("steward_bot_trap_field", honeypot);
 
       const res = await submitLeadAction(formData);
@@ -226,9 +228,13 @@ export function DedicatedAuditPage({
         window.dataLayer.push({
           event: "steward_lead_submitted",
           lead_type: "audit",
-          user_data: {
-            email: email.trim().toLowerCase(),
-          },
+          ...(hasStewardMarketingConsent()
+            ? {
+                user_data: {
+                  email: email.trim().toLowerCase(),
+                },
+              }
+            : {}),
         });
       }
 
@@ -889,16 +895,17 @@ export function DedicatedTalkPage({
       const topicPrefix = selectedTopic ? `[Topic: ${selectedTopic}]\n` : "";
       const combinedMessage = `${topicPrefix}${message.trim()}`.slice(0, 1000);
 
+      const activeAttribution = captureFirstLandingAttribution();
       formData.set("intent", "conversation");
       formData.set("name", name.trim());
       formData.set("email", email.trim());
       formData.set("message", combinedMessage);
       formData.set("source_button", sourceButton || "talk-page");
       formData.set("source_page", sourcePage || "/talk");
-      formData.set("utm_source", attribution.utm_source);
-      formData.set("utm_medium", attribution.utm_medium);
-      formData.set("utm_campaign", attribution.utm_campaign);
-      formData.set("referrer", attribution.referrer);
+      formData.set("utm_source", activeAttribution.utm_source || attribution.utm_source);
+      formData.set("utm_medium", activeAttribution.utm_medium || attribution.utm_medium);
+      formData.set("utm_campaign", activeAttribution.utm_campaign || attribution.utm_campaign);
+      formData.set("referrer", activeAttribution.referrer || attribution.referrer);
       formData.set("steward_bot_trap_field", honeypot);
 
       const res = await submitLeadAction(formData);
@@ -928,9 +935,13 @@ export function DedicatedTalkPage({
         window.dataLayer.push({
           event: "steward_lead_submitted",
           lead_type: "talk",
-          user_data: {
-            email: email.trim().toLowerCase(),
-          },
+          ...(hasStewardMarketingConsent()
+            ? {
+                user_data: {
+                  email: email.trim().toLowerCase(),
+                },
+              }
+            : {}),
         });
       }
 

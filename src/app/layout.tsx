@@ -10,6 +10,7 @@ import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { SiteAttributionTracker } from "@/lib/attribution";
+import CookieConsentBanner from "@/components/CookieConsentBanner";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -65,14 +66,25 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <Script
-          src="https://www.googletagmanager.com/gtm.js?id=GTM-TTPBBWPC"
-          strategy="afterInteractive"
-        />
-        <Script id="google-tag-manager-init" strategy="afterInteractive">
+        <Script id="google-consent-mode-v2" strategy="beforeInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
+            window.gtag = gtag;
+
+            var savedConsent = null;
+            try {
+              savedConsent = window.localStorage.getItem('steward_cookie_consent');
+            } catch (e) {}
+
+            var defaultState = savedConsent === 'granted' ? 'granted' : 'denied';
+            gtag('consent', 'default', {
+              ad_storage: defaultState,
+              analytics_storage: defaultState,
+              ad_user_data: defaultState,
+              ad_personalization: defaultState,
+              wait_for_update: 500
+            });
             gtag('js', new Date());
           `}
         </Script>
@@ -81,6 +93,7 @@ export default function RootLayout({
         <SiteAttributionTracker />
         <ThemeProvider>
           <SmoothScroll>{children}</SmoothScroll>
+          <CookieConsentBanner />
         </ThemeProvider>
       </body>
     </html>

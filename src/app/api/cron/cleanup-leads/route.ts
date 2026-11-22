@@ -49,6 +49,24 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  // Also purge stale admin rate-limit records (> 24 hours) and old security audit logs (> 90 days)
+  const rateLimitCutoffIso = new Date(
+    Date.now() - 24 * 60 * 60 * 1000
+  ).toISOString();
+  const auditLogCutoffIso = new Date(
+    Date.now() - 90 * 24 * 60 * 60 * 1000
+  ).toISOString();
+
+  await supabase
+    .from("admin_rate_limits")
+    .delete()
+    .lt("first_attempt_at", rateLimitCutoffIso);
+
+  await supabase
+    .from("admin_audit_logs")
+    .delete()
+    .lt("created_at", auditLogCutoffIso);
+
   return NextResponse.json({
     ok: true,
     deletedCount: data?.length ?? 0,

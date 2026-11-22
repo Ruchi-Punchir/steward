@@ -108,23 +108,39 @@ export const LEAD_COPY = {
   },
 
   privacyPage: {
-    eyebrow: "Privacy Policy",
+    eyebrow: "Privacy Policy & GDPR Disclosures",
     headline: "Plain-English Privacy.",
-    lastUpdated: "October 2026",
+    lastUpdated: "November 2026",
     intro:
-      "We collect the minimum information needed to reply to your inquiry or deliver your free product audit. We never sell, rent, or trade your data.",
+      "We collect the minimum information needed to reply to your inquiry or deliver your free product audit. We never sell, rent, or trade your personal data.",
     sections: [
       {
-        title: "1. What we store",
-        body: "When you submit the Free Audit or Start the Conversation form, we store your name, email address, message, optional product link and stage, the page and button you clicked from, and standard referral/UTM tags so we know how you found Steward. We do not collect phone numbers or use tracking cookies.",
+        title: "1. Data Controller & Contact",
+        body: "Steward ('Hello Steward', https://hellosteward.agency) acts as the Data Controller for personal data collected through this website. For any privacy inquiries, Data Subject Access Requests (DSAR), or deletion requests, contact our privacy team directly at connect@hellosteward.agency.",
       },
       {
-        title: "2. How long we keep it",
-        body: "We retain inquiry records for up to 24 months so we can follow up on conversations and audits. Any lead older than 24 months that did not become an active client partnership is automatically and permanently deleted.",
+        title: "2. What we collect when you submit a form",
+        body: "When you submit the Free Audit, Talk to Us, or campaign inquiry form, we collect your name, work email address, message, optional product URL and product stage, the page and button you submitted from, and campaign attribution parameters (such as UTM tags, referrer, click identifiers like gclid, a tab-scoped session visitor ID, and the pages visited during your current session). We do not collect phone numbers, payment details, or sensitive special-category data.",
       },
       {
-        title: "3. How to request immediate deletion",
-        body: "Want us to delete your details right now? Email connect@hellosteward.agency from the address you used and we will permanently delete your record and all notes from our database within 48 hours.",
+        title: "3. Cookies, Local Storage & Google Consent Mode v2",
+        body: "By default, we use strictly necessary browser storage to remember your light/dark theme preference (steward-theme), your cookie consent choice (steward_cookie_consent), and tab-scoped sessionStorage (cleared automatically when you close your tab) to carry UTM attribution from your landing page to our inquiry form. We also use Google Tag Manager with Google Consent Mode v2: analytics and advertising storage (ad_storage, analytics_storage, ad_user_data, ad_personalization) default to 'denied' on arrival and are only enabled if you click 'Accept All' on our consent banner. You can change or withdraw your consent at any time using the 'Cookie Preferences' link in the footer or on this page.",
+      },
+      {
+        title: "4. Legal basis for processing (GDPR Art. 6)",
+        body: "Under the EU/UK General Data Protection Regulation (GDPR), we process your personal data on the following legal bases: (a) Pre-contractual measures (Art. 6(1)(b)) and Legitimate Interests (Art. 6(1)(f)) to review your product, deliver your requested audit, and respond to your direct inquiry; (b) Legitimate Interests (Art. 6(1)(f)) to protect our forms against automated spam and abuse using short-lived in-memory IP rate limiting and Cloudflare Turnstile; and (c) Explicit Consent (Art. 6(1)(a)) for optional analytics and advertising cookies.",
+      },
+      {
+        title: "5. Sub-processors & international transfers",
+        body: "We share data only with trusted infrastructure providers bound by Data Processing Agreements (DPAs) and Standard Contractual Clauses (SCCs) where data is processed outside the EEA/UK: Supabase (encrypted database hosting for lead records), Resend (transactional confirmation and notification emails), Cloudflare Turnstile (privacy-preserving bot verification), Vercel (website hosting and edge delivery), and Google Ireland Ltd / Google LLC (Google Tag Manager and Google Ads conversion measurement, strictly subject to your consent choice).",
+      },
+      {
+        title: "6. How long we keep it (24-month auto-deletion)",
+        body: "We retain inquiry records for up to 24 months so we can follow up on conversations and audits. An automated scheduled job permanently deletes any inquiry older than 24 months that did not become an active client partnership. Transient IP addresses used for spam rate-limiting are held only in volatile server memory for up to 60 minutes and are never written to our database.",
+      },
+      {
+        title: "7. Your GDPR rights & immediate deletion",
+        body: "Under GDPR Articles 15–22, you have the right to access, rectify, erase ('right to be forgotten'), restrict, or export (portability) your personal data, to object to processing, and to withdraw cookie consent at any time without affecting prior lawful processing. To exercise any of these rights, email connect@hellosteward.agency from the address you used and we will permanently delete or export your record within 48 hours. You also have the right to lodge a complaint with your local Data Protection Authority (DPA).",
       },
     ],
   },

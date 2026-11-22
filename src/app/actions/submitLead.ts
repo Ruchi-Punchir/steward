@@ -130,9 +130,7 @@ export async function submitLeadAction(
     rawInput.honeypot && rawInput.honeypot.trim().length > 0
   );
   if (isSuspectedBot) {
-    console.warn("[STEWARD_SPAM_NOTICE] Honeypot field was populated", {
-      ipAddress,
-    });
+    console.warn("[STEWARD_SPAM_NOTICE] Honeypot field was populated");
   }
 
   // 2. Validate with Zod
@@ -158,9 +156,7 @@ export async function submitLeadAction(
 
   // 3. Rate limit by IP (30 per hour)
   if (!checkLeadIpRateLimit(ipAddress)) {
-    console.warn("[STEWARD_SPAM_BLOCKED] IP rate limit exceeded", {
-      ipAddress,
-    });
+    console.warn("[STEWARD_SPAM_BLOCKED] IP rate limit exceeded");
     return {
       success: false,
       error: "Too many submissions in a short time. Please try again in a few minutes.",
@@ -173,9 +169,7 @@ export async function submitLeadAction(
     ipAddress
   );
   if (!turnstileOk) {
-    console.warn("[STEWARD_SPAM_BLOCKED] Turnstile verification failed", {
-      ipAddress,
-    });
+    console.warn("[STEWARD_SPAM_BLOCKED] Turnstile verification failed");
     return {
       success: false,
       error: "Security verification failed. Please refresh and try again.",

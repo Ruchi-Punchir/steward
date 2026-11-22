@@ -25,7 +25,8 @@ export interface FirstLandingAttribution {
 }
 
 /**
- * Capture UTM parameters and document.referrer on first landing in browser storage.
+ * Capture UTM parameters and document.referrer on first landing in browser storage,
+ * strictly when analytics/marketing consent has been granted.
  */
 export function captureFirstLandingAttribution(): FirstLandingAttribution {
   if (typeof window === "undefined") {
@@ -33,6 +34,10 @@ export function captureFirstLandingAttribution(): FirstLandingAttribution {
   }
 
   try {
+    if (window.localStorage.getItem("steward_cookie_consent") !== "granted") {
+      return { utm_source: "", utm_medium: "", utm_campaign: "", referrer: "" };
+    }
+
     const existingRaw = window.sessionStorage.getItem(UTM_STORAGE_KEY);
     if (existingRaw) {
       return JSON.parse(existingRaw) as FirstLandingAttribution;
