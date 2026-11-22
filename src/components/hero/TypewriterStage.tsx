@@ -1099,19 +1099,26 @@ export default function TypewriterStage({
         window.innerWidth >= 1024 &&
         window.innerHeight > 700 &&
         window.innerHeight <= 820;
+      // iPad Pro 13 Portrait & narrow lg viewports (1024..1279px with tall height > 820px, e.g. 1032x1376)
+      const isIpadProPortrait = () =>
+        window.innerWidth >= 1024 &&
+        window.innerWidth < 1280 &&
+        window.innerHeight > 820;
       const getHeroScale = () =>
         is1024x600()
           ? 0.76
           : is1024x768()
-            ? 0.79
-            : is768Height()
-              ? 0.88
-              : 1;
+            ? 0.69
+            : isIpadProPortrait()
+              ? 0.76
+              : is768Height()
+                ? 0.88
+                : 1;
       const getTargetScale = () =>
         is1024x600()
           ? 0.48
           : is1024x768()
-            ? 0.52
+            ? 0.45
             : is768Height()
               ? 0.54
               : 0.62;
@@ -1299,7 +1306,10 @@ export default function TypewriterStage({
         const scaledW = twW * curTargetScale;
         const scaledH = twH * curTargetScale;
 
-        const targetCenterX = anchorRight - scaledW / 2;
+        // On 1024x768 (iPad Mini Landscape), shift the right edge inward by 18px so the
+        // typewriter & its carriage lever align cleanly with the "Free Audit" button and editorial copy.
+        const rightEdgeInset = is1024x768() ? 18 : 0;
+        const targetCenterX = anchorRight - rightEdgeInset - scaledW / 2;
 
         // Note: top 34% of twEl is the emerging $1 bill slot (mostly empty at 30% feed),
         // while the visible platen + keyboard chassis occupies the bottom 66% of twEl.

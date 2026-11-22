@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useTheme } from "@/context/ThemeContext";
 import ExplodedTypewriter3D, { PRODUCT_UNITS } from "./ExplodedTypewriter3D";
 import TestSolutionStage from "./TestSolutionStage";
+import PyramidLogoMorph from "./PyramidLogoMorph";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -85,6 +86,10 @@ export default function ProcessSection({
   const startSublineRef = useRef<HTMLParagraphElement | null>(null);
   const startActionsRef = useRef<HTMLDivElement | null>(null);
   const startFootnoteRef = useRef<HTMLParagraphElement | null>(null);
+
+  // Scroll progress (0..1) of the pinned ProcessSection so the 04 -> 05
+  // US Dollar Pyramid -> Steward Logo Mark emblem is driven reactively
+  const [sectionScrollProgress, setSectionScrollProgress] = useState<number>(0);
 
   const [isStartSectionActive, setIsStartSectionActive] =
     useState<boolean>(false);
@@ -205,6 +210,7 @@ export default function ProcessSection({
           invalidateOnRefresh: true,
           onUpdate: (self) => {
             const p = self.progress;
+            setSectionScrollProgress(p);
 
             // Explosion progress (0 -> 1 during Stage 1)
             const exp = Math.max(0, Math.min(1, (p - 0.02) / 0.085));
@@ -465,7 +471,8 @@ export default function ProcessSection({
       // -----------------------------------------------------------------
       // TRANSITION BETWEEN SECTION 4 ("04 / WHO WE WORK WITH") &
       // SECTION 5 ("05 / LET’S START") (0.86 -> 0.99):
-      // 04 disappears in place and 05 appears in place!
+      // 04 disappears in place, the US Dollar Pyramid with Eye morphs & shrinks
+      // into the Steward Logo Mark (triangle with circle), and 05 appears below it!
       // -----------------------------------------------------------------
       if (whoBlockRef.current) {
         stepTl.fromTo(
@@ -572,6 +579,29 @@ export default function ProcessSection({
   }, []);
 
   const currentUnit = PRODUCT_UNITS[activeUnitIndex] ?? PRODUCT_UNITS[0];
+
+  // Scroll-driven choreography for the US Dollar Pyramid with Eye (04) -> Steward Logo Mark (05)
+  // Entry: fades & glides in during 0.72 -> 0.785 alongside "04 / WHO WE WORK WITH"
+  const emblemEntryT = Math.max(
+    0,
+    Math.min(1, (sectionScrollProgress - 0.72) / 0.065),
+  );
+  const emblemEntryEase = 1 - Math.pow(1 - emblemEntryT, 3);
+
+  // Morph & Shrink: transitions during 0.855 -> 0.935 as Section 04 hands off to Section 05
+  const rawMorphT = Math.max(
+    0,
+    Math.min(1, (sectionScrollProgress - 0.855) / 0.08),
+  );
+  const smoothMorphT =
+    rawMorphT * rawMorphT * (3 - 2 * rawMorphT);
+
+  // Scale shrinks from 1.0 (148px Pyramid in 04) down to 0.44 (~65px Steward Logo Mark in 05)
+  const emblemScale =
+    (0.86 + 0.14 * emblemEntryEase) * (1 - 0.56 * smoothMorphT);
+  // Subtle entry lift (22px -> 0px) and docks cleanly right above "05 / LET'S START" (with 20px breathing room above the eyebrow)
+  const emblemTranslateY =
+    (1 - emblemEntryEase) * 22 - smoothMorphT * 28;
 
   return (
     <section
@@ -1019,11 +1049,61 @@ export default function ProcessSection({
           }`}
         />
 
+        {/* ===================================================================
+            MORPHING EMBLEM OVERLAY: US Dollar Great Seal Pyramid with Eye (04)
+            -> Capstone lowers & fuses into Steward Logo Mark (Triangle + Circle) (05)
+            while shrinking smoothly into place directly above "05 / LET’S START".
+        =================================================================== */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-[60] flex flex-col items-center justify-center px-6 text-center sm:px-10"
+        >
+          <div
+            style={{
+              opacity: emblemEntryEase,
+              transform: `translate3d(0, ${emblemTranslateY.toFixed(1)}px, 0) scale(${emblemScale.toFixed(3)})`,
+              transformOrigin: "center bottom",
+            }}
+            className="mb-5 flex h-[132px] w-[132px] shrink-0 items-center justify-center will-change-[opacity,transform] sm:mb-6 sm:h-[148px] sm:w-[148px] [@media(max-height:760px)]:mb-3.5 [@media(max-height:760px)]:h-[108px] [@media(max-height:760px)]:w-[108px]"
+          >
+            <PyramidLogoMorph
+              morphProgress={rawMorphT}
+              isLight={isLight}
+              idPrefix="desktop-process-morph"
+            />
+          </div>
+
+          {/* Invisible matching height spacer so the flex column places the emblem at the exact top of the 04/05 text block */}
+          <div className="pointer-events-none invisible flex flex-col items-center">
+            <div className="mb-5 inline-flex items-center gap-2.5 text-xs">
+              <span>04 / WHO WE WORK WITH</span>
+            </div>
+            <div className="text-4xl font-semibold leading-[1.06] sm:text-5xl xl:text-[3.75rem]">
+              We own the outcome.
+            </div>
+            <div className="mt-6 max-w-[680px] text-lg leading-[1.6] sm:text-xl lg:text-[1.35rem]">
+              You’ve built the product. We take on everything between it and
+              your next paying customer: finding what’s in the way, fixing it,
+              and tracking whether it worked.
+            </div>
+            <div className="mt-5 max-w-[560px] text-sm leading-[1.65] sm:text-base">
+              You keep the vision and the decisions. We agree on one number up
+              front, and we answer for it.
+            </div>
+          </div>
+        </div>
+
         {/* SECTION 04 OVERLAY: 04 / WHO WE WORK WITH */}
         <div
           ref={whoBlockRef}
           className="pointer-events-none absolute inset-0 z-50 flex flex-col items-center justify-center px-6 text-center will-change-[opacity,transform] sm:px-10"
         >
+          {/* Layout slot reserving exact space for the US Dollar Pyramid with Eye above 04 */}
+          <div
+            aria-hidden="true"
+            className="mb-5 h-[132px] w-[132px] shrink-0 sm:mb-6 sm:h-[148px] sm:w-[148px] [@media(max-height:760px)]:mb-3.5 [@media(max-height:760px)]:h-[108px] [@media(max-height:760px)]:w-[108px]"
+          />
+
           {/* Eyebrow: 04 / WHO WE WORK WITH */}
           <div
             ref={whoEyebrowRef}
@@ -1077,6 +1157,12 @@ export default function ProcessSection({
           style={{ pointerEvents: isStartSectionActive ? "auto" : "none" }}
           className="absolute inset-0 z-50 flex flex-col items-center justify-center px-6 text-center will-change-[opacity,transform] sm:px-10"
         >
+          {/* Layout slot reserving exact space for the morphed Steward Logo Mark (triangle + circle) above 05 */}
+          <div
+            aria-hidden="true"
+            className="mb-5 h-[88px] w-[88px] shrink-0 sm:mb-6 sm:h-[98px] sm:w-[98px] [@media(max-height:760px)]:mb-3.5 [@media(max-height:760px)]:h-[72px] [@media(max-height:760px)]:w-[72px]"
+          />
+
           {/* Eyebrow: 05 / LET’S START */}
           <div
             ref={startEyebrowRef}

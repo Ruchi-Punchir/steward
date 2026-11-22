@@ -6,6 +6,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { DollarBillGraphic } from "@/components/hero/TypewriterStage";
 import { CrispDollarBillGraphic } from "@/components/process/TestSolutionStage";
 import { PRODUCT_UNITS } from "@/components/process/ExplodedTypewriter3D";
+import PyramidLogoMorph from "@/components/process/PyramidLogoMorph";
 import StewardLogo from "@/components/StewardLogo";
 
 type SpendTier = 20 | 5000 | 10000;
@@ -1289,6 +1290,15 @@ export default function MobileStaticHome() {
         className="relative w-full border-t border-[var(--border-subtle)] px-5 py-14 text-center sm:px-10 sm:py-16"
       >
         <div className="mx-auto flex w-full max-w-xl flex-col items-center">
+          {/* US Dollar Great Seal Pyramid with Eye of Providence */}
+          <div className="mb-5 h-28 w-28 sm:h-32 sm:w-32">
+            <PyramidLogoMorph
+              morphProgress={0}
+              isLight={isLight}
+              idPrefix="mobile-who-pyramid"
+            />
+          </div>
+
           <div className="mb-4 inline-flex items-center gap-2">
             <span className="font-mono-label text-[11px] font-semibold uppercase tracking-[0.22em] text-[#e89b3c]">
               04
@@ -1333,6 +1343,15 @@ export default function MobileStaticHome() {
         className="relative w-full border-t border-[var(--border-subtle)] px-5 py-16 text-center sm:px-10 sm:py-20"
       >
         <div className="mx-auto flex w-full max-w-xl flex-col items-center">
+          {/* Steward Logo Mark (Triangle with Circle) directly above 05 / LET'S START */}
+          <div className="mb-4 h-14 w-14 sm:h-16 sm:w-16">
+            <PyramidLogoMorph
+              morphProgress={1}
+              isLight={isLight}
+              idPrefix="mobile-start-logo-mark"
+            />
+          </div>
+
           <div className="mb-4 inline-flex items-center gap-2">
             <span className="font-mono-label text-[11px] font-semibold uppercase tracking-[0.22em] text-[#e89b3c]">
               05
