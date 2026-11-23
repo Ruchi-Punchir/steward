@@ -1,15 +1,22 @@
 import type { Metadata } from "next";
 import AdLandingPage from "@/components/ads/AdLandingPage";
-import { AD_LANDING_PAGES } from "@/data/adLandingPages";
-
-const pageConfig = AD_LANDING_PAGES["speed-audit"];
 
 export const metadata: Metadata = {
-  title: pageConfig.seoTitle,
-  description: pageConfig.seoDescription,
-  robots: {
-    index: false,
-    follow: false,
+  title:
+    "React & Next.js Speed Optimization & Core Web Vitals Agency | Hello Steward",
+  description:
+    "We engineer sub-1.5s SaaS load times, 0.00 CLS, and <100ms INP to lower Google Ads CAC and lift trial conversions. Request a free 5-min speed audit.",
+  alternates: {
+    canonical: "https://www.hellosteward.agency/speed-audit",
+  },
+  openGraph: {
+    title:
+      "React & Next.js Speed Optimization & Core Web Vitals Agency | Hello Steward",
+    description:
+      "We engineer sub-1.5s SaaS load times, 0.00 CLS, and <100ms INP to lower Google Ads CAC and lift trial conversions. Request a free 5-min speed audit.",
+    url: "https://www.hellosteward.agency/speed-audit",
+    siteName: "Hello Steward",
+    type: "website",
   },
 };
 

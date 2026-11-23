@@ -3,9 +3,20 @@ import React from "react";
 import { DedicatedAuditPage } from "@/components/leads/DedicatedLeadPages";
 
 export const metadata: Metadata = {
-  title: "Free Product & Revenue Audit | Steward",
+  title: "Free B2B SaaS Funnel, UX & Conversion Audit | Hello Steward",
   description:
-    "Send us your product and where conversions feel stuck. We’ll review your product and funnel and reach out if we need anything else.",
+    "Request a free 5-unit SaaS diagnostic teardown covering monetization, acquisition funnel, positioning, core UX, and onboarding activation.",
+  alternates: {
+    canonical: "https://www.hellosteward.agency/audit",
+  },
+  openGraph: {
+    title: "Free B2B SaaS Funnel, UX & Conversion Audit | Hello Steward",
+    description:
+      "Request a free 5-unit SaaS diagnostic teardown covering monetization, acquisition funnel, positioning, core UX, and onboarding activation.",
+    url: "https://www.hellosteward.agency/audit",
+    siteName: "Hello Steward",
+    type: "website",
+  },
 };
 
 export default async function AuditPage({

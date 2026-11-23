@@ -1,15 +1,21 @@
 import type { Metadata } from "next";
 import AdLandingPage from "@/components/ads/AdLandingPage";
-import { AD_LANDING_PAGES } from "@/data/adLandingPages";
-
-const pageConfig = AD_LANDING_PAGES["conversion-engineering"];
 
 export const metadata: Metadata = {
-  title: pageConfig.seoTitle,
-  description: pageConfig.seoDescription,
-  robots: {
-    index: false,
-    follow: false,
+  title:
+    "SaaS Conversion Engineering & CRO Agency | Hello Steward",
+  description:
+    "We fix B2B SaaS signup, pricing, and onboarding leaks—with 40% of our fee at risk on your conversion lift. Get a free 5-minute Loom funnel teardown.",
+  alternates: {
+    canonical: "https://www.hellosteward.agency/conversion-engineering",
+  },
+  openGraph: {
+    title: "SaaS Conversion Engineering & CRO Agency | Hello Steward",
+    description:
+      "We fix B2B SaaS signup, pricing, and onboarding leaks—with 40% of our fee at risk on your conversion lift. Get a free 5-minute Loom funnel teardown.",
+    url: "https://www.hellosteward.agency/conversion-engineering",
+    siteName: "Hello Steward",
+    type: "website",
   },
 };
 

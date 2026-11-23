@@ -7,8 +7,18 @@ import { LEAD_COPY } from "@/config/leadCopy";
 import PrivacyCookieSettingsButton from "./PrivacyCookieSettingsButton";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Steward",
+  title: "Privacy Policy | Hello Steward",
   description: LEAD_COPY.privacyPage.intro,
+  alternates: {
+    canonical: "https://www.hellosteward.agency/privacy",
+  },
+  openGraph: {
+    title: "Privacy Policy | Hello Steward",
+    description: LEAD_COPY.privacyPage.intro,
+    url: "https://www.hellosteward.agency/privacy",
+    siteName: "Hello Steward",
+    type: "website",
+  },
 };
 
 export default function PrivacyPage() {

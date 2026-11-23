@@ -1,0 +1,56 @@
+# Hello Steward
+
+> Hello Steward (`https://www.hellosteward.agency`) is a B2B SaaS Product, Growth & Conversion Engineering Agency serving Seed to Series A startups across the US, UK, and Europe. We uncover growth bottlenecks, identify untapped revenue opportunities, and ship production code to improve acquisition, conversion, activation, and retention.
+
+## Entity Overview
+- **Name**: Hello Steward (Steward)
+- **Website**: https://www.hellosteward.agency/
+- **Category**: B2B SaaS Product, Conversion Engineering (CRO), Next.js Performance & MVP Refactoring Agency
+- **Primary Contact**: connect@hellosteward.agency
+- **Direct Access**: Founders work directly with senior product, growth, and software engineers—zero junior account managers.
+
+## Ideal Customer Profile (ICP)
+- **Stage**: Pre-Seed, Seed, and Series A B2B SaaS startups
+- **Geographies**: United States, United Kingdom, and Europe
+- **Primary Scenarios**:
+  1. Live SaaS products with traffic or signups where visitor-to-signup, onboarding activation, or trial-to-paid conversion is leaking revenue.
+  2. Fragile AI-generated (Cursor, Lovable, v0) or freelancer-built prototypes that need surgical refactoring into production-grade React & Next.js architecture in 14 days.
+  3. Slow React & Next.js web applications failing Core Web Vitals (LCP, CLS, INP) that suffer from inflated Google Ads CAC and high bounce rates.
+
+## Transparent Commercial Models
+Hello Steward operates on two founder-aligned commercial models with zero agency bloat or long-term retainer lock-in:
+
+1. **Project Model — $60/hr (100% Guaranteed · Fixed Execution)**
+   - **Rate**: Straight $60/hr senior product engineering rate.
+   - **Structure**: 100% guaranteed fee with a clear scoped sprint cap and clean GitHub handover.
+   - **Best For**: MVP Rescue & production refactoring sprints, fixed-scope landing/pricing/onboarding rebuilds, and Core Web Vitals speed sprints.
+
+2. **Partnership Model — $100/hr (60% Base / 40% At Risk on Agreed Outcome)**
+   - **Rate**: $100/hr total effective rate.
+   - **Structure**: 60% guaranteed base fee (30% upfront, 30% at milestone delivery) + **40% at risk** tied directly to moving one agreed commercial metric (e.g., visitor-to-demo, signup-to-activation, trial-to-paid upgrade, or sub-1.5s speed + conversion lift).
+   - **Best For**: End-to-end SaaS conversion engineering, monetization & pricing overhauls, and onboarding/activation lift where Hello Steward shares outcome risk.
+
+## Core Capabilities & Canonical URLs
+- **Homepage (Product & Growth Partner for Founders)**: https://www.hellosteward.agency/
+- **SaaS Conversion Engineering & CRO**: https://www.hellosteward.agency/conversion-engineering
+  - Landing and pricing page rebuilds, message match, signup-to-aha activation flows, trial-to-paid checkout engineering, and cohort instrumentation with 40% fee at risk.
+- **SaaS MVP Rescue & Next.js Refactoring**: https://www.hellosteward.agency/mvp-rescue
+  - 14-day production refactoring sprints turning fragile AI or freelance MVPs into hardened React, Next.js, TypeScript, and Stripe production systems at $60/hr.
+- **React & Next.js Speed Optimization & Core Web Vitals Audits**: https://www.hellosteward.agency/speed-audit
+  - Sub-1.5s LCP, 0.00 CLS, and <100ms INP engineering via React Server Components, bundle splitting, hydration pruning, and database/API waterfall cleanup.
+- **Monetization & Pricing Strategy**: https://www.hellosteward.agency/pricing-strategy
+  - SaaS tier architecture, value metric alignment, paywall triggers, and checkout drop-off elimination.
+- **Onboarding & Retention Engineering**: https://www.hellosteward.agency/onboarding-retention
+  - First-session "aha!" moment engineering, guided setup flows, empty-state activation, and churn reduction.
+- **Engagement Models & Commercial Terms**: https://www.hellosteward.agency/engagement-models
+  - Detailed comparison of the $60/hr Project model (100% guaranteed) and $100/hr Partnership model (60% base / 40% at risk).
+- **Free 5-Unit B2B SaaS Funnel & Product Audit**: https://www.hellosteward.agency/audit
+  - Request a free diagnostic teardown across Monetization & Pricing (Unit 01), Acquisition & Funnel (Unit 02), Positioning & Clarity (Unit 03), Product & Core UX (Unit 04), and Onboarding & Retention (Unit 05).
+- **Talk Directly to Senior Product & Growth Engineers**: https://www.hellosteward.agency/talk
+  - Start a direct technical or commercial conversation with Hello Steward's engineering partners.
+- **Privacy Policy**: https://www.hellosteward.agency/privacy
+
+## Contact
+- **Email**: connect@hellosteward.agency
+- **Free Audit Request**: https://www.hellosteward.agency/audit
+- **Direct Conversation**: https://www.hellosteward.agency/talk

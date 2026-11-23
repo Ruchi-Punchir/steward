@@ -167,8 +167,6 @@ export default function Navbar({ showInsights }: NavbarProps) {
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2.5 lg:gap-3">
             <Link
               href="/talk?source=navbar"
-              target="_blank"
-              rel="noopener noreferrer"
               className={`whitespace-nowrap rounded-full border px-2.5 py-1.5 font-mono-label text-[9px] font-medium uppercase tracking-[0.12em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:px-3.5 sm:py-1.5 sm:text-[10px] sm:tracking-[0.16em] lg:px-4 lg:py-2 lg:text-[10.5px] ${
                 isLight
                   ? "border-black/15 text-[#141413]/80 hover:border-black/35 hover:text-[#141413]"
@@ -180,8 +178,6 @@ export default function Navbar({ showInsights }: NavbarProps) {
 
             <Link
               href="/audit?source=navbar"
-              target="_blank"
-              rel="noopener noreferrer"
               className="whitespace-nowrap rounded-full bg-[#e89b3c] px-2.5 py-1.5 font-mono-label text-[9px] font-medium uppercase tracking-[0.12em] text-[#08080a] transition-colors duration-200 hover:bg-[var(--text-primary)] hover:text-[var(--bg-stage)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c] sm:px-3.5 sm:py-1.5 sm:text-[10px] sm:tracking-[0.16em] lg:px-4 lg:py-2 lg:text-[10.5px]"
             >
               Free Audit

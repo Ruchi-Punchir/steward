@@ -43,6 +43,96 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+const HOMEPAGE_JSON_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.hellosteward.agency/#organization",
+      name: "Hello Steward",
+      url: "https://www.hellosteward.agency",
+      logo: "https://www.hellosteward.agency/logo-dark.png",
+      email: "connect@hellosteward.agency",
+      areaServed: ["US", "GB", "EU"],
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://www.hellosteward.agency/#professional-service",
+      name: "Hello Steward",
+      url: "https://www.hellosteward.agency",
+      logo: "https://www.hellosteward.agency/logo-dark.png",
+      image: "https://www.hellosteward.agency/logo-dark.png",
+      email: "connect@hellosteward.agency",
+      description:
+        "Product and growth partners for Seed to Series A B2B SaaS startups in the US and Europe. Outcome-backed conversion engineering, MVP rescue, and sub-1.5s speed audits.",
+      areaServed: ["US", "GB", "EU"],
+      priceRange: "$60/hr - $100/hr (40% at risk on outcome)",
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "B2B SaaS Product, Growth & Conversion Engineering Services",
+        itemListElement: [
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "SaaS Conversion Engineering & CRO",
+              url: "https://www.hellosteward.agency/conversion-engineering",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "SaaS MVP Rescue & Next.js Refactoring",
+              url: "https://www.hellosteward.agency/mvp-rescue",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "React & Next.js Speed Optimization & Core Web Vitals Audits",
+              url: "https://www.hellosteward.agency/speed-audit",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "SaaS Pricing Strategy & Monetization Engineering",
+              url: "https://www.hellosteward.agency/pricing-strategy",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "SaaS Onboarding Optimization & Activation Engineering",
+              url: "https://www.hellosteward.agency/onboarding-retention",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Outcome-Based SaaS Product & Growth Engagement Models",
+              url: "https://www.hellosteward.agency/engagement-models",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Free 5-Unit B2B SaaS Funnel, UX & Conversion Audit",
+              url: "https://www.hellosteward.agency/audit",
+            },
+          },
+        ],
+      },
+    },
+  ],
+};
+
 export default function HomePage() {
   const [isLoaderActive, setIsLoaderActive] = useState<boolean>(true);
   const [isDesktop, setIsDesktop] = useState<boolean>(false);
@@ -138,11 +228,9 @@ export default function HomePage() {
     (intent: LeadIntent, sourceButton: string) => {
       if (typeof window !== "undefined") {
         const path = intent === "conversation" ? "/talk" : "/audit";
-        window.open(
-          `${path}?source=${encodeURIComponent(sourceButton)}`,
-          "_blank",
-          "noopener,noreferrer"
-        );
+        window.location.href = `${path}?source=${encodeURIComponent(
+          sourceButton
+        )}`;
       }
     },
     []
@@ -283,6 +371,10 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-stage)] text-[var(--text-primary)] transition-colors duration-300">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(HOMEPAGE_JSON_LD) }}
+      />
       <HomeLoader
         onDismissStart={activateBelowFoldSections}
         onComplete={handleLoaderComplete}

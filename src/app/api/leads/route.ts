@@ -39,7 +39,14 @@ function checkLeadIpRateLimit(ip: string): boolean {
 }
 
 const adLeadPayloadSchema = z.object({
-  lead_type: z.enum(["mvp-rescue", "conversion-engineering", "speed-audit"]),
+  lead_type: z.enum([
+    "mvp-rescue",
+    "conversion-engineering",
+    "speed-audit",
+    "pricing-strategy",
+    "onboarding-retention",
+    "engagement-models",
+  ]),
   email: z
     .string()
     .trim()
@@ -174,6 +181,15 @@ export async function POST(req: Request) {
         detailsLines.push(`Primary Stack: ${data.primary_stack}`);
       if (data.main_goal)
         detailsLines.push(`Main Goal: ${data.main_goal}`);
+    } else {
+      if (data.current_stage)
+        detailsLines.push(`Current Stage: ${data.current_stage}`);
+      if (data.biggest_leak)
+        detailsLines.push(`Primary Focus: ${data.biggest_leak}`);
+      if (data.main_goal)
+        detailsLines.push(`Main Goal: ${data.main_goal}`);
+      if (data.breaking_right_now)
+        detailsLines.push(`Notes: ${data.breaking_right_now}`);
     }
 
     const attributionMeta = {

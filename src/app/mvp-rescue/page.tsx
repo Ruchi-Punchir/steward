@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
 import AdLandingPage from "@/components/ads/AdLandingPage";
-import { AD_LANDING_PAGES } from "@/data/adLandingPages";
-
-const pageConfig = AD_LANDING_PAGES["mvp-rescue"];
 
 export const metadata: Metadata = {
-  title: pageConfig.seoTitle,
-  description: pageConfig.seoDescription,
-  robots: {
-    index: false,
-    follow: false,
+  title: "SaaS MVP Rescue & Next.js Refactoring Agency | Hello Steward",
+  description:
+    "Turn fragile AI or freelancer prototypes into production-grade React & Next.js SaaS in 14 days. Straight $60/hr senior product engineering, zero lock-in.",
+  alternates: {
+    canonical: "https://www.hellosteward.agency/mvp-rescue",
+  },
+  openGraph: {
+    title: "SaaS MVP Rescue & Next.js Refactoring Agency | Hello Steward",
+    description:
+      "Turn fragile AI or freelancer prototypes into production-grade React & Next.js SaaS in 14 days. Straight $60/hr senior product engineering, zero lock-in.",
+    url: "https://www.hellosteward.agency/mvp-rescue",
+    siteName: "Hello Steward",
+    type: "website",
   },
 };
 

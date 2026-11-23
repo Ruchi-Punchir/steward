@@ -1216,8 +1216,6 @@ export default function ProcessSection({
           >
             <Link
               href="/audit?source=close-section"
-              target="_blank"
-              rel="noopener noreferrer"
               data-cta-source="close-section"
               className="cursor-pointer rounded-full bg-[#e89b3c] px-8 py-3.5 font-mono-label text-xs font-medium uppercase tracking-[0.16em] text-[#08080a] transition-all duration-200 hover:bg-[var(--text-primary)] hover:text-[var(--bg-stage)] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e89b3c]"
             >

@@ -176,8 +176,6 @@ export default function FloatingDockCta() {
       <Link
         ref={auditItemRef}
         href="/audit?source=nav-dock"
-        target="_blank"
-        rel="noopener noreferrer"
         data-cta-source="nav-dock-audit"
         onMouseEnter={() => setHoveredItem("audit")}
         onFocus={() => setHoveredItem("audit")}
@@ -249,8 +247,6 @@ export default function FloatingDockCta() {
       <Link
         ref={talkItemRef}
         href="/talk?source=nav-dock"
-        target="_blank"
-        rel="noopener noreferrer"
         data-cta-source="nav-dock-talk"
         onMouseEnter={() => setHoveredItem("talk")}
         onFocus={() => setHoveredItem("talk")}

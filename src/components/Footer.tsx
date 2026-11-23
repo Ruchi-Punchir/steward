@@ -56,7 +56,7 @@ export default function Footer({ onAuditClick }: FooterProps) {
 
               <p className="mt-3 max-w-md text-sm leading-relaxed text-[var(--text-secondary)]">
                 We help startups uncover growth bottlenecks, identify untapped
-                opportunities and build practical soutions to improve
+                opportunities and build practical solutions to improve
                 acquisition, conversion and retention through research,
                 marketing expertise, product thinking and engineering.
               </p>
@@ -74,11 +74,54 @@ export default function Footer({ onAuditClick }: FooterProps) {
                 Our Services
               </span>
               <ul className="space-y-2.5 text-sm text-[var(--text-secondary)]">
-                <li>Monetization & Pricing</li>
-                <li>Acquisition & Growth</li>
-                <li>Product-Market Fit & Positioning</li>
-                <li>Product & Development</li>
-                <li>Onboarding & Retention</li>
+                <li>
+                  <Link
+                    href="/pricing-strategy"
+                    className="transition-colors hover:text-[var(--text-primary)]"
+                  >
+                    Monetization &amp; Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/conversion-engineering"
+                    className="transition-colors hover:text-[var(--text-primary)]"
+                  >
+                    Acquisition &amp; Growth
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/engagement-models"
+                    className="transition-colors hover:text-[var(--text-primary)]"
+                  >
+                    Product-Market Fit &amp; Positioning
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/mvp-rescue"
+                    className="transition-colors hover:text-[var(--text-primary)]"
+                  >
+                    Product &amp; Development
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/onboarding-retention"
+                    className="transition-colors hover:text-[var(--text-primary)]"
+                  >
+                    Onboarding &amp; Retention
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/speed-audit"
+                    className="transition-colors hover:text-[var(--text-primary)]"
+                  >
+                    React &amp; Next.js Speed Audits
+                  </Link>
+                </li>
               </ul>
             </div>
 
@@ -127,8 +170,6 @@ export default function Footer({ onAuditClick }: FooterProps) {
               <div className="mt-5 flex flex-col gap-2.5">
                 <Link
                   href="/audit?source=footer"
-                  target="_blank"
-                  rel="noopener noreferrer"
                   data-cta-source="footer"
                   className="inline-flex w-full cursor-pointer items-center justify-center rounded-full bg-[#e89b3c] px-5 py-2.5 font-mono-label text-[11px] font-semibold uppercase tracking-[0.16em] text-[#08080a] transition-all duration-200 hover:bg-[var(--text-primary)] hover:text-[var(--bg-stage)] active:scale-[0.98] [@media(min-width:1024px)_and_(max-width:1279px)]:px-3 [@media(min-width:1024px)_and_(max-width:1279px)]:text-[10px] [@media(min-width:1024px)_and_(max-width:1279px)]:tracking-[0.12em] [@media(min-width:1024px)_and_(max-width:1279px)]:whitespace-nowrap"
                 >

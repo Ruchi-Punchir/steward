@@ -27,6 +27,80 @@ export default function AdLandingPage({ slug }: AdLandingPageProps) {
   const { theme, toggleTheme } = useTheme();
   const isLight = theme === "light";
 
+  const canonicalUrl = `https://www.hellosteward.agency/${config.slug}`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Service",
+        "@id": `${canonicalUrl}#service`,
+        name: config.serviceName,
+        serviceType: config.serviceType,
+        description: config.seoDescription,
+        url: canonicalUrl,
+        provider: {
+          "@type": "ProfessionalService",
+          "@id": "https://www.hellosteward.agency/#organization",
+          name: "Hello Steward",
+          url: "https://www.hellosteward.agency",
+          logo: "https://www.hellosteward.agency/logo-dark.png",
+          email: "connect@hellosteward.agency",
+        },
+        areaServed: ["US", "GB", "EU"],
+        offers: [
+          {
+            "@type": "Offer",
+            name: "Hello Steward Project Model (100% Guaranteed Fixed Execution)",
+            price: "60",
+            priceCurrency: "USD",
+            unitText: "HOUR",
+            description:
+              "Straight $60/hr senior product engineering rate — 100% guaranteed with a scoped sprint cap, clean GitHub handover, and zero retainer lock-in.",
+          },
+          {
+            "@type": "Offer",
+            name: "Hello Steward Outcome Partnership Model (60% Base / 40% At Risk)",
+            price: "100",
+            priceCurrency: "USD",
+            unitText: "HOUR",
+            description:
+              "$100/hr total rate structured as 60% guaranteed base (30% upfront, 30% at milestone) and 40% at risk tied directly to moving the agreed conversion or revenue metric.",
+          },
+        ],
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${canonicalUrl}#faq`,
+        mainEntity: config.faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer,
+          },
+        })),
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${canonicalUrl}#breadcrumb`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Hello Steward",
+            item: "https://www.hellosteward.agency/",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: config.serviceName,
+            item: canonicalUrl,
+          },
+        ],
+      },
+    ],
+  };
+
   // Form states
   const [email, setEmail] = useState("");
   const [productLink, setProductLink] = useState("");
@@ -168,6 +242,10 @@ export default function AdLandingPage({ slug }: AdLandingPageProps) {
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden bg-[var(--bg-stage)] text-[var(--text-primary)] transition-colors duration-300">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* =====================================================================
           1. MINIMAL AD HEADER
           Steward logo + theme toggle + 1 primary CTA button (scrolls to #lead-form).
@@ -178,10 +256,14 @@ export default function AdLandingPage({ slug }: AdLandingPageProps) {
         style={{ backgroundColor: "var(--bg-nav)" }}
       >
         <div className="mx-auto flex w-full max-w-[1380px] items-center justify-between gap-3 px-4 py-3.5 sm:px-8 lg:px-14">
-          {/* Non-distracting Brand Logo */}
-          <div className="flex shrink-0 items-center select-none">
+          {/* Non-distracting Brand Logo linked to Home */}
+          <Link
+            href="/"
+            aria-label="Hello Steward Home"
+            className="flex shrink-0 items-center select-none transition-opacity hover:opacity-80"
+          >
             <StewardLogo className="h-5 w-auto sm:h-6 lg:h-7" />
-          </div>
+          </Link>
 
           {/* Right Controls: Theme Toggle + Single Primary CTA */}
           <div className="flex shrink-0 items-center gap-2.5 sm:gap-4">
@@ -556,6 +638,108 @@ export default function AdLandingPage({ slug }: AdLandingPageProps) {
         </section>
 
         {/* ===================================================================
+            5B. OPTIONAL SEMANTIC 4-WAY COMPARISON TABLE (e.g. /engagement-models)
+        =================================================================== */}
+        {config.comparisonTableSection && (
+          <section
+            id="comparison-table"
+            className="border-b border-[var(--border-hairline)] py-14 sm:py-20"
+          >
+            <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-8 lg:px-14">
+              <div className="max-w-3xl">
+                <span className="font-mono-label text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[#e89b3c]">
+                  {config.comparisonTableSection.eyebrow}
+                </span>
+                <h2 className="mt-2.5 text-2xl font-semibold leading-[1.1] tracking-[-0.03em] text-[var(--text-primary)] sm:text-4xl">
+                  {config.comparisonTableSection.headline}{" "}
+                  <span className="font-serif-editorial font-normal italic text-[#e89b3c]">
+                    {config.comparisonTableSection.headlineAccent}
+                  </span>
+                </h2>
+                <p className="mt-3 text-sm leading-[1.65] text-[var(--text-secondary)] sm:text-base">
+                  {config.comparisonTableSection.subline}
+                </p>
+              </div>
+
+              <div
+                className={`mt-8 overflow-x-auto rounded-2xl border sm:mt-10 ${
+                  isLight
+                    ? "border-black/10 bg-[#fbf9f5] shadow-[0_18px_45px_rgba(20,20,19,0.05)]"
+                    : "border-white/[0.08] bg-[#101015] shadow-[0_22px_55px_rgba(0,0,0,0.7)]"
+                }`}
+              >
+                <table className="w-full min-w-[820px] border-collapse text-left text-sm">
+                  <thead>
+                    <tr
+                      className={`border-b ${
+                        isLight
+                          ? "border-black/10 bg-[#eae5dc]/70"
+                          : "border-white/[0.08] bg-[#16161e]"
+                      }`}
+                    >
+                      <th
+                        scope="col"
+                        className="w-[18%] px-5 py-4 font-mono-label text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-secondary)]"
+                      >
+                        Dimension
+                      </th>
+                      <th
+                        scope="col"
+                        className="w-[22%] border-l border-[#e89b3c]/30 bg-[#e89b3c]/10 px-5 py-4 font-mono-label text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[#e89b3c]"
+                      >
+                        Hello Steward Partnership ($100/hr)
+                      </th>
+                      <th
+                        scope="col"
+                        className="w-[21%] border-l border-[var(--border-hairline)] px-5 py-4 font-mono-label text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[var(--text-primary)]"
+                      >
+                        Hello Steward Project ($60/hr)
+                      </th>
+                      <th
+                        scope="col"
+                        className="w-[19.5%] border-l border-[var(--border-hairline)] px-5 py-4 font-mono-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]"
+                      >
+                        Traditional Retainer Agency ($15k–$30k/mo)
+                      </th>
+                      <th
+                        scope="col"
+                        className="w-[19.5%] border-l border-[var(--border-hairline)] px-5 py-4 font-mono-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]"
+                      >
+                        In-House Senior Hire ($140k–$180k/yr + equity)
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[var(--border-hairline)]">
+                    {config.comparisonTableSection.rows.map((row) => (
+                      <tr key={row.dimension} className="align-top">
+                        <th
+                          scope="row"
+                          className="px-5 py-4 font-mono-label text-xs font-semibold tracking-[0.04em] text-[var(--text-primary)]"
+                        >
+                          {row.dimension}
+                        </th>
+                        <td className="border-l border-[#e89b3c]/25 bg-[#e89b3c]/[0.04] px-5 py-4 font-medium leading-[1.6] text-[var(--text-primary)]">
+                          {row.stewardPartnership}
+                        </td>
+                        <td className="border-l border-[var(--border-hairline)] px-5 py-4 leading-[1.6] text-[var(--text-primary)]">
+                          {row.stewardProject}
+                        </td>
+                        <td className="border-l border-[var(--border-hairline)] px-5 py-4 leading-[1.6] text-[var(--text-secondary)]">
+                          {row.retainerAgency}
+                        </td>
+                        <td className="border-l border-[var(--border-hairline)] px-5 py-4 leading-[1.6] text-[var(--text-secondary)]">
+                          {row.inHouseHire}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ===================================================================
             6. PRICING COMPARISON TABLE (id="pricing")
             Founder-perspective copy ("We're responsible for", "We stay").
             Zero horizontal overflow on 375px mobile viewports.
@@ -665,6 +849,59 @@ export default function AdLandingPage({ slug }: AdLandingPageProps) {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        </section>
+
+        {/* ===================================================================
+            6B. FREQUENTLY ASKED QUESTIONS (SSR-RENDERED <details>/<summary> FOR AI & SEARCH)
+        =================================================================== */}
+        <section
+          id="faq"
+          aria-labelledby="faq-section-heading"
+          className="border-b border-[var(--border-hairline)] py-14 sm:py-20"
+        >
+          <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-8 lg:px-14">
+            <div className="max-w-2xl">
+              <span className="font-mono-label text-[10.5px] font-semibold uppercase tracking-[0.22em] text-[#e89b3c]">
+                06 / FREQUENTLY ASKED QUESTIONS
+              </span>
+              <h2
+                id="faq-section-heading"
+                className="mt-2.5 text-2xl font-semibold leading-[1.1] tracking-[-0.03em] text-[var(--text-primary)] sm:text-4xl"
+              >
+                Direct answers for{" "}
+                <span className="font-serif-editorial font-normal italic text-[#e89b3c]">
+                  SaaS founders.
+                </span>
+              </h2>
+            </div>
+
+            <div className="mt-8 space-y-3.5 sm:mt-10">
+              {config.faqs.map((faq, idx) => (
+                <details
+                  key={faq.question}
+                  open={idx === 0}
+                  className={`group rounded-2xl border p-5 transition-colors sm:p-6 ${
+                    isLight
+                      ? "border-black/10 bg-[#fbf9f5]"
+                      : "border-white/[0.08] bg-[#101015]"
+                  }`}
+                >
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-semibold tracking-[-0.015em] text-[var(--text-primary)] sm:text-lg [&::-webkit-details-marker]:hidden">
+                    <span>{faq.question}</span>
+                    <span
+                      aria-hidden="true"
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#e89b3c]/40 font-mono-label text-xs text-[#e89b3c] transition-transform duration-200 group-open:rotate-45"
+                    >
+                      +
+                    </span>
+                  </summary>
+                  <p className="mt-3.5 max-w-4xl border-t border-[var(--border-hairline)] pt-3.5 text-sm leading-[1.7] text-[var(--text-secondary)] sm:text-[15px]">
+                    {faq.answer}
+                  </p>
+                </details>
+              ))}
             </div>
           </div>
         </section>
@@ -985,14 +1222,41 @@ export default function AdLandingPage({ slug }: AdLandingPageProps) {
 
       {/* =====================================================================
           8. MINIMAL FOOTER
-          Copyright © 2026 HELLO STEWARD + Privacy Policy & Cookie Preferences links.
+          Copyright © 2026 HELLO STEWARD + subtle crawl & legal links.
       ===================================================================== */}
       <footer className="border-t border-[var(--border-hairline)] py-6">
         <div className="mx-auto flex w-full max-w-[1380px] flex-col items-center justify-between gap-3 px-4 sm:flex-row sm:px-8 lg:px-14">
           <p className="font-mono-label text-[10.5px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
             © 2026 HELLO STEWARD · ALL RIGHTS RESERVED
           </p>
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-3.5 sm:justify-end">
+            <Link
+              href="/"
+              className="font-mono-label text-[10.5px] uppercase tracking-[0.16em] text-[var(--text-secondary)] transition-colors hover:text-[#e89b3c]"
+            >
+              Home
+            </Link>
+            <span aria-hidden="true" className="text-[var(--text-muted)]">
+              ·
+            </span>
+            <Link
+              href="/engagement-models"
+              className="font-mono-label text-[10.5px] uppercase tracking-[0.16em] text-[var(--text-secondary)] transition-colors hover:text-[#e89b3c]"
+            >
+              All Engagement Models
+            </Link>
+            <span aria-hidden="true" className="text-[var(--text-muted)]">
+              ·
+            </span>
+            <Link
+              href="/audit"
+              className="font-mono-label text-[10.5px] uppercase tracking-[0.16em] text-[var(--text-secondary)] transition-colors hover:text-[#e89b3c]"
+            >
+              Free Funnel Audit
+            </Link>
+            <span aria-hidden="true" className="text-[var(--text-muted)]">
+              ·
+            </span>
             <Link
               href="/privacy"
               className="font-mono-label text-[10.5px] uppercase tracking-[0.16em] text-[var(--text-secondary)] transition-colors hover:text-[#e89b3c]"

@@ -978,8 +978,6 @@ export default function MobileBelowFoldSections({
           <div className="mt-7 flex w-full flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
             <Link
               href="/audit?source=close-section"
-              target="_blank"
-              rel="noopener noreferrer"
               data-cta-source="close-section"
               className="inline-flex w-full max-w-xs items-center justify-center rounded-full bg-[#e89b3c] px-8 py-3.5 font-mono-label text-xs font-medium uppercase tracking-[0.16em] text-[#08080a] sm:w-auto"
             >

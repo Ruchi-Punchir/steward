@@ -1,18 +1,38 @@
 import type { MetadataRoute } from "next";
 
-export default function robots(): MetadataRoute.Robots {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    "https://hellosteward.agency";
+const DISALLOWED_PATHS = [
+  "/audit/thank-you",
+  "/talk/thank-you",
+  "/api/",
+  "/admin",
+  "/admin/",
+];
 
+const AI_AND_SEARCH_BOTS = [
+  "Googlebot",
+  "Bingbot",
+  "OAI-SearchBot",
+  "ChatGPT-User",
+  "GPTBot",
+  "PerplexityBot",
+  "ClaudeBot",
+  "Google-Extended",
+];
+
+export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/admin/", "/api/admin"],
+        disallow: DISALLOWED_PATHS,
       },
+      ...AI_AND_SEARCH_BOTS.map((bot) => ({
+        userAgent: bot,
+        allow: "/",
+        disallow: DISALLOWED_PATHS,
+      })),
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: "https://www.hellosteward.agency/sitemap.xml",
   };
 }

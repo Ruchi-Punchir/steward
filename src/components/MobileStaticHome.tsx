@@ -204,7 +204,7 @@ export default function MobileStaticHome() {
             </span>
           </div>
 
-          <h1
+          <p
             id="mobile-hero-heading"
             className="text-[2.25rem] font-semibold leading-[1.06] tracking-[-0.035em] text-[var(--text-primary)] sm:text-5xl"
           >
@@ -212,11 +212,11 @@ export default function MobileStaticHome() {
             <span className="font-serif-editorial mt-1 block text-[1.06em] font-normal italic tracking-[-0.01em] text-[#e89b3c]">
               only metric we care about.
             </span>
-          </h1>
+          </p>
 
           <p className="mt-4 text-[15px] font-normal leading-[1.65] text-[var(--text-secondary)] sm:text-base">
             We help startups uncover growth bottlenecks, identify untapped
-            opportunities and build practical soutions to improve acquisition,
+            opportunities and build practical solutions to improve acquisition,
             conversion and retention through research, marketing expertise,
             product thinking and engineering.
           </p>
@@ -225,16 +225,12 @@ export default function MobileStaticHome() {
           <div className="mt-6 flex w-full flex-wrap items-center gap-3">
             <Link
               href="/audit?source=hero"
-              target="_blank"
-              rel="noopener noreferrer"
               className="inline-flex items-center justify-center rounded-full bg-[#e89b3c] px-6 py-3 font-mono-label text-[11px] font-semibold uppercase tracking-[0.16em] text-[#08080a]"
             >
               Get a free audit →
             </Link>
             <Link
               href="/talk?source=hero"
-              target="_blank"
-              rel="noopener noreferrer"
               className={`inline-flex items-center justify-center rounded-full border px-5 py-3 font-mono-label text-[11px] font-medium uppercase tracking-[0.16em] ${
                 isLight
                   ? "border-black/15 text-[#141413]"

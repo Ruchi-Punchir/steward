@@ -7,9 +7,20 @@ import {
 } from "@/components/leads/DedicatedLeadPages";
 
 export const metadata: Metadata = {
-  title: "Contact & Free Audit | Steward",
+  title: "Contact & Free Audit | Hello Steward",
   description:
-    "Request a free product and revenue audit or start a conversation with Steward.",
+    "Request a free product and revenue audit or start a conversation with Hello Steward.",
+  alternates: {
+    canonical: "https://www.hellosteward.agency/contact",
+  },
+  openGraph: {
+    title: "Contact & Free Audit | Hello Steward",
+    description:
+      "Request a free product and revenue audit or start a conversation with Hello Steward.",
+    url: "https://www.hellosteward.agency/contact",
+    siteName: "Hello Steward",
+    type: "website",
+  },
 };
 
 export default async function ContactPage({

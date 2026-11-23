@@ -61,7 +61,7 @@ export default function HeroSection({
 
           <p className="mt-5 max-w-lg text-base font-normal leading-[1.65] text-[var(--text-secondary)] sm:text-[17px] [@media(max-height:740px)]:mt-2.5 [@media(max-height:740px)]:text-[13.5px] [@media(max-height:740px)]:leading-[1.5]">
             We help startups uncover growth bottlenecks, identify untapped
-            opportunities and build practical soutions to improve acquisition,
+            opportunities and build practical solutions to improve acquisition,
             conversion and retention through research, marketing expertise,
             product thinking and engineering.
           </p>

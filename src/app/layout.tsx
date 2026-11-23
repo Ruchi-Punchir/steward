@@ -35,9 +35,21 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Steward | Product and Growth Partner for Founders.",
+  metadataBase: new URL("https://www.hellosteward.agency"),
+  title: "Hello Steward | B2B SaaS Product & Conversion Engineering Agency",
   description:
-    "Steward helps founders find growth bottlenecks and revenue opportunities, then fix and scale them with product and engineering. Start with a free audit.",
+    "Product and growth partners for Seed to Series A B2B SaaS startups in the US and Europe. Outcome-backed conversion engineering, MVP rescue, and sub-1.5s speed audits.",
+  alternates: {
+    canonical: "https://www.hellosteward.agency/",
+  },
+  openGraph: {
+    title: "Hello Steward | B2B SaaS Product & Conversion Engineering Agency",
+    description:
+      "Product and growth partners for Seed to Series A B2B SaaS startups in the US and Europe. Outcome-backed conversion engineering, MVP rescue, and sub-1.5s speed audits.",
+    url: "https://www.hellosteward.agency/",
+    siteName: "Hello Steward",
+    type: "website",
+  },
   manifest: "/site.webmanifest",
   icons: {
     icon: [
