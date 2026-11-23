@@ -24,25 +24,59 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
       return;
     }
 
-    const lenis = new Lenis({
-      duration: 1.15,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-      touchMultiplier: 1.2,
-    });
+    let lenis: Lenis | null = null;
+    let updateTicker: ((time: number) => void) | null = null;
 
-    lenis.on("scroll", ScrollTrigger.update);
+    const startLenis = () => {
+      if (lenis) return;
+      window.removeEventListener("wheel", startLenis, true);
+      window.removeEventListener("touchstart", startLenis, true);
+      window.removeEventListener("keydown", startLenis, true);
+      window.removeEventListener("pointerdown", startLenis, true);
 
-    const updateTicker = (time: number) => {
-      lenis.raf(time * 1000);
+      lenis = new Lenis({
+        duration: 1.15,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+        touchMultiplier: 1.2,
+      });
+
+      lenis.on("scroll", ScrollTrigger.update);
+
+      updateTicker = (time: number) => {
+        lenis?.raf(time * 1000);
+      };
+
+      gsap.ticker.add(updateTicker);
+      gsap.ticker.lagSmoothing(0);
     };
 
-    gsap.ticker.add(updateTicker);
-    gsap.ticker.lagSmoothing(0);
+    window.addEventListener("wheel", startLenis, {
+      capture: true,
+      passive: true,
+    });
+    window.addEventListener("touchstart", startLenis, {
+      capture: true,
+      passive: true,
+    });
+    window.addEventListener("keydown", startLenis, {
+      capture: true,
+      passive: true,
+    });
+    window.addEventListener("pointerdown", startLenis, {
+      capture: true,
+      passive: true,
+    });
 
     return () => {
-      gsap.ticker.remove(updateTicker);
-      lenis.destroy();
+      window.removeEventListener("wheel", startLenis, true);
+      window.removeEventListener("touchstart", startLenis, true);
+      window.removeEventListener("keydown", startLenis, true);
+      window.removeEventListener("pointerdown", startLenis, true);
+      if (updateTicker) {
+        gsap.ticker.remove(updateTicker);
+      }
+      lenis?.destroy();
     };
   }, []);
 

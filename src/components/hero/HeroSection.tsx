@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import TypewriterStage from "./TypewriterStage";
 
 interface HeroSectionProps {
   onAuditClick?: (sourceButton?: string) => void;

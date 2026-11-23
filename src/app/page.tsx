@@ -1,19 +1,43 @@
 "use client";
 
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import Lenis from "lenis";
+import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/hero/HeroSection";
-import TypewriterStage from "@/components/hero/TypewriterStage";
-import DashboardSection from "@/components/dashboard/DashboardSection";
-import ProcessSection from "@/components/process/ProcessSection";
+import MobileStaticHome from "@/components/MobileStaticHome";
 import Footer from "@/components/Footer";
 import HomeLoader from "@/components/HomeLoader";
-import MobileStaticHome from "@/components/MobileStaticHome";
 import { captureFirstLandingAttribution } from "@/components/leads/LeadCaptureModal";
 import type { LeadIntent } from "@/config/leadCopy";
+
+const TypewriterStage = dynamic(
+  () => import("@/components/hero/TypewriterStage"),
+  {
+    ssr: false,
+  }
+);
+
+const DashboardSection = dynamic(
+  () => import("@/components/dashboard/DashboardSection"),
+  {
+    ssr: false,
+    loading: () => (
+      <div aria-hidden="true" className="relative h-[260vh] w-full" />
+    ),
+  }
+);
+
+const ProcessSection = dynamic(
+  () => import("@/components/process/ProcessSection"),
+  {
+    ssr: false,
+    loading: () => (
+      <div aria-hidden="true" className="relative z-40 h-[760vh] w-full" />
+    ),
+  }
+);
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -22,17 +46,93 @@ if (typeof window !== "undefined") {
 export default function HomePage() {
   const [isLoaderActive, setIsLoaderActive] = useState<boolean>(true);
   const [isDesktop, setIsDesktop] = useState<boolean>(false);
+  const [isTypewriterMounted, setIsTypewriterMounted] =
+    useState<boolean>(false);
+  const [isDashboardMounted, setIsDashboardMounted] = useState<boolean>(false);
+  const [isProcessMounted, setIsProcessMounted] = useState<boolean>(false);
   const snapToBeatRef = useRef<((beat: number) => void) | null>(null);
+  const belowFoldTriggeredRef = useRef<boolean>(false);
+
+  const activateBelowFoldSections = useCallback(() => {
+    if (belowFoldTriggeredRef.current) return;
+    belowFoldTriggeredRef.current = true;
+    setIsTypewriterMounted(true);
+    setIsDashboardMounted(true);
+    setTimeout(() => {
+      setIsProcessMounted(true);
+    }, 64);
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
+    let idleTimer: ReturnType<typeof setTimeout> | null = null;
+
     const updateViewport = () => {
-      setIsDesktop(mq.matches);
+      const matchesDesktop = mq.matches;
+      setIsDesktop(matchesDesktop);
+
+      if (matchesDesktop) {
+        // Mount the fixed Hero TypewriterStage in an idle slice after initial hydration
+        // so HomeLoader's handoff target is ready without blocking initial hydration.
+        idleTimer = setTimeout(() => {
+          setIsTypewriterMounted(true);
+        }, 120);
+
+        if (window.scrollY > 10 || window.location.hash) {
+          activateBelowFoldSections();
+        }
+      }
     };
+
     updateViewport();
     mq.addEventListener("change", updateViewport);
-    return () => mq.removeEventListener("change", updateViewport);
-  }, []);
+
+    const onFirstInteraction = () => {
+      if (mq.matches) {
+        activateBelowFoldSections();
+      }
+    };
+
+    window.addEventListener("wheel", onFirstInteraction, {
+      passive: true,
+      capture: true,
+      once: true,
+    });
+    window.addEventListener("touchstart", onFirstInteraction, {
+      passive: true,
+      capture: true,
+      once: true,
+    });
+    window.addEventListener("keydown", onFirstInteraction, {
+      passive: true,
+      capture: true,
+      once: true,
+    });
+    window.addEventListener("pointerdown", onFirstInteraction, {
+      passive: true,
+      capture: true,
+      once: true,
+    });
+    window.addEventListener("mousemove", onFirstInteraction, {
+      passive: true,
+      once: true,
+    });
+    window.addEventListener("scroll", onFirstInteraction, {
+      passive: true,
+      once: true,
+    });
+
+    return () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      mq.removeEventListener("change", updateViewport);
+      window.removeEventListener("wheel", onFirstInteraction, true);
+      window.removeEventListener("touchstart", onFirstInteraction, true);
+      window.removeEventListener("keydown", onFirstInteraction, true);
+      window.removeEventListener("pointerdown", onFirstInteraction, true);
+      window.removeEventListener("mousemove", onFirstInteraction);
+      window.removeEventListener("scroll", onFirstInteraction);
+    };
+  }, [activateBelowFoldSections]);
 
   const openCtaPageInNewTab = useCallback(
     (intent: LeadIntent, sourceButton: string) => {
@@ -49,12 +149,13 @@ export default function HomePage() {
   );
 
   const handleLoaderComplete = useCallback(() => {
+    activateBelowFoldSections();
     window.scrollTo(0, 0);
     // Buffer so trackpad inertia from the loader dismissal scroll never skips Section 1
     setTimeout(() => {
       setIsLoaderActive(false);
     }, 320);
-  }, []);
+  }, [activateBelowFoldSections]);
 
   useEffect(() => {
     captureFirstLandingAttribution();
@@ -182,7 +283,10 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-stage)] text-[var(--text-primary)] transition-colors duration-300">
-      <HomeLoader onComplete={handleLoaderComplete} />
+      <HomeLoader
+        onDismissStart={activateBelowFoldSections}
+        onComplete={handleLoaderComplete}
+      />
 
       <Navbar
         onAuditClick={(sourceButton = "nav") =>
@@ -190,25 +294,25 @@ export default function HomePage() {
         }
       />
 
-      <main>
-        {/* Static Mobile-Only View (< 1024px): Zero GSAP ScrollTriggers, zero sticky pinning, zero canvas loops */}
+      <main className="min-h-screen">
+        {/* Static Mobile-Only View (< 1024px): Renders lightweight Section 01 Hero in SSR for 0 Mobile CLS, while below-the-fold sections load lazily on mobile */}
         {!isDesktop && (
-          <div className="lg:hidden">
+          <div className="min-h-[340vh] lg:hidden">
             <MobileStaticHome />
           </div>
         )}
 
-        {/* Animated Desktop View (>= 1024px): Only mounted on desktop viewports so mobile never pays the DOM/JS/SVG cost */}
-        {isDesktop && (
-          <div className="hidden lg:block">
-            {/* Shared Section 1 + Section 2 Stage Wrapper:
-                Keeps the exact same TypewriterStage instance alive across both sections
-                so the typewriter and $20/$50/$100 buttons smoothly transition into Section 2. */}
-            <div
-              ref={handoffWrapperRef}
-              className="relative w-full overflow-x-clip"
-            >
-              {/* Desktop Fixed Shared Typewriter Stage (spans Section 1 & Section 2 so the exact same typewriter stays in view and transitions on scroll) */}
+        {/* Animated Desktop View (>= 1024px): Always renders the structural desktop container & height-matched placeholders during SSR so initial paint and hydrated layout match 1:1 with zero CLS on #footer */}
+        <div className="hidden min-h-[1120vh] lg:block">
+          {/* Shared Section 1 + Section 2 Stage Wrapper:
+              Keeps the exact same TypewriterStage instance alive across both sections
+              so the typewriter and $20/$50/$100 buttons smoothly transition into Section 2. */}
+          <div
+            ref={handoffWrapperRef}
+            className="relative min-h-[360vh] w-full overflow-x-clip"
+          >
+            {/* Desktop Fixed Shared Typewriter Stage (spans Section 1 & Section 2 so the exact same typewriter stays in view and transitions on scroll) */}
+            {isDesktop && isTypewriterMounted && (
               <div
                 ref={desktopFixedStageRef}
                 className="pointer-events-none hidden lg:fixed lg:inset-x-0 lg:top-0 lg:z-30 lg:flex lg:h-screen lg:w-full lg:items-center lg:overflow-hidden [@media(max-height:800px)]:lg:pt-11"
@@ -220,26 +324,30 @@ export default function HomePage() {
                       externalEarned={earned}
                       onSpend={handleSpend}
                       isTransitionLocked={isTransitionLocked}
+                      isLoaderActive={isLoaderActive}
+                      isScrollHandoffReady={isDashboardMounted}
                       handoffTriggerRef={handoffWrapperRef}
                       onTransitionLockChange={setIsTransitionLocked}
                     />
                   </div>
                 </div>
               </div>
+            )}
 
-              <HeroSection
-                onAuditClick={(sourceButton = "hero") =>
-                  openCtaPageInNewTab("audit", sourceButton)
-                }
-                onConversationClick={(sourceButton = "hero") =>
-                  openCtaPageInNewTab("conversation", sourceButton)
-                }
-                externalSpent={spent}
-                externalEarned={earned}
-                onSpend={handleSpend}
-                isTransitionLocked={isTransitionLocked}
-              />
+            <HeroSection
+              onAuditClick={(sourceButton = "hero") =>
+                openCtaPageInNewTab("audit", sourceButton)
+              }
+              onConversationClick={(sourceButton = "hero") =>
+                openCtaPageInNewTab("conversation", sourceButton)
+              }
+              externalSpent={spent}
+              externalEarned={earned}
+              onSpend={handleSpend}
+              isTransitionLocked={isTransitionLocked}
+            />
 
+            {isDesktop && isDashboardMounted ? (
               <DashboardSection
                 spent={spent}
                 earned={earned}
@@ -247,8 +355,15 @@ export default function HomePage() {
                 onSpend={handleSpend}
                 isTransitionLocked={isTransitionLocked}
               />
-            </div>
+            ) : (
+              <div
+                aria-hidden="true"
+                className="relative h-[260vh] w-full"
+              />
+            )}
+          </div>
 
+          {isDesktop && isProcessMounted ? (
             <ProcessSection
               onAuditClick={(sourceButton = "close-section") =>
                 openCtaPageInNewTab("audit", sourceButton)
@@ -257,8 +372,13 @@ export default function HomePage() {
                 snapToBeatRef.current?.(5 + stepIndex);
               }}
             />
-          </div>
-        )}
+          ) : (
+            <div
+              aria-hidden="true"
+              className="relative z-40 h-[760vh] w-full"
+            />
+          )}
+        </div>
       </main>
 
       <Footer

@@ -3,9 +3,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { DollarBillGraphic } from "@/components/hero/TypewriterStage";
+import { DollarBillGraphic } from "@/components/shared/DollarBillGraphics";
 import StewardLogo from "@/components/StewardLogo";
-import { number } from "zod";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);

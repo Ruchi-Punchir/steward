@@ -2,12 +2,22 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useTheme } from "@/context/ThemeContext";
-import ExplodedTypewriter3D, { PRODUCT_UNITS } from "./ExplodedTypewriter3D";
-import TestSolutionStage from "./TestSolutionStage";
+import { PRODUCT_UNITS } from "@/components/shared/productUnits";
 import PyramidLogoMorph from "./PyramidLogoMorph";
+
+const ExplodedTypewriter3D = dynamic(() => import("./ExplodedTypewriter3D"), {
+  ssr: false,
+  loading: () => <div aria-hidden="true" className="h-full w-full" />,
+});
+
+const TestSolutionStage = dynamic(() => import("./TestSolutionStage"), {
+  ssr: false,
+  loading: () => <div aria-hidden="true" className="h-full w-full" />,
+});
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);

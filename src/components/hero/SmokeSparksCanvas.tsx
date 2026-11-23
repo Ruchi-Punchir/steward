@@ -10,6 +10,8 @@ export interface SmokeSparksCanvasProps {
   thickerSmoke: boolean;
   /** Respect user reduced-motion preference */
   reducedMotion: boolean;
+  /** Pause 60fps canvas loop while covered by HomeLoader */
+  paused?: boolean;
 }
 
 interface SmokeParticle {
@@ -52,6 +54,7 @@ export default function SmokeSparksCanvas({
   powerState,
   thickerSmoke,
   reducedMotion,
+  paused = false,
 }: SmokeSparksCanvasProps) {
   const { theme } = useTheme();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -62,7 +65,7 @@ export default function SmokeSparksCanvas({
   }, [powerState, thickerSmoke, theme]);
 
   useEffect(() => {
-    if (reducedMotion) return;
+    if (reducedMotion || paused) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -72,6 +75,8 @@ export default function SmokeSparksCanvas({
     let animationFrameId = 0;
     let isVisible = true;
     let isMobile = window.innerWidth < 768;
+    let logicalWidth = 800;
+    let logicalHeight = 540;
 
     const smokeParticles: SmokeParticle[] = [];
     const sparkParticles: SparkParticle[] = [];
@@ -79,10 +84,12 @@ export default function SmokeSparksCanvas({
     const resize = () => {
       if (!canvas) return;
       const rect = canvas.getBoundingClientRect();
+      logicalWidth = Math.max(1, rect.width);
+      logicalHeight = Math.max(1, rect.height);
       isMobile = window.innerWidth < 768;
       const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.25 : 1.5);
-      canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-      canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+      canvas.width = Math.max(1, Math.floor(logicalWidth * dpr));
+      canvas.height = Math.max(1, Math.floor(logicalHeight * dpr));
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
@@ -103,10 +110,9 @@ export default function SmokeSparksCanvas({
       const maxSmoke = isMobile ? 16 : 28;
       if (smokeParticles.length >= maxSmoke) return;
 
-      const rect = canvas.getBoundingClientRect();
       const { thickerSmoke: isThicker, powerState: pState } = stateRef.current;
-      const originX = rect.width * 0.5 + (Math.random() - 0.5) * 34;
-      const originY = rect.height * 0.48 + (Math.random() - 0.5) * 8;
+      const originX = logicalWidth * 0.5 + (Math.random() - 0.5) * 34;
+      const originY = logicalHeight * 0.48 + (Math.random() - 0.5) * 8;
 
       const intensityMult =
         pState === "surge100" ? 1.65 : isThicker ? 1.35 : 1.0;
@@ -134,9 +140,8 @@ export default function SmokeSparksCanvas({
       const maxSparks = isMobile ? 24 : 48;
       if (sparkParticles.length >= maxSparks) return;
 
-      const rect = canvas.getBoundingClientRect();
-      const px = rect.width * normX + (Math.random() - 0.5) * 10;
-      const py = rect.height * normY + (Math.random() - 0.5) * 10;
+      const px = logicalWidth * normX + (Math.random() - 0.5) * 10;
+      const py = logicalHeight * normY + (Math.random() - 0.5) * 10;
 
       for (let i = 0; i < count; i++) {
         const angle = Math.random() * Math.PI * 2;
@@ -161,8 +166,7 @@ export default function SmokeSparksCanvas({
       if (!isVisible) return;
 
       tick++;
-      const rect = canvas.getBoundingClientRect();
-      ctx.clearRect(0, 0, rect.width, rect.height);
+      ctx.clearRect(0, 0, logicalWidth, logicalHeight);
 
       const {
         powerState: pState,
@@ -303,7 +307,7 @@ export default function SmokeSparksCanvas({
       window.removeEventListener("resize", resize);
       observer.disconnect();
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, paused]);
 
   if (reducedMotion) {
     return (

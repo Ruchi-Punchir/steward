@@ -3,10 +3,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useTheme } from "@/context/ThemeContext";
-import { DollarBillGraphic } from "@/components/hero/TypewriterStage";
+import { DollarBillGraphic } from "@/components/shared/DollarBillGraphics";
 import StewardLogo from "@/components/StewardLogo";
 
 interface HomeLoaderProps {
+  onDismissStart?: () => void;
   onComplete?: () => void;
 }
 
@@ -15,11 +16,13 @@ const LOADER_TERMINAL_LOGS = [
   { id: 2, text: "awaiting spend...", isSummary: false },
 ];
 
-export default function HomeLoader({ onComplete }: HomeLoaderProps) {
+export default function HomeLoader({
+  onDismissStart,
+  onComplete,
+}: HomeLoaderProps) {
   const { theme } = useTheme();
   const isLight = theme === "light";
 
-  const [progress, setProgress] = useState(0);
   const [isReadyToScroll, setIsReadyToScroll] = useState(false);
   const [isUnmounted, setIsUnmounted] = useState(false);
 
@@ -31,6 +34,9 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
   const headlineRef = useRef<HTMLParagraphElement | null>(null);
   const bottomBarRef = useRef<HTMLDivElement | null>(null);
   const loaderTypewriterRef = useRef<HTMLDivElement | null>(null);
+  const loaderBillInnerRef = useRef<HTMLDivElement | null>(null);
+  const progressTextRef = useRef<HTMLSpanElement | null>(null);
+  const progressBarFillRef = useRef<HTMLDivElement | null>(null);
 
   // Get initial responsive scale for the loader typewriter
   const getInitialScale = useCallback(() => {
@@ -60,13 +66,6 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
 
     setHeroTypewritersOpacity("0");
 
-    const observer = new MutationObserver(() => {
-      if (!hasTriggeredRef.current) {
-        setHeroTypewritersOpacity("0");
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-
     if (loaderTypewriterRef.current) {
       gsap.set(loaderTypewriterRef.current, {
         x: 0,
@@ -91,27 +90,43 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
       }
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize, { passive: true });
     return () => {
-      observer.disconnect();
       window.removeEventListener("resize", handleResize);
       setHeroTypewritersOpacity("1");
     };
   }, [isUnmounted, getInitialScale, onComplete]);
 
-  // 1) Animate bottom progress bar from 0% -> 100%, then reveal "Scroll to begin"
+  // 1) Animate bottom progress bar from 0% -> 100% via direct DOM refs (zero React re-renders), then reveal "Scroll to begin"
   useEffect(() => {
     if (typeof window !== "undefined" && window.innerWidth < 1024) return;
     const startTime = performance.now();
     const totalDuration = 2100; // 2.1s smooth progress fill
     let rafId: number;
     let readyTimer: ReturnType<typeof setTimeout> | null = null;
+    let lastPct = -1;
 
     const tick = (now: number) => {
       const elapsed = now - startTime;
       const raw = Math.min(1, elapsed / totalDuration);
       const eased = 1 - Math.pow(1 - raw, 3);
-      setProgress(Math.round(eased * 100));
+      const pct = Math.round(eased * 100);
+
+      if (pct !== lastPct) {
+        lastPct = pct;
+        if (progressTextRef.current) {
+          progressTextRef.current.textContent = `${pct}%`;
+        }
+        if (progressBarFillRef.current) {
+          progressBarFillRef.current.style.transform = `scaleX(${pct / 100})`;
+        }
+        if (loaderBillInnerRef.current) {
+          loaderBillInnerRef.current.style.transform = `translateY(${(
+            70 +
+            (1 - pct / 100) * 22
+          ).toFixed(2)}%) rotate(-1.1deg)`;
+        }
+      }
 
       if (raw < 1) {
         rafId = requestAnimationFrame(tick);
@@ -133,6 +148,7 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
   const triggerDismiss = useCallback(() => {
     if (!isReadyToScroll || hasTriggeredRef.current) return;
     hasTriggeredRef.current = true;
+    onDismissStart?.();
 
     window.scrollTo(0, 0);
 
@@ -230,7 +246,7 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
         },
       });
     }
-  }, [isReadyToScroll, onComplete]);
+  }, [isReadyToScroll, onDismissStart, onComplete]);
 
   // 3) Intercept scroll-down while loader is active; once 100% is reached, scrolling down triggers the handoff
   useEffect(() => {
@@ -351,12 +367,11 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
             <div className="relative z-20 -mb-3.5 flex w-full flex-col items-center">
               <div className="relative z-10 flex h-[118px] w-[264px] items-end justify-center overflow-hidden sm:h-[144px] sm:w-[344px] lg:h-[156px] lg:w-[376px] xl:h-[166px] xl:w-[404px] 2xl:h-[178px] 2xl:w-[444px]">
                 <div
+                  ref={loaderBillInnerRef}
                   style={{
-                    transform: `translateY(${
-                      70 + (1 - progress / 100) * 22
-                    }%) rotate(-1.1deg)`,
+                    transform: "translateY(92%) rotate(-1.1deg)",
                   }}
-                  className="relative h-[118px] w-[264px] transition-transform duration-300 ease-out sm:h-[144px] sm:w-[344px] lg:h-[156px] lg:w-[376px] xl:h-[166px] xl:w-[404px] 2xl:h-[178px] 2xl:w-[444px]"
+                  className="relative h-[118px] w-[264px] transition-transform duration-300 ease-out will-change-transform sm:h-[144px] sm:w-[344px] lg:h-[156px] lg:w-[376px] xl:h-[166px] xl:w-[404px] 2xl:h-[178px] 2xl:w-[444px]"
                 >
                   <DollarBillGraphic idPrefix="loader-bill" />
                 </div>
@@ -699,13 +714,19 @@ export default function HomeLoader({ onComplete }: HomeLoaderProps) {
           <div className="flex w-full flex-col items-center gap-2.5 transition-opacity duration-300">
             <div className="flex w-full items-center justify-between font-mono-label text-[10px] uppercase tracking-[0.2em] text-[var(--text-muted)]">
               <span>Initializing stage</span>
-              <span className="tabular-nums text-[#e89b3c]">{progress}%</span>
+              <span
+                ref={progressTextRef}
+                className="tabular-nums text-[#e89b3c]"
+              >
+                0%
+              </span>
             </div>
 
             <div className="h-[2px] w-full overflow-hidden rounded-full bg-[var(--border-subtle)]">
               <div
-                className="h-full bg-[#e89b3c] transition-[width] duration-75 ease-out"
-                style={{ width: `${progress}%` }}
+                ref={progressBarFillRef}
+                className="h-full w-full origin-left bg-[#e89b3c] transition-transform duration-75 ease-out will-change-transform"
+                style={{ transform: "scaleX(0)" }}
               />
             </div>
           </div>

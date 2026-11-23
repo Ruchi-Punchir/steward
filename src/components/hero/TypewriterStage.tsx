@@ -5,6 +5,9 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SmokeSparksCanvas from "./SmokeSparksCanvas";
 import { useTheme } from "@/context/ThemeContext";
+import { DollarBillGraphic } from "@/components/shared/DollarBillGraphics";
+
+export { DollarBillGraphic };
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -118,570 +121,6 @@ const TERMINAL_SEQUENCES: Record<
   ],
 };
 
-/**
- * Classic Vintage Green US $1 Federal Reserve Note — Old, Creased, Torn & Chewed by the Typewriter
- */
-export function DollarBillGraphic({ idPrefix }: { idPrefix: string }) {
-  return (
-    <svg
-      viewBox="0 0 320 165"
-      className="h-full w-full drop-shadow-[0_8px_18px_rgba(0,0,0,0.45)]"
-      role="img"
-      aria-label="Old, creased, and torn classic green 1 US Dollar bill"
-    >
-      <defs>
-        {/* Aged cotton-linen greenback paper gradient */}
-        <linearGradient
-          id={`${idPrefix}-paper`}
-          x1="0%"
-          y1="0%"
-          x2="100%"
-          y2="100%"
-        >
-          <stop offset="0%" stopColor="#d9e5cc" />
-          <stop offset="28%" stopColor="#c3d4b4" />
-          <stop offset="48%" stopColor="#adc29d" />
-          <stop offset="53%" stopColor="#cfdec0" />
-          <stop offset="78%" stopColor="#b9cca9" />
-          <stop offset="100%" stopColor="#a7bc96" />
-        </linearGradient>
-
-        {/* Deep vintage paper stain / age vignette */}
-        <radialGradient id={`${idPrefix}-age`} cx="50%" cy="50%" r="65%">
-          <stop offset="0%" stopColor="#d4c598" stopOpacity="0.08" />
-          <stop offset="70%" stopColor="#8c7d56" stopOpacity="0.22" />
-          <stop offset="100%" stopColor="#3d3522" stopOpacity="0.42" />
-        </radialGradient>
-
-        {/* Fine intaglio green guilloche crosshatch pattern */}
-        <pattern
-          id={`${idPrefix}-guilloche`}
-          width="6"
-          height="6"
-          patternUnits="userSpaceOnUse"
-        >
-          <path
-            d="M 0 6 L 6 0 M -1 1 L 1 -1 M 5 7 L 7 5"
-            stroke="#1e462c"
-            strokeWidth="0.55"
-            opacity="0.42"
-          />
-        </pattern>
-
-        {/* Jagged torn paper outer silhouette (top-right rip, left roller bite, top-left nick) */}
-        <clipPath id={`${idPrefix}-torn-clip`}>
-          <path
-            d="
-              M 0 4
-              L 42 0
-              L 46 8
-              L 51 2
-              L 55 11
-              L 61 0
-              L 208 0
-              L 215 16
-              L 221 7
-              L 228 24
-              L 235 4
-              L 241 0
-              L 314 0
-              L 320 9
-              L 320 64
-              L 310 69
-              L 318 74
-              L 307 81
-              L 320 86
-              L 320 165
-              L 0 165
-              L 0 108
-              L 11 103
-              L 3 97
-              L 14 91
-              L 0 85
-              Z
-            "
-          />
-        </clipPath>
-      </defs>
-
-      {/* Main Torn & Creased Bill Group */}
-      <g clipPath={`url(#${idPrefix}-torn-clip)`}>
-        {/* Aged cotton-linen greenback base paper */}
-        <rect width="320" height="165" fill={`url(#${idPrefix}-paper)`} />
-        <rect width="320" height="165" fill={`url(#${idPrefix}-age)`} />
-
-        {/* Diagonal accordion fold shadow bands (gives 3D crumpled paper depth) */}
-        <polygon
-          points="32,0 64,0 180,165 148,165"
-          fill="#152b1c"
-          opacity="0.14"
-        />
-        <polygon
-          points="212,0 240,0 138,165 110,165"
-          fill="#152b1c"
-          opacity="0.12"
-        />
-        <polygon
-          points="0,68 320,82 320,98 0,84"
-          fill="#152b1c"
-          opacity="0.11"
-        />
-
-        {/* Outer ornate intaglio green frame */}
-        <rect
-          x="7"
-          y="7"
-          width="306"
-          height="151"
-          fill={`url(#${idPrefix}-guilloche)`}
-          stroke="#1a3d27"
-          strokeWidth="2.3"
-        />
-        <rect
-          x="12"
-          y="12"
-          width="296"
-          height="141"
-          fill="#c4d5b6"
-          fillOpacity="0.82"
-          stroke="#214a30"
-          strokeWidth="1.2"
-        />
-        <rect
-          x="15"
-          y="15"
-          width="290"
-          height="135"
-          fill="none"
-          stroke="#2b5c3c"
-          strokeWidth="0.75"
-          strokeDasharray="3 1.5"
-        />
-
-        {/* Typewriter Platen Gear-Tooth Skid Marks along Left & Right Margins */}
-        <g fill="#1c241e" opacity="0.42">
-          {[22, 32, 42, 52, 62, 72, 114, 124, 134].map((yPos) => (
-            <rect
-              key={`l-${yPos}`}
-              x="3"
-              y={yPos}
-              width="5"
-              height="2.2"
-              rx="0.5"
-            />
-          ))}
-          {[26, 36, 46, 56, 96, 106, 116, 126].map((yPos) => (
-            <rect
-              key={`r-${yPos}`}
-              x="312"
-              y={yPos}
-              width="5"
-              height="2.2"
-              rx="0.5"
-            />
-          ))}
-        </g>
-
-        {/* Four Corner "1" Green Rosettes */}
-        <g transform="translate(28, 28)">
-          <ellipse
-            cx="0"
-            cy="0"
-            rx="15"
-            ry="13"
-            fill="#173823"
-            stroke="#dfead5"
-            strokeWidth="1"
-          />
-          <ellipse
-            cx="0"
-            cy="0"
-            rx="12"
-            ry="10"
-            fill="none"
-            stroke="#84a98c"
-            strokeWidth="0.7"
-          />
-          <text
-            x="0"
-            y="6"
-            textAnchor="middle"
-            fill="#eff5e8"
-            fontSize="18"
-            fontWeight="900"
-            fontFamily="serif"
-          >
-            1
-          </text>
-        </g>
-
-        <g transform="translate(292, 28)">
-          <ellipse
-            cx="0"
-            cy="0"
-            rx="15"
-            ry="13"
-            fill="#173823"
-            stroke="#dfead5"
-            strokeWidth="1"
-          />
-          <ellipse
-            cx="0"
-            cy="0"
-            rx="12"
-            ry="10"
-            fill="none"
-            stroke="#84a98c"
-            strokeWidth="0.7"
-          />
-          <text
-            x="0"
-            y="6"
-            textAnchor="middle"
-            fill="#eff5e8"
-            fontSize="18"
-            fontWeight="900"
-            fontFamily="serif"
-          >
-            1
-          </text>
-        </g>
-
-        <g transform="translate(28, 136)">
-          <ellipse
-            cx="0"
-            cy="0"
-            rx="15"
-            ry="13"
-            fill="#173823"
-            stroke="#dfead5"
-            strokeWidth="1"
-          />
-          <text
-            x="0"
-            y="6"
-            textAnchor="middle"
-            fill="#eff5e8"
-            fontSize="18"
-            fontWeight="900"
-            fontFamily="serif"
-          >
-            1
-          </text>
-        </g>
-
-        <g transform="translate(292, 136)">
-          <ellipse
-            cx="0"
-            cy="0"
-            rx="15"
-            ry="13"
-            fill="#173823"
-            stroke="#dfead5"
-            strokeWidth="1"
-          />
-          <text
-            x="0"
-            y="6"
-            textAnchor="middle"
-            fill="#eff5e8"
-            fontSize="18"
-            fontWeight="900"
-            fontFamily="serif"
-          >
-            1
-          </text>
-        </g>
-
-        {/* Header Banner */}
-        <text
-          x="160"
-          y="24"
-          textAnchor="middle"
-          fill="#1b3d28"
-          fontSize="6.5"
-          fontWeight="700"
-          letterSpacing="2.2"
-          fontFamily="serif"
-        >
-          FEDERAL RESERVE NOTE
-        </text>
-        <text
-          x="160"
-          y="35"
-          textAnchor="middle"
-          fill="#11291a"
-          fontSize="9.5"
-          fontWeight="900"
-          letterSpacing="1.4"
-          fontFamily="serif"
-        >
-          THE UNITED STATES OF AMERICA
-        </text>
-
-        {/* Left Federal Reserve Seal + Green Serial Number */}
-        <g transform="translate(68, 78)">
-          <circle
-            cx="0"
-            cy="0"
-            r="17"
-            fill="none"
-            stroke="#1b3a26"
-            strokeWidth="1.4"
-            strokeDasharray="2 1.5"
-          />
-          <circle
-            cx="0"
-            cy="0"
-            r="13"
-            fill="none"
-            stroke="#1b3a26"
-            strokeWidth="0.8"
-          />
-          <text
-            x="0"
-            y="4"
-            textAnchor="middle"
-            fill="#16301f"
-            fontSize="12"
-            fontWeight="800"
-            fontFamily="serif"
-          >
-            L
-          </text>
-        </g>
-        <text
-          x="46"
-          y="54"
-          fill="#156b38"
-          fontSize="7.2"
-          fontWeight="700"
-          letterSpacing="0.8"
-          fontFamily="monospace"
-        >
-          L00000001A
-        </text>
-
-        {/* Right Emerald Green Treasury Seal + Green Serial Number */}
-        <g transform="translate(252, 78)">
-          <circle
-            cx="0"
-            cy="0"
-            r="17"
-            fill="#19723d"
-            fillOpacity="0.14"
-            stroke="#19723d"
-            strokeWidth="1.5"
-            strokeDasharray="2 1.5"
-          />
-          <circle
-            cx="0"
-            cy="0"
-            r="13"
-            fill="none"
-            stroke="#19723d"
-            strokeWidth="0.9"
-          />
-          <text
-            x="0"
-            y="4"
-            textAnchor="middle"
-            fill="#145c31"
-            fontSize="11"
-            fontWeight="900"
-            fontFamily="serif"
-          >
-            $1
-          </text>
-        </g>
-        <text
-          x="218"
-          y="112"
-          fill="#156b38"
-          fontSize="7.2"
-          fontWeight="700"
-          letterSpacing="0.8"
-          fontFamily="monospace"
-        >
-          L00000001A
-        </text>
-
-        {/* Center Portrait Oval (George Washington Green Intaglio Engraving) */}
-        <g transform="translate(160, 82)">
-          <ellipse
-            cx="0"
-            cy="0"
-            rx="34"
-            ry="40"
-            fill="#adc29e"
-            stroke="#173823"
-            strokeWidth="2.2"
-          />
-          <ellipse
-            cx="0"
-            cy="0"
-            rx="30"
-            ry="36"
-            fill={`url(#${idPrefix}-guilloche)`}
-            stroke="#285438"
-            strokeWidth="0.9"
-          />
-          <path
-            d="M -21 32 C -18 15, -10 11, 0 11 C 10 11, 18 15, 21 32 Z"
-            fill="#183824"
-          />
-          <path d="M -5 12 L 0 25 L 5 12 Z" fill="#d9e5cc" />
-          <path
-            d="M -11 -14 C -15 -12, -16 -4, -14 2 C -12 5, -9 7, -9 10 L 9 10 C 9 7, 12 5, 14 2 C 16 -4, 15 -12, 11 -14 C 8 -20, -8 -20, -11 -14 Z"
-            fill="#d4e0c7"
-            stroke="#183824"
-            strokeWidth="1.2"
-          />
-          <ellipse
-            cx="0"
-            cy="-4"
-            rx="9.5"
-            ry="12"
-            fill="#c3d4b4"
-            stroke="#183824"
-            strokeWidth="1.1"
-          />
-          <line
-            x1="-5"
-            y1="-6"
-            x2="-2"
-            y2="-6"
-            stroke="#142e1d"
-            strokeWidth="1.3"
-          />
-          <line
-            x1="2"
-            y1="-6"
-            x2="5"
-            y2="-6"
-            stroke="#142e1d"
-            strokeWidth="1.3"
-          />
-          <path
-            d="M 0 -6 L -1 0 L 1 0"
-            fill="none"
-            stroke="#142e1d"
-            strokeWidth="1.1"
-          />
-          <path
-            d="M -4 4 Q 0 1.5 4 4"
-            fill="none"
-            stroke="#142e1d"
-            strokeWidth="1.2"
-          />
-        </g>
-
-        {/* High-Contrast Classic Green "ONE • 1 USD" Bottom Banner */}
-        <rect
-          x="92"
-          y="122"
-          width="136"
-          height="24"
-          rx="2"
-          fill="#163622"
-          stroke="#d9e5cc"
-          strokeWidth="1.2"
-        />
-        <text
-          x="160"
-          y="139"
-          textAnchor="middle"
-          fill="#eff5e8"
-          fontSize="16"
-          fontWeight="900"
-          letterSpacing="3"
-          fontFamily="monospace"
-        >
-          ONE • 1 USD
-        </text>
-
-        {/* Malfunctioning Typewriter Ribbon Smudge & Misaligned Strike Marks */}
-        <g transform="rotate(-4 195 62)" opacity="0.55">
-          <text
-            x="178"
-            y="62"
-            fill="#8f2419"
-            fontSize="7.5"
-            fontWeight="700"
-            letterSpacing="1.5"
-            fontFamily="monospace"
-          >
-            #ERR-FEED
-          </text>
-        </g>
-        <circle cx="112" cy="44" r="5" fill="#1a1c19" opacity="0.18" />
-        <circle cx="115" cy="47" r="3" fill="#1a1c19" opacity="0.22" />
-        <circle cx="204" cy="108" r="6" fill="#5e4b2b" opacity="0.16" />
-
-        {/* Deep Paper Creases, Fold Cracks & Internal Rip Fissures */}
-        <path
-          d="M 35 0 L 92 78 L 155 165"
-          fill="none"
-          stroke="#162e1e"
-          strokeWidth="1.8"
-          opacity="0.65"
-        />
-        <path
-          d="M 37 0 L 94 78 L 157 165"
-          fill="none"
-          stroke="#eef6e6"
-          strokeWidth="1.2"
-          opacity="0.7"
-        />
-        <path
-          d="M 228 18 L 172 86 L 118 165"
-          fill="none"
-          stroke="#162e1e"
-          strokeWidth="1.5"
-          opacity="0.55"
-        />
-        <path
-          d="M 230 18 L 174 86 L 120 165"
-          fill="none"
-          stroke="#eef6e6"
-          strokeWidth="1"
-          opacity="0.6"
-        />
-        <path
-          d="M 0 74 L 160 85 L 320 79"
-          fill="none"
-          stroke="#162e1e"
-          strokeWidth="1.6"
-          opacity="0.58"
-        />
-        <path
-          d="M 0 76 L 160 87 L 320 81"
-          fill="none"
-          stroke="#eef6e6"
-          strokeWidth="1.1"
-          opacity="0.65"
-        />
-        <path
-          d="M 265 0 L 242 52 L 288 112"
-          fill="none"
-          stroke="#162e1e"
-          strokeWidth="1.1"
-          opacity="0.45"
-        />
-      </g>
-
-      {/* Dark Frayed Paper Edge Outline around the Tears so the rips pop visually */}
-      <path
-        d="M 42 0 L 46 8 L 51 2 L 55 11 L 61 0 M 208 0 L 215 16 L 221 7 L 228 24 L 235 4 L 241 0 M 320 64 L 310 69 L 318 74 L 307 81 L 320 86 M 0 108 L 11 103 L 3 97 L 14 91 L 0 85"
-        fill="none"
-        stroke="#e8efe0"
-        strokeWidth="1.4"
-        opacity="0.85"
-      />
-    </svg>
-  );
-}
-
 interface WireSpringNode {
   cx: number;
   cy: number;
@@ -697,6 +136,8 @@ export interface TypewriterStageProps {
   externalEarned?: number;
   onSpend?: (tier: OrbTier, earnedDelta?: number) => void;
   isTransitionLocked?: boolean;
+  isLoaderActive?: boolean;
+  isScrollHandoffReady?: boolean;
   handoffTriggerRef?: React.RefObject<HTMLElement | null>;
   onTransitionLockChange?: (locked: boolean) => void;
 }
@@ -707,6 +148,8 @@ export default function TypewriterStage({
   externalEarned,
   onSpend,
   isTransitionLocked = false,
+  isLoaderActive = false,
+  isScrollHandoffReady = true,
   handoffTriggerRef,
   onTransitionLockChange,
 }: TypewriterStageProps = {}) {
@@ -812,6 +255,17 @@ export default function TypewriterStage({
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sequenceTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const uniqueIdRef = useRef<number>(0);
+  const wakeWiresRef = useRef<(() => void) | null>(null);
+
+  // Sync hero typewriter initial visibility with HomeLoader without needing a document.body MutationObserver
+  useEffect(() => {
+    if (!typewriterGroupRef.current) return;
+    if (isLoaderActive) {
+      typewriterGroupRef.current.style.opacity = "0";
+    } else {
+      typewriterGroupRef.current.style.opacity = "1";
+    }
+  }, [isLoaderActive]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -863,7 +317,7 @@ export default function TypewriterStage({
   // Sequential "Click me" prompt + pulsating border animation that appears one by one
   // ($20 -> $50 -> $100) and permanently disappears once the user clicks any button.
   useEffect(() => {
-    if (hasClickedAnyOrb || inDashboardMode) {
+    if (isLoaderActive || hasClickedAnyOrb || inDashboardMode) {
       setActiveClickMeTier(null);
       return;
     }
@@ -876,11 +330,7 @@ export default function TypewriterStage({
     const runStep = () => {
       if (cancelled) return;
 
-      // Wait while the homepage loader is still covering Section 1
-      const loaderEl = document.querySelector(
-        '[aria-label="Welcome to Hello Steward"]',
-      );
-      if (loaderEl || masterUnitsRef.current > 0.15) {
+      if (masterUnitsRef.current > 0.15) {
         setActiveClickMeTier(null);
         timerId = setTimeout(runStep, 450);
         return;
@@ -905,7 +355,7 @@ export default function TypewriterStage({
       cancelled = true;
       if (timerId) clearTimeout(timerId);
     };
-  }, [hasClickedAnyOrb, inDashboardMode]);
+  }, [isLoaderActive, hasClickedAnyOrb, inDashboardMode]);
 
   useEffect(() => {
     if (typeof externalEarned === "number" && externalEarned !== earnedTarget) {
@@ -979,10 +429,11 @@ export default function TypewriterStage({
 
   // Distance-based mouse follow (closer buttons move faster) + Typewriter 3D tilt
   useEffect(() => {
-    if (reducedMotion) return;
+    if (reducedMotion || isLoaderActive) return;
 
     const handleGlobalMouseMove = (e: MouseEvent) => {
       if (!stageRef.current) return;
+      wakeWiresRef.current?.();
 
       const orbs: {
         tier: OrbTier;
@@ -1072,7 +523,7 @@ export default function TypewriterStage({
       passive: true,
     });
     return () => window.removeEventListener("mousemove", handleGlobalMouseMove);
-  }, [reducedMotion]);
+  }, [reducedMotion, isLoaderActive]);
 
   // Scroll handoff from Section 1 (Hero) -> Section 2 (Dashboard) -> Partnership Lockup:
   // - Segment 1 (0 -> 1.0 vh): Hero to Section 2 Dashboard (typewriter bottom-right + 3 stacked cards on left)
@@ -1517,16 +968,24 @@ export default function TypewriterStage({
           1.6,
         );
       }
-
-      ScrollTrigger.refresh();
     }, stageRef);
 
     return () => ctx.revert();
-  }, [reducedMotion, handoffTriggerRef, onTransitionLockChange]);
+  }, [
+    reducedMotion,
+    isScrollHandoffReady,
+    handoffTriggerRef,
+    onTransitionLockChange,
+  ]);
 
   // Flexible spring-physics wires connected to each button and the typewriter
   useEffect(() => {
     let rafId = 0;
+    let isRunning = false;
+    let settledFrames = 0;
+    let prevPath20 = "";
+    let prevPath50 = "";
+    let prevPath100 = "";
 
     const wire20Spring: WireSpringNode = {
       cx: 185,
@@ -1617,10 +1076,15 @@ export default function TypewriterStage({
     };
 
     const updateWires = () => {
-      rafId = requestAnimationFrame(updateWires);
-      if (!stageRef.current) return;
+      if (!stageRef.current) {
+        isRunning = false;
+        return;
+      }
       // Skip expensive DOM layout reads & SVG path string updates once wires have faded out in Partnership mode
-      if (masterUnitsRef.current > 2.05) return;
+      if (masterUnitsRef.current > 2.05) {
+        isRunning = false;
+        return;
+      }
 
       const stageRect = stageRef.current.getBoundingClientRect();
       const p = scrollProgressRef.current;
@@ -1753,26 +1217,40 @@ export default function TypewriterStage({
         c2_100Y,
       );
 
-      if (wire20BaseRef.current)
-        wire20BaseRef.current.setAttribute("d", path20);
-      if (wire20FlowRef.current)
-        wire20FlowRef.current.setAttribute("d", path20);
-      if (wire20GlowRef.current)
-        wire20GlowRef.current.setAttribute("d", path20);
+      const changed =
+        path20 !== prevPath20 ||
+        path50 !== prevPath50 ||
+        path100 !== prevPath100;
 
-      if (wire50BaseRef.current)
-        wire50BaseRef.current.setAttribute("d", path50);
-      if (wire50FlowRef.current)
-        wire50FlowRef.current.setAttribute("d", path50);
-      if (wire50GlowRef.current)
-        wire50GlowRef.current.setAttribute("d", path50);
+      if (path20 !== prevPath20) {
+        prevPath20 = path20;
+        if (wire20BaseRef.current)
+          wire20BaseRef.current.setAttribute("d", path20);
+        if (wire20FlowRef.current)
+          wire20FlowRef.current.setAttribute("d", path20);
+        if (wire20GlowRef.current)
+          wire20GlowRef.current.setAttribute("d", path20);
+      }
 
-      if (wire100BaseRef.current)
-        wire100BaseRef.current.setAttribute("d", path100);
-      if (wire100FlowRef.current)
-        wire100FlowRef.current.setAttribute("d", path100);
-      if (wire100GlowRef.current)
-        wire100GlowRef.current.setAttribute("d", path100);
+      if (path50 !== prevPath50) {
+        prevPath50 = path50;
+        if (wire50BaseRef.current)
+          wire50BaseRef.current.setAttribute("d", path50);
+        if (wire50FlowRef.current)
+          wire50FlowRef.current.setAttribute("d", path50);
+        if (wire50GlowRef.current)
+          wire50GlowRef.current.setAttribute("d", path50);
+      }
+
+      if (path100 !== prevPath100) {
+        prevPath100 = path100;
+        if (wire100BaseRef.current)
+          wire100BaseRef.current.setAttribute("d", path100);
+        if (wire100FlowRef.current)
+          wire100FlowRef.current.setAttribute("d", path100);
+        if (wire100GlowRef.current)
+          wire100GlowRef.current.setAttribute("d", path100);
+      }
 
       // Update traveling circle position along the active clicked wire path
       if (pulseStateRef.current.active && pulseDotGroupRef.current) {
@@ -1797,10 +1275,48 @@ export default function TypewriterStage({
           }
         }
       }
+
+      const springEnergy =
+        Math.abs(wire20Spring.vx) +
+        Math.abs(wire20Spring.vy) +
+        Math.abs(wire50Spring.vx) +
+        Math.abs(wire50Spring.vy) +
+        Math.abs(wire100Spring.vx) +
+        Math.abs(wire100Spring.vy);
+
+      if (!changed && springEnergy < 0.04 && !pulseStateRef.current.active) {
+        settledFrames += 1;
+      } else {
+        settledFrames = 0;
+      }
+
+      if (settledFrames < 3 || pulseStateRef.current.active) {
+        rafId = requestAnimationFrame(updateWires);
+      } else {
+        isRunning = false;
+      }
     };
 
-    rafId = requestAnimationFrame(updateWires);
-    return () => cancelAnimationFrame(rafId);
+    const wakeWires = () => {
+      settledFrames = 0;
+      if (!isRunning) {
+        isRunning = true;
+        rafId = requestAnimationFrame(updateWires);
+      }
+    };
+
+    wakeWiresRef.current = wakeWires;
+    wakeWires();
+
+    window.addEventListener("scroll", wakeWires, { passive: true });
+    window.addEventListener("resize", wakeWires, { passive: true });
+
+    return () => {
+      wakeWiresRef.current = null;
+      window.removeEventListener("scroll", wakeWires);
+      window.removeEventListener("resize", wakeWires);
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 
   // Sticky magnetic hover & rubbery snap-back
@@ -1908,6 +1424,7 @@ export default function TypewriterStage({
       pulseStateRef.current.active = true;
       pulseStateRef.current.tier = tier;
       pulseStateRef.current.progress = 0;
+      wakeWiresRef.current?.();
 
       if (pulseDotGroupRef.current) {
         gsap.killTweensOf(pulseDotGroupRef.current);
@@ -2342,6 +1859,7 @@ export default function TypewriterStage({
             powerState={powerState}
             thickerSmoke={hasCompletedPayoff}
             reducedMotion={reducedMotion}
+            paused={isLoaderActive}
           />
         </div>
 
