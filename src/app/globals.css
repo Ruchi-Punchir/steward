@@ -145,13 +145,17 @@ html[data-theme="light"] .admin-theme-root {
 html[data-theme="light"] .admin-theme-root .bg-\[\#08080a\],
 html[data-theme="light"] .admin-theme-root .bg-\[\#0a0a0d\],
 html[data-theme="light"] .admin-theme-root .bg-\[\#09090c\],
+html[data-theme="light"] .admin-theme-root .bg-\[\#0c0c10\],
 html[data-theme="light"] .admin-theme-root .bg-\[\#070709\] {
   background-color: #f5f2eb !important;
 }
 
+html[data-theme="light"] .admin-theme-root .bg-\[\#08080a\]\/95,
+html[data-theme="light"] .admin-theme-root .bg-\[\#0a0a0d\]\/95,
+html[data-theme="light"] .admin-theme-root .bg-\[\#0d0d11\]\/95,
 html[data-theme="light"] .admin-theme-root .bg-\[\#0c0c10\]\/95,
 html[data-theme="light"] .admin-theme-root .bg-\[\#101014\]\/95 {
-  background-color: rgba(245, 242, 235, 0.92) !important;
+  background-color: rgba(251, 249, 245, 0.95) !important;
 }
 
 html[data-theme="light"] .admin-theme-root .bg-\[\#101014\],
@@ -163,15 +167,22 @@ html[data-theme="light"] .admin-theme-root .bg-\[\#0d0d11\] {
 html[data-theme="light"] .admin-theme-root .bg-white\/\[0\.02\],
 html[data-theme="light"] .admin-theme-root .bg-white\/\[0\.03\],
 html[data-theme="light"] .admin-theme-root .bg-white\/\[0\.04\],
+html[data-theme="light"] .admin-theme-root .bg-white\/\[0\.05\],
 html[data-theme="light"] .admin-theme-root .bg-white\/\[0\.06\],
-html[data-theme="light"] .admin-theme-root .bg-white\/\[0\.08\] {
-  background-color: rgba(20, 20, 24, 0.045) !important;
+html[data-theme="light"] .admin-theme-root .bg-white\/\[0\.07\],
+html[data-theme="light"] .admin-theme-root .bg-white\/\[0\.08\],
+html[data-theme="light"] .admin-theme-root .bg-white\/\[0\.1\],
+html[data-theme="light"] .admin-theme-root .bg-white\/\[0\.12\],
+html[data-theme="light"] .admin-theme-root .bg-white\/\[0\.14\] {
+  background-color: rgba(20, 20, 24, 0.055) !important;
 }
 
 html[data-theme="light"] .admin-theme-root .hover\:bg-white\/\[0\.03\]:hover,
 html[data-theme="light"] .admin-theme-root .hover\:bg-white\/\[0\.06\]:hover,
-html[data-theme="light"] .admin-theme-root .hover\:bg-white\/\[0\.08\]:hover {
-  background-color: rgba(20, 20, 24, 0.075) !important;
+html[data-theme="light"] .admin-theme-root .hover\:bg-white\/\[0\.07\]:hover,
+html[data-theme="light"] .admin-theme-root .hover\:bg-white\/\[0\.08\]:hover,
+html[data-theme="light"] .admin-theme-root .hover\:bg-white\/\[0\.1\]:hover {
+  background-color: rgba(20, 20, 24, 0.085) !important;
 }
 
 html[data-theme="light"] .admin-theme-root .text-\[\#f4f0ea\] {
@@ -199,21 +210,32 @@ html[data-theme="light"] .admin-theme-root .border-white\/\[0\.1\],
 html[data-theme="light"] .admin-theme-root .border-white\/\[0\.12\],
 html[data-theme="light"] .admin-theme-root .border-white\/\[0\.14\],
 html[data-theme="light"] .admin-theme-root .border-white\/\[0\.15\],
+html[data-theme="light"] .admin-theme-root .border-white\/\[0\.16\],
+html[data-theme="light"] .admin-theme-root .border-white\/\[0\.18\],
+html[data-theme="light"] .admin-theme-root .border-white\/\[0\.22\],
 html[data-theme="light"] .admin-theme-root .border-white\/10 {
-  border-color: rgba(20, 20, 24, 0.12) !important;
+  border-color: rgba(20, 20, 24, 0.13) !important;
 }
 
-html[data-theme="light"] .admin-theme-root .divide-white\/\[0\.06\] > :not([hidden]) ~ :not([hidden]) {
-  border-color: rgba(20, 20, 24, 0.09) !important;
+html[data-theme="light"] .admin-theme-root .divide-white\/\[0\.06\] > :not([hidden]) ~ :not([hidden]),
+html[data-theme="light"] .admin-theme-root .divide-white\/\[0\.08\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(20, 20, 24, 0.1) !important;
 }
 
 html[data-theme="light"] .admin-theme-root .text-red-200,
-html[data-theme="light"] .admin-theme-root .text-red-300 {
+html[data-theme="light"] .admin-theme-root .text-red-300,
+html[data-theme="light"] .admin-theme-root .text-red-400 {
   color: #b91c1c !important;
 }
 
-html[data-theme="light"] .admin-theme-root .text-amber-200 {
+html[data-theme="light"] .admin-theme-root .text-amber-200,
+html[data-theme="light"] .admin-theme-root .text-amber-300,
+html[data-theme="light"] .admin-theme-root .text-amber-400 {
   color: #92400e !important;
+}
+
+html[data-theme="light"] .admin-theme-root .text-\[\#10b981\] {
+  color: #047857 !important;
 }
 
 html[data-theme="light"] .admin-theme-root .text-sky-300 {

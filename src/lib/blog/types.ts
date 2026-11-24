@@ -14,14 +14,30 @@ export type PostAuthor = (typeof POST_AUTHORS)[number];
 export const POST_STATUSES = ["draft", "scheduled", "published"] as const;
 export type PostStatus = (typeof POST_STATUSES)[number];
 
+export type TiptapMarkType =
+  | "bold"
+  | "italic"
+  | "underline"
+  | "strike"
+  | "code"
+  | "highlight"
+  | "subscript"
+  | "superscript"
+  | "link";
+
 export interface TiptapMark {
-  type: "bold" | "italic" | "code" | "link";
+  type: TiptapMarkType;
   attrs?: {
     href?: string;
     target?: string;
     rel?: string;
+    color?: string;
   };
 }
+
+export type ImageWidthOption = "small" | "medium" | "wide" | "full";
+export type ImageAlignOption = "left" | "center" | "right";
+export type CalloutTone = "info" | "tip" | "warning";
 
 export interface TiptapNode {
   type: string;

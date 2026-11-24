@@ -145,16 +145,6 @@ export async function savePostAction(
         error: "Cover image alt text is required when a cover image is set.",
       };
     }
-    if (
-      (input.status === "published" || input.status === "scheduled") &&
-      !hasCoverAlt
-    ) {
-      return {
-        success: false,
-        error:
-          "Cover image alt text is required before scheduling or publishing.",
-      };
-    }
   }
 
   // 3. Fetch existing post if updating
@@ -289,11 +279,11 @@ export async function savePostAction(
     savedRecord = data as PostRecord;
   }
 
-  revalidatePath("/admin/blog");
-  revalidatePath(`/admin/blog/${savedRecord.id}`);
-  revalidatePath(`/admin/blog/${savedRecord.id}/preview`);
-  revalidatePath("/insights");
-  revalidatePath(`/insights/${savedRecord.slug}`);
+  if (!input.isAutosave) {
+    revalidatePath("/admin/blog");
+    revalidatePath("/insights");
+    revalidatePath(`/insights/${savedRecord.slug}`);
+  }
 
   return {
     success: true,

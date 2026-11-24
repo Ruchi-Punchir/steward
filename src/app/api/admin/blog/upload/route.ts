@@ -8,8 +8,10 @@ const BUCKET_NAME = "blog-images";
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 const ALLOWED_MIME_TO_EXT: Record<string, string> = {
   "image/jpeg": "jpg",
+  "image/jpg": "jpg",
   "image/png": "png",
   "image/webp": "webp",
+  "image/gif": "gif",
 };
 
 export async function POST(request: NextRequest) {
@@ -29,7 +31,7 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get("file");
-    const alt = String(formData.get("alt") ?? "").trim();
+    const rawAlt = String(formData.get("alt") ?? "").trim();
 
     if (!(file instanceof File)) {
       return NextResponse.json(
@@ -38,12 +40,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!alt) {
-      return NextResponse.json(
-        { ok: false, error: "Alt text is required for every image." },
-        { status: 400 }
-      );
-    }
+    const fallbackAlt =
+      file.name
+        .replace(/\.[^/.]+$/, "")
+        .replace(/[-_]+/g, " ")
+        .trim() || "Article image";
+    const alt = rawAlt || fallbackAlt;
 
     const ext = ALLOWED_MIME_TO_EXT[file.type];
     if (!ext) {

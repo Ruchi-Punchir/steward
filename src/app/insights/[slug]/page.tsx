@@ -9,7 +9,7 @@ import {
   getRelatedPublishedPosts,
 } from "@/lib/blog/public-queries";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 function getSiteOrigin(): string {
   const domain = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN?.trim();

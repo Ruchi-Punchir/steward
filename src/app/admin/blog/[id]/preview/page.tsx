@@ -36,7 +36,7 @@ export default async function AdminPostPreviewPage({
   const post = data as PostRecord;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0d] text-[#f4f0ea]">
+    <div className="admin-theme-root min-h-screen bg-[var(--bg-stage)] text-[var(--text-primary)]">
       {/* Sticky Admin Preview Bar */}
       <div className="sticky top-0 z-40 border-b border-white/[0.08] bg-[#101014]/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">

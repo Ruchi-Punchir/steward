@@ -10,7 +10,7 @@ import {
 } from "@/lib/blog/public-queries";
 import { POST_CATEGORIES } from "@/lib/blog/types";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   return POST_CATEGORIES.map((c) => ({

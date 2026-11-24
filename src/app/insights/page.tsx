@@ -4,7 +4,7 @@ import InsightsShell from "@/components/blog/InsightsShell";
 import InsightsListingView from "@/components/blog/InsightsListingView";
 import { getPublishedPosts } from "@/lib/blog/public-queries";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Growth Insights & Business Strategy | Steward",
